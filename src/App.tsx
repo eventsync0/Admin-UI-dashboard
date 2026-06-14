@@ -1,7 +1,15 @@
 import { Admin } from "react-admin";
-import { Layout } from "./Layout";
-import { dataProvider } from "./dataProvider";
+import { authProvider } from "./providers/authProvider";
+import { Login } from "./components/Login";
 
-export const App = () => (
-  <Admin layout={Layout} dataProvider={dataProvider}></Admin>
-);
+function App() {
+  return (
+    <Admin
+      authProvider={authProvider}
+      loginPage={Login}
+      title="EventSync - Administration"
+    ></Admin>
+  );
+}
+
+export default App;
