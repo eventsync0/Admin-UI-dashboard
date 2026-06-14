@@ -1,0 +1,205 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   2. PALETTE DE BASE — Coffee Bean
+   ========================================================================== */
+:root {
+  --coffee-50:  #ede1db;
+  --coffee-100: #f5ded6;
+  --coffee-200: #ebbdad;
+  --coffee-300: #e19d84;
+  --coffee-400: #d77c5b;
+  --coffee-500: #cd5b32;
+  --coffee-600: #a44928;
+  --coffee-700: #7b371e;
+  --coffee-800: #522414;
+  --coffee-900: #29120a;
+  --coffee-950: #1d0d07;
+
+  /* ==========================================================================
+     3. FONDS & SURFACES
+     ========================================================================== */
+  --background:    var(--coffee-50);
+  --bg-card:       #ffffff;
+  --bg-subtle:     var(--coffee-100);
+  --border:        var(--coffee-200);
+
+  /* ==========================================================================
+     4. TYPOGRAPHIE
+     ========================================================================== */
+  --txt-title:     var(--coffee-900);
+  --txt-body:      var(--coffee-800);
+  --txt-secondary: var(--coffee-600);
+  --txt-disabled:  var(--coffee-300);
+  --txt-on-dark:   var(--coffee-50);
+
+  /* ==========================================================================
+     5. BOUTON PRIMARY
+     ========================================================================== */
+  --btn-primary:          var(--coffee-500);
+  --btn-primary-hover:    var(--coffee-600);
+  --btn-primary-active:   var(--coffee-700);
+  --btn-primary-disabled: var(--coffee-300);
+  --btn-primary-txt:      var(--coffee-50);
+
+  /* ==========================================================================
+     6. BOUTON SECONDARY
+     ========================================================================== */
+  --btn-secondary:          var(--coffee-100);
+  --btn-secondary-hover:    var(--coffee-200);
+  --btn-secondary-active:   var(--coffee-300);
+  --btn-secondary-disabled: var(--coffee-50);
+  --btn-secondary-txt:      var(--coffee-800);
+
+  /* ==========================================================================
+     7. BOUTON TERTIARY / GHOST
+     ========================================================================== */
+  --btn-ghost:          transparent;
+  --btn-ghost-hover:    rgba(205, 91, 50, 0.08);
+  --btn-ghost-active:   rgba(205, 91, 50, 0.15);
+  --btn-ghost-disabled: transparent;
+  --btn-ghost-txt:      var(--coffee-600);
+
+  /* ==========================================================================
+     8. BOUTON DANGER
+     ========================================================================== */
+  --btn-danger:          #dc2626;
+  --btn-danger-hover:    #b91c1c;
+  --btn-danger-active:   #991b1b;
+  --btn-danger-disabled: #fca5a5;
+  --btn-danger-txt:      #ffffff;
+
+  /* ==========================================================================
+     9. BADGES & LABELS
+     ========================================================================== */
+  --badge-bg:  var(--coffee-100);
+  --badge-txt: var(--coffee-700);
+
+  /* ==========================================================================
+     10. FEEDBACK — États sémantiques
+     ========================================================================== */
+  --success:     #16a34a;
+  --success-bg:  #dcfce7;
+  --warning:     #d97706;
+  --warning-bg:  #fef3c7;
+  --error:       #dc2626;
+  --error-bg:    #fee2e2;
+  --info:        #2563eb;
+  --info-bg:     #dbeafe;
+
+  /* ==========================================================================
+     11. FOCUS (accessibilité)
+     ========================================================================== */
+  --focus-ring: var(--coffee-500);
+}
+
+/* ==========================================================================
+   12. DARK MODE
+   ========================================================================== */
+.dark {
+  --background: var(--coffee-950);
+  --bg-card:    var(--coffee-900);
+  --bg-subtle:  var(--coffee-800);
+  --border:     var(--coffee-800);
+
+  --txt-title:     var(--coffee-50);
+  --txt-body:      var(--coffee-100);
+  --txt-secondary: var(--coffee-300);
+  --txt-disabled:  var(--coffee-700);
+  --txt-on-dark:   var(--coffee-950);
+
+  --btn-primary:          var(--coffee-400);
+  --btn-primary-hover:    var(--coffee-500);
+  --btn-primary-active:   var(--coffee-600);
+  --btn-primary-disabled: var(--coffee-800);
+  --btn-primary-txt:      var(--coffee-950);
+
+  --btn-secondary:          rgba(41, 18, 10, 0.5);
+  --btn-secondary-hover:    rgba(82, 36, 20, 0.7);
+  --btn-secondary-active:   rgba(82, 36, 20, 0.9);
+  --btn-secondary-disabled: rgba(41, 18, 10, 0.2);
+  --btn-secondary-txt:      var(--coffee-200);
+
+  --btn-ghost:          transparent;
+  --btn-ghost-hover:    rgba(215, 124, 91, 0.1);
+  --btn-ghost-active:   rgba(215, 124, 91, 0.2);
+  --btn-ghost-disabled: transparent;
+  --btn-ghost-txt:      var(--coffee-300);
+
+  --btn-danger:          #ef4444;
+  --btn-danger-hover:    #dc2626;
+  --btn-danger-active:   #b91c1c;
+  --btn-danger-disabled: #7f1d1d;
+  --btn-danger-txt:      #ffffff;
+
+  --badge-bg:  rgba(41, 18, 10, 0.6);
+  --badge-txt: var(--coffee-200);
+
+  --success:     #4ade80;
+  --success-bg:  rgba(22, 163, 74, 0.15);
+  --warning:     #fbbf24;
+  --warning-bg:  rgba(217, 119, 6, 0.15);
+  --error:       #f87171;
+  --error-bg:    rgba(220, 38, 38, 0.15);
+  --info:        #60a5fa;
+  --info-bg:     rgba(37, 99, 235, 0.15);
+
+  --focus-ring: var(--coffee-400);
+}
+
+/* ==========================================================================
+   13. STYLES GLOBAUX
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--txt-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--txt-disabled);
+}
+
+/* Animations */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes spin-slower {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+@keyframes spin-slowest {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: spin-slow 25s linear infinite; }
+.animate-spin-slower { animation: spin-slower 30s linear infinite; }
+.animate-spin-slowest { animation: spin-slowest 35s linear infinite; }
+.bg-gradient-radial { background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%); }
+.blur-2xl { filter: blur(48px); }
+.blur-3xl { filter: blur(64px); }

@@ -27,17 +27,17 @@ export const Login = () => {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        backgroundColor: "var(--background)",
       }}
     >
       <div
         style={{
-          backgroundColor: "white",
+          backgroundColor: "var(--bg-card)",
           padding: "2.5rem",
-          borderRadius: "16px",
+          borderRadius: "1rem",
           boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
           width: "420px",
-          transition: "transform 0.3s ease",
+          border: "1px solid var(--border)",
         }}
       >
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
@@ -45,7 +45,7 @@ export const Login = () => {
             style={{
               width: "60px",
               height: "60px",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              backgroundColor: "var(--btn-primary)",
               borderRadius: "12px",
               display: "flex",
               alignItems: "center",
@@ -61,9 +61,7 @@ export const Login = () => {
               margin: 0,
               fontSize: "1.75rem",
               fontWeight: "600",
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
+              color: "var(--txt-title)",
             }}
           >
             EventSync
@@ -71,7 +69,7 @@ export const Login = () => {
           <p
             style={{
               margin: "0.5rem 0 0",
-              color: "#666",
+              color: "var(--txt-secondary)",
               fontSize: "0.875rem",
             }}
           >
@@ -85,7 +83,7 @@ export const Login = () => {
               style={{
                 display: "block",
                 marginBottom: "0.5rem",
-                color: "#333",
+                color: "var(--txt-body)",
                 fontSize: "0.875rem",
                 fontWeight: "500",
               }}
@@ -101,17 +99,18 @@ export const Login = () => {
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "8px",
-                border: "1px solid #e0e0e0",
+                border: `1px solid var(--border)`,
+                backgroundColor: "var(--bg-card)",
+                color: "var(--txt-body)",
                 fontSize: "0.875rem",
-                transition: "all 0.2s ease",
                 boxSizing: "border-box",
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = "#667eea";
+                e.target.style.borderColor = "var(--btn-primary)";
                 e.target.style.outline = "none";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#e0e0e0";
+                e.target.style.borderColor = "var(--border)";
               }}
               required
               autoFocus
@@ -123,7 +122,7 @@ export const Login = () => {
               style={{
                 display: "block",
                 marginBottom: "0.5rem",
-                color: "#333",
+                color: "var(--txt-body)",
                 fontSize: "0.875rem",
                 fontWeight: "500",
               }}
@@ -139,17 +138,18 @@ export const Login = () => {
                 width: "100%",
                 padding: "0.75rem",
                 borderRadius: "8px",
-                border: "1px solid #e0e0e0",
+                border: `1px solid var(--border)`,
+                backgroundColor: "var(--bg-card)",
+                color: "var(--txt-body)",
                 fontSize: "0.875rem",
-                transition: "all 0.2s ease",
                 boxSizing: "border-box",
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = "#667eea";
+                e.target.style.borderColor = "var(--btn-primary)";
                 e.target.style.outline = "none";
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = "#e0e0e0";
+                e.target.style.borderColor = "var(--border)";
               }}
               required
             />
@@ -161,8 +161,10 @@ export const Login = () => {
             style={{
               width: "100%",
               padding: "0.75rem",
-              backgroundColor: isLoading ? "#ccc" : "#667eea",
-              color: "white",
+              backgroundColor: isLoading
+                ? "var(--btn-primary-disabled)"
+                : "var(--btn-primary)",
+              color: "var(--btn-primary-txt)",
               border: "none",
               borderRadius: "8px",
               cursor: isLoading ? "not-allowed" : "pointer",
@@ -172,12 +174,13 @@ export const Login = () => {
             }}
             onMouseEnter={(e) => {
               if (!isLoading) {
-                e.currentTarget.style.backgroundColor = "#5a67d8";
+                e.currentTarget.style.backgroundColor =
+                  "var(--btn-primary-hover)";
               }
             }}
             onMouseLeave={(e) => {
               if (!isLoading) {
-                e.currentTarget.style.backgroundColor = "#667eea";
+                e.currentTarget.style.backgroundColor = "var(--btn-primary)";
               }
             }}
           >
@@ -189,14 +192,14 @@ export const Login = () => {
           style={{
             marginTop: "1.5rem",
             paddingTop: "1.5rem",
-            borderTop: "1px solid #e0e0e0",
+            borderTop: `1px solid var(--border)`,
             textAlign: "center",
           }}
         >
           <p
             style={{
               margin: 0,
-              color: "#999",
+              color: "var(--txt-disabled)",
               fontSize: "0.75rem",
             }}
           >
