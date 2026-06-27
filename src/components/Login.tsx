@@ -1,12 +1,22 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLogin, useNotify } from "react-admin";
-import { Coffee, Mail, Lock, Sparkles, Eye, EyeOff } from "lucide-react";
+import {
+  Calendar,
+  Mail,
+  Lock,
+  Sparkles,
+  Eye,
+  EyeOff,
+  Star,
+  Activity,
+} from "lucide-react";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const login = useLogin();
   const notify = useNotify();
 
@@ -26,430 +36,579 @@ export const Login = () => {
     <div
       style={{
         minHeight: "100vh",
+        width: "100%",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "var(--background)",
+        backgroundColor: "#030305", // Fond très sombre de base
         padding: "16px",
         position: "relative",
         overflow: "hidden",
-        fontFamily: "Inter, Roboto, sans-serif",
+        fontFamily:
+          "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}
     >
-      {/* Background decoration */}
+      {/* 1. Arrière-plan : Effet Bokeh / Concert Lights */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          overflow: "hidden",
+          zIndex: 0,
           pointerEvents: "none",
+          overflow: "hidden",
         }}
       >
         <div
-          className="animate-spin-slow"
           style={{
             position: "absolute",
-            top: "-50%",
-            right: "-50%",
-            width: "600px",
-            height: "600px",
-            borderRadius: "50%",
-            border: "4px solid rgba(205, 91, 50, 0.12)",
-          }}
-        />
-        <div
-          className="animate-spin-slower"
-          style={{
-            position: "absolute",
-            bottom: "-50%",
-            left: "-50%",
-            width: "500px",
-            height: "500px",
-            borderRadius: "50%",
-            border: "4px solid rgba(205, 91, 50, 0.12)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
+            top: "20%",
+            left: "15%",
             width: "400px",
             height: "400px",
-            borderRadius: "50%",
             background:
-              "radial-gradient(circle, rgba(205,91,50,0.07) 0%, transparent 70%)",
-            filter: "blur(48px)",
+              "radial-gradient(circle, rgba(234, 88, 12, 0.15) 0%, transparent 60%)",
+            filter: "blur(60px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: "10%",
+            right: "10%",
+            width: "500px",
+            height: "500px",
+            background:
+              "radial-gradient(circle, rgba(14, 165, 233, 0.1) 0%, transparent 60%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: "40%",
+            right: "25%",
+            width: "300px",
+            height: "300px",
+            background:
+              "radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 60%)",
+            filter: "blur(50px)",
           }}
         />
       </div>
 
-      {/* Login Card */}
+      {}
+      {/* 2. Arrière-plan : Anneaux concentriques orangés (Copie exacte de l'image) */}
+      <div
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1,
+          pointerEvents: "none",
+        }}
+      >
+        {/* Glow central intense */}
+        <div
+          style={{
+            position: "absolute",
+            width: "300px",
+            height: "300px",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle at center, rgba(234, 88, 12, 0.25) 0%, transparent 70%)",
+            filter: "blur(20px)",
+          }}
+        />
+        {/* Anneau 1 (Intérieur, épais et brillant) */}
+        <div
+          style={{
+            position: "absolute",
+            width: "520px",
+            height: "520px",
+            borderRadius: "50%",
+            border: "6px solid rgba(234, 88, 12, 0.4)",
+            boxShadow:
+              "0 0 60px rgba(234, 88, 12, 0.4), inset 0 0 40px rgba(234, 88, 12, 0.2)",
+          }}
+        />
+        {/* Anneau 2 (Médian, plus fin) */}
+        <div
+          style={{
+            position: "absolute",
+            width: "680px",
+            height: "680px",
+            borderRadius: "50%",
+            border: "2px solid rgba(234, 88, 12, 0.3)",
+            boxShadow: "0 0 30px rgba(234, 88, 12, 0.15)",
+          }}
+        />
+        {/* Anneau 3 (Extérieur, très fin et large) */}
+        <div
+          style={{
+            position: "absolute",
+            width: "880px",
+            height: "880px",
+            borderRadius: "50%",
+            border: "1px solid rgba(234, 88, 12, 0.15)",
+          }}
+        />
+      </div>
+
+      {}
+      {/* 3. Arrière-plan : Ondes (Soundwaves multiples croisées) */}
+      <div
+        style={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          zIndex: 2,
+          pointerEvents: "none",
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <svg
+          style={{ width: "100%", height: "400px", opacity: 0.8 }}
+          viewBox="0 0 1200 400"
+          preserveAspectRatio="none"
+        >
+          {/* Ondes Orangées/Dorées principales */}
+          <path
+            d="M0,200 Q150,50 300,200 T600,200 T900,200 T1200,200"
+            fill="none"
+            stroke="rgba(249, 115, 22, 0.6)"
+            strokeWidth="1.5"
+            style={{ filter: "drop-shadow(0 0 8px rgba(249,115,22,0.5))" }}
+          />
+          <path
+            d="M0,200 Q100,300 250,200 T550,200 T850,200 T1200,200"
+            fill="none"
+            stroke="rgba(249, 115, 22, 0.4)"
+            strokeWidth="1"
+          />
+          <path
+            d="M0,200 Q200,100 400,200 T800,200 T1200,200"
+            fill="none"
+            stroke="rgba(253, 186, 116, 0.5)"
+            strokeWidth="0.8"
+          />
+
+          {/* Ondes Bleutées/Violettes secondaires pour le contraste (comme sur l'image) */}
+          <path
+            d="M0,200 Q120,350 350,200 T700,200 T1050,200 T1200,200"
+            fill="none"
+            stroke="rgba(56, 189, 248, 0.3)"
+            strokeWidth="1"
+          />
+          <path
+            d="M0,200 Q180,50 450,200 T850,200 T1200,200"
+            fill="none"
+            stroke="rgba(129, 140, 248, 0.2)"
+            strokeWidth="1.5"
+          />
+
+          {/* Grille d'ondes fines type oscilloscope */}
+          <path
+            d="M0,200 C100,150 150,250 300,200 C450,150 500,250 600,200 C700,150 750,250 900,200 C1050,150 1100,250 1200,200"
+            fill="none"
+            stroke="rgba(234, 88, 12, 0.5)"
+            strokeWidth="0.5"
+          />
+          <path
+            d="M0,200 C120,280 180,120 350,200 C520,280 580,120 700,200 C820,280 880,120 1050,200 C1150,240 1180,180 1200,200"
+            fill="none"
+            stroke="rgba(234, 88, 12, 0.3)"
+            strokeWidth="0.5"
+          />
+        </svg>
+      </div>
+
+      {}
+      {/* 4. Carte Principale Glassmorphism */}
       <div
         style={{
           position: "relative",
+          zIndex: 10,
           width: "100%",
-          maxWidth: "440px",
-          backgroundColor: "var(--bg-card)",
-          borderRadius: "28px",
-          boxShadow: "0 4px 6px rgba(0,0,0,0.05), 0 20px 60px rgba(0,0,0,0.1)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
+          maxWidth: "400px",
+          padding: "40px 32px",
+          borderRadius: "20px",
+          backgroundColor: "rgba(255, 255, 255, 0.03)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)", // Pour Safari
+          border: "1px solid rgba(255, 255, 255, 0.15)",
+          boxShadow:
+            "0 30px 60px -12px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.05)",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
-        {/* Top accent bar */}
+        {}
+        {/* Logo Container (Carré arrondi translucide avec icône) */}
         <div
           style={{
-            height: "5px",
-            background: "linear-gradient(90deg, #cd5b32, #a44928, #7b371e)",
+            width: "64px",
+            height: "64px",
+            borderRadius: "16px",
+            background:
+              "linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02))",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: "20px",
+            boxShadow:
+              "0 10px 30px rgba(234, 88, 12, 0.2), inset 0 0 20px rgba(234, 88, 12, 0.15)",
+            position: "relative",
           }}
-        />
+        >
+          {/* Composition de l'icône personnalisée semblable à l'image */}
+          <div style={{ position: "relative", width: "32px", height: "32px" }}>
+            <Calendar
+              color="#ea580c"
+              size={32}
+              strokeWidth={1.5}
+              style={{ position: "absolute", top: 0, left: 0 }}
+            />
+            <Activity
+              color="#ea580c"
+              size={16}
+              strokeWidth={2.5}
+              style={{ position: "absolute", top: "10px", left: "8px" }}
+            />
+            <Star
+              color="#ea580c"
+              size={14}
+              fill="#ea580c"
+              style={{
+                position: "absolute",
+                bottom: "-2px",
+                right: "-2px",
+                filter: "drop-shadow(0 0 4px rgba(234,88,12,0.8))",
+              }}
+            />
+          </div>
+        </div>
 
-        <div style={{ padding: "40px" }}>
-          {/* Logo & title */}
-          <div style={{ textAlign: "center", marginBottom: "32px" }}>
-            <div
-              className="animate-pulse-glow"
+        {/* Titres */}
+        <h1
+          style={{
+            fontSize: "26px",
+            fontWeight: 700,
+            color: "#ffffff",
+            margin: "0 0 4px",
+            letterSpacing: "-0.01em",
+          }}
+        >
+          EventSync
+        </h1>
+        <p
+          style={{
+            fontSize: "13px",
+            color: "rgba(255, 255, 255, 0.6)",
+            margin: "0 0 16px",
+            fontWeight: 400,
+          }}
+        >
+          Administration Panel
+        </p>
+
+        {/* Badge Secure */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            padding: "4px 12px",
+            borderRadius: "99px",
+            backgroundColor: "rgba(234, 88, 12, 0.1)",
+            border: "1px solid rgba(234, 88, 12, 0.25)",
+            color: "#ffedd5",
+            fontSize: "11px",
+            fontWeight: 500,
+            marginBottom: "32px",
+          }}
+        >
+          <Sparkles size={12} color="#f97316" />
+          Secure Access
+        </div>
+
+        {}
+        {/* Formulaire */}
+        <form
+          onSubmit={handleSubmit}
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
+          {/* Champ Email */}
+          <div>
+            <label
               style={{
-                display: "inline-flex",
-                padding: "16px",
-                borderRadius: "20px",
-                backgroundColor: "var(--bg-subtle)",
-                marginBottom: "16px",
-              }}
-            >
-              <Coffee size={32} color="var(--btn-primary)" />
-            </div>
-            <h1
-              style={{
-                fontSize: "28px",
-                fontWeight: 800,
-                color: "var(--txt-title)",
-                letterSpacing: "-0.04em",
-                margin: "0 0 6px",
-              }}
-            >
-              EventSync
-            </h1>
-            <p
-              style={{
-                fontSize: "14px",
-                color: "var(--txt-secondary)",
-                fontWeight: 500,
-                margin: "0 0 14px",
-              }}
-            >
-              Administration Panel
-            </p>
-            <span
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
+                display: "block",
                 fontSize: "12px",
-                fontWeight: 600,
-                color: "var(--badge-txt)",
-                backgroundColor: "var(--badge-bg)",
-                padding: "5px 12px",
-                borderRadius: "999px",
-                border: "1px solid var(--border)",
+                fontWeight: 500,
+                color: "rgba(255, 255, 255, 0.9)",
+                marginBottom: "6px",
+                marginLeft: "2px",
               }}
             >
-              <Sparkles size={12} />
-              Secure Access
-            </span>
+              Email
+            </label>
+            <div style={{ position: "relative" }}>
+              <Mail
+                size={16}
+                style={{
+                  position: "absolute",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "rgba(255, 255, 255, 0.6)",
+                  pointerEvents: "none",
+                }}
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@eventsync.com"
+                required
+                autoFocus
+                style={{
+                  width: "100%",
+                  padding: "12px 14px 12px 40px",
+                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  border: "1px solid rgba(234, 88, 12, 0.5)", // Bordure orangée par défaut comme sur l'image
+                  borderRadius: "8px",
+                  color: "#ffffff",
+                  fontSize: "13px",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  boxSizing: "border-box",
+                  fontFamily: "inherit",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#f97316";
+                  e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+                  e.currentTarget.style.boxShadow =
+                    "0 0 0 2px rgba(234, 88, 12, 0.2)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(234, 88, 12, 0.5)";
+                  e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              />
+            </div>
           </div>
 
-          {/* Form */}
-          <form
-            onSubmit={handleSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "18px" }}
-          >
-            {/* Email field */}
-            <div>
-              <label
+          {}
+          {/* Champ Mot de passe */}
+          <div>
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                fontWeight: 500,
+                color: "rgba(255, 255, 255, 0.9)",
+                marginBottom: "6px",
+                marginLeft: "2px",
+              }}
+            >
+              Password
+            </label>
+            <div style={{ position: "relative" }}>
+              <Lock
+                size={16}
                 style={{
-                  display: "block",
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  color: "var(--txt-secondary)",
-                  marginBottom: "6px",
+                  position: "absolute",
+                  left: "14px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: "rgba(255, 255, 255, 0.6)",
+                  pointerEvents: "none",
                 }}
-              >
-                Email
-              </label>
-              <div style={{ position: "relative" }}>
-                <Mail
-                  size={18}
-                  style={{
-                    position: "absolute",
-                    left: "14px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "var(--txt-disabled)",
-                    pointerEvents: "none",
-                  }}
-                />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@eventsync.com"
-                  required
-                  autoFocus
-                  style={{
-                    width: "100%",
-                    paddingLeft: "44px",
-                    paddingRight: "16px",
-                    paddingTop: "12px",
-                    paddingBottom: "12px",
-                    backgroundColor: "var(--bg-subtle)",
-                    border: "2px solid var(--border)",
-                    borderRadius: "12px",
-                    color: "var(--txt-title)",
-                    fontSize: "14px",
-                    fontFamily: "Inter, Roboto, sans-serif",
-                    outline: "none",
-                    transition: "all 0.25s",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "var(--btn-primary)";
-                    e.currentTarget.style.backgroundColor = "var(--bg-card)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 0 4px rgba(205, 91, 50, 0.1)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.backgroundColor = "var(--bg-subtle)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Password field */}
-            <div>
-              <label
+              />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
                 style={{
-                  display: "block",
+                  width: "100%",
+                  padding: "12px 40px 12px 40px",
+                  backgroundColor: "rgba(0, 0, 0, 0.3)",
+                  border: "1px solid rgba(255, 255, 255, 0.15)", // Bordure grise par défaut
+                  borderRadius: "8px",
+                  color: "#ffffff",
                   fontSize: "13px",
-                  fontWeight: 600,
-                  color: "var(--txt-secondary)",
-                  marginBottom: "6px",
+                  letterSpacing: showPassword ? "normal" : "0.15em",
+                  outline: "none",
+                  transition: "all 0.2s ease",
+                  boxSizing: "border-box",
+                  fontFamily: "inherit",
                 }}
-              >
-                Mot de passe
-              </label>
-              <div style={{ position: "relative" }}>
-                <Lock
-                  size={18}
-                  style={{
-                    position: "absolute",
-                    left: "14px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    color: "var(--txt-disabled)",
-                    pointerEvents: "none",
-                  }}
-                />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  required
-                  style={{
-                    width: "100%",
-                    paddingLeft: "44px",
-                    paddingRight: "48px",
-                    paddingTop: "12px",
-                    paddingBottom: "12px",
-                    backgroundColor: "var(--bg-subtle)",
-                    border: "2px solid var(--border)",
-                    borderRadius: "12px",
-                    color: "var(--txt-title)",
-                    fontSize: "14px",
-                    fontFamily: "Inter, Roboto, sans-serif",
-                    outline: "none",
-                    transition: "all 0.25s",
-                    boxSizing: "border-box",
-                  }}
-                  onFocus={(e) => {
-                    e.currentTarget.style.borderColor = "var(--btn-primary)";
-                    e.currentTarget.style.backgroundColor = "var(--bg-card)";
-                    e.currentTarget.style.boxShadow =
-                      "0 0 0 4px rgba(205, 91, 50, 0.1)";
-                  }}
-                  onBlur={(e) => {
-                    e.currentTarget.style.borderColor = "var(--border)";
-                    e.currentTarget.style.backgroundColor = "var(--bg-subtle)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: "absolute",
-                    right: "12px",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    padding: "6px",
-                    border: "none",
-                    backgroundColor: "transparent",
-                    cursor: "pointer",
-                    color: "var(--txt-disabled)",
-                    display: "flex",
-                    borderRadius: "8px",
-                    transition: "all 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--bg-subtle)";
-                    e.currentTarget.style.color = "var(--txt-secondary)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                    e.currentTarget.style.color = "var(--txt-disabled)";
-                  }}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Forgot password */}
-            <div style={{ textAlign: "right", marginTop: "-8px" }}>
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#f97316";
+                  e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+                  e.currentTarget.style.boxShadow =
+                    "0 0 0 2px rgba(234, 88, 12, 0.2)";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor =
+                    "rgba(255, 255, 255, 0.15)";
+                  e.currentTarget.style.backgroundColor = "rgba(0, 0, 0, 0.3)";
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              />
               <button
                 type="button"
+                onClick={() => setShowPassword(!showPassword)}
                 style={{
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  color: "var(--btn-primary)",
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "transparent",
                   border: "none",
-                  backgroundColor: "transparent",
+                  color: "rgba(255, 255, 255, 0.5)",
                   cursor: "pointer",
-                  fontFamily: "Inter, Roboto, sans-serif",
-                  transition: "opacity 0.2s",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "4px",
+                  transition: "color 0.2s",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.color = "rgba(255, 255, 255, 0.5)")
+                }
               >
-                Mot de passe oublié ?
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+          </div>
 
-            {/* Submit button */}
+          {/* Lien Mdp oublié */}
+          <div style={{ textAlign: "right", marginTop: "-6px" }}>
             <button
-              type="submit"
-              disabled={isLoading}
+              type="button"
               style={{
-                width: "100%",
-                padding: "14px",
-                backgroundColor: isLoading
-                  ? "var(--btn-primary-disabled)"
-                  : "var(--btn-primary)",
-                color: "var(--btn-primary-txt)",
+                fontSize: "11px",
+                fontWeight: 400,
+                color: "#ea580c",
+                background: "transparent",
                 border: "none",
-                borderRadius: "12px",
-                fontSize: "15px",
-                fontWeight: 700,
-                fontFamily: "Inter, Roboto, sans-serif",
-                cursor: isLoading ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                boxShadow: isLoading
-                  ? "none"
-                  : "0 4px 14px rgba(205, 91, 50, 0.35)",
-                transition: "all 0.25s",
-                letterSpacing: "0.01em",
+                cursor: "pointer",
+                padding: 0,
+                transition: "color 0.2s",
+                fontFamily: "inherit",
               }}
-              onMouseEnter={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--btn-primary-hover)";
-                  e.currentTarget.style.boxShadow =
-                    "0 6px 20px rgba(205, 91, 50, 0.45)";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.backgroundColor = "var(--btn-primary)";
-                  e.currentTarget.style.boxShadow =
-                    "0 4px 14px rgba(205, 91, 50, 0.35)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }
-              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#f97316")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#ea580c")}
             >
-              {isLoading ? (
-                <>
-                  <svg
-                    style={{
-                      animation: "spin 1s linear infinite",
-                      width: "18px",
-                      height: "18px",
-                    }}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      style={{ opacity: 0.25 }}
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      style={{ opacity: 0.75 }}
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  Connexion en cours...
-                </>
-              ) : (
-                <>
-                  <span>Se connecter</span>
-                  <span style={{ fontSize: "18px", lineHeight: 1 }}>→</span>
-                </>
-              )}
+              Mot de passe oublié ?
             </button>
-          </form>
+          </div>
 
-          {/* Footer */}
-          <div
+          {}
+          {/* Bouton de soumission */}
+          <button
+            type="submit"
+            disabled={isLoading}
             style={{
-              marginTop: "24px",
-              paddingTop: "20px",
-              borderTop: "1px solid var(--border)",
-              textAlign: "center",
+              width: "100%",
+              padding: "12px",
+              marginTop: "8px",
+              background: isLoading
+                ? "rgba(234, 88, 12, 0.5)"
+                : "linear-gradient(90deg, #ea580c 0%, #d94a00 100%)", // Dégradé orangé précis
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              cursor: isLoading ? "not-allowed" : "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              boxShadow: isLoading
+                ? "none"
+                : "0 4px 12px rgba(234, 88, 12, 0.3)",
+              transition: "transform 0.2s, box-shadow 0.2s, background 0.2s",
+              fontFamily: "inherit",
+            }}
+            onMouseEnter={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 16px rgba(234, 88, 12, 0.4)";
+                e.currentTarget.style.background =
+                  "linear-gradient(90deg, #f97316 0%, #ea580c 100%)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 12px rgba(234, 88, 12, 0.3)";
+                e.currentTarget.style.background =
+                  "linear-gradient(90deg, #ea580c 0%, #d94a00 100%)";
+              }
             }}
           >
-            <p
-              style={{
-                fontSize: "12px",
-                color: "var(--txt-disabled)",
-                margin: "0 0 4px",
-              }}
-            >
-              Event Management Platform
-            </p>
-            <p
-              style={{
-                fontSize: "10px",
-                color: "var(--txt-disabled)",
-                opacity: 0.6,
-                margin: 0,
-              }}
-            >
-              🔒 Protégé par chiffrement SSL
-            </p>
+            {isLoading ? (
+              <span>Connexion...</span>
+            ) : (
+              <>
+                <span>Se connecter</span>
+                <span style={{ fontSize: "14px", fontWeight: "bold" }}>→</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Footer */}
+        <div
+          style={{
+            marginTop: "32px",
+            width: "100%",
+            textAlign: "center",
+            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            paddingTop: "20px",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "11px",
+              color: "rgba(255, 255, 255, 0.6)",
+              margin: "0 0 6px",
+              fontWeight: 400,
+            }}
+          >
+            Plateforme de Gestion d'Événements
+          </p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "4px",
+              fontSize: "10px",
+              color: "rgba(255, 255, 255, 0.4)",
+            }}
+          >
+            <Lock size={10} /> Protégé par chiffrement SSL
           </div>
         </div>
       </div>
