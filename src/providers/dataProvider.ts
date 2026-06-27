@@ -1,11 +1,19 @@
 import { DataProvider } from "react-admin";
 
-// Notez bien : pas de /api ici
+// Pas de /api ici : il est ajouté dans chaque appel
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const getToken = () => localStorage.getItem("accessToken");
 
-const httpClient = async (url: string, options: RequestInit = {}) => {
+interface ApiResponse {
+  json: any;
+  headers: Headers;
+}
+
+const httpClient = async (
+  url: string,
+  options: RequestInit = {},
+): Promise<ApiResponse> => {
   const token = getToken();
 
   const headers: HeadersInit = {
@@ -26,7 +34,6 @@ const httpClient = async (url: string, options: RequestInit = {}) => {
     throw new Error("Unauthorized");
   }
 
-  // ✅ Gérer le cas où la réponse est vide (DELETE par exemple)
   if (response.status === 204) {
     return { json: null, headers: response.headers };
   }
@@ -35,162 +42,107 @@ const httpClient = async (url: string, options: RequestInit = {}) => {
   return { json, headers: response.headers };
 };
 
+const normalizeList = (json: any): { data: any[]; total: number } => {
+  if (json?.data) {
+    const data = Array.isArray(json.data) ? json.data : [];
+    return { data, total: json.pagination?.total ?? data.length };
+  }
+
+  if (Array.isArray(json)) {
+    return { data: json, total: json.length };
+  }
+
+  if (json && typeof json === "object") {
+    const data = Object.values(json).filter(Array.isArray).flat();
+    return { data, total: data.length };
+  }
+
+  return { data: [], total: 0 };
+};
+
+const normalizeOne = (json: any) => json?.data ?? json;
+
 export const dataProvider: DataProvider = {
-  // GET LIST
-  getList: async (resource, params) => {
+  getList: async (resource, _params) => {
     const url = `${API_URL}/api/${resource}`;
-    const response = await httpClient(url);
-
-    // ✅ CORRECTION : Vérifier le format de la réponse
-    let data = [];
-    let total = 0;
-
-    if (response.json && response.json.data) {
-      // Si votre API retourne { data: [...], pagination: { total } }
-      data = Array.isArray(response.json.data) ? response.json.data : [];
-      total = response.json.pagination?.total || data.length;
-    } else if (Array.isArray(response.json)) {
-      // Si votre API retourne directement un tableau
-      data = response.json;
-      total = data.length;
-    } else if (response.json && typeof response.json === 'object') {
-      // Si votre API retourne un objet avec les données
-      data = Object.values(response.json).filter(Array.isArray).flat() || [];
-      total = data.length;
-    }
-
-    // ✅ Format attendu par React-Admin
-    return {
-      data: data,
-      total: total,
-    };
+    const { json } = await httpClient(url);
+    return normalizeList(json);
   },
 
-  // GET ONE
   getOne: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
-    const response = await httpClient(url);
-
-    // ✅ CORRECTION : Gérer les différents formats
-    let data = response.json;
-    if (response.json && response.json.data) {
-      data = response.json.data;
-    }
-
-    return { data };
+    const { json } = await httpClient(url);
+    return { data: normalizeOne(json) };
   },
 
-  // CREATE
   create: async (resource, params) => {
     const url = `${API_URL}/api/${resource}`;
-    const response = await httpClient(url, {
+    const { json } = await httpClient(url, {
       method: "POST",
       body: JSON.stringify(params.data),
     });
-
-    // ✅ CORRECTION : Gérer les différents formats
-    let data = response.json;
-    if (response.json && response.json.data) {
-      data = response.json.data;
-    }
-
-    return { data };
+    return { data: normalizeOne(json) };
   },
 
-  // UPDATE
   update: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
-    const response = await httpClient(url, {
+    const { json } = await httpClient(url, {
       method: "PUT",
       body: JSON.stringify(params.data),
     });
-
-    // ✅ CORRECTION : Gérer les différents formats
-    let data = response.json;
-    if (response.json && response.json.data) {
-      data = response.json.data;
-    }
-
-    return { data };
+    return { data: normalizeOne(json) };
   },
 
-  // DELETE
   delete: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
     await httpClient(url, { method: "DELETE" });
-    return { data: { id: params.id } };
+    return { data: { id: params.id } as any };
   },
 
-  // GET MANY
   getMany: async (resource, params) => {
     const url = `${API_URL}/api/${resource}`;
-    const response = await httpClient(url);
+    const { json } = await httpClient(url);
+    const { data } = normalizeList(json);
 
-    // ✅ CORRECTION : Extraire les données correctement
-    let allData = [];
-    if (response.json && response.json.data) {
-      allData = Array.isArray(response.json.data) ? response.json.data : [];
-    } else if (Array.isArray(response.json)) {
-      allData = response.json;
-    }
-
-    // Filtrer par IDs
-    const filtered = allData.filter((item: any) => params.ids.includes(item.id));
+    const filtered = data.filter((item: any) => params.ids.includes(item.id));
     return { data: filtered };
   },
 
-  // UPDATE MANY (optionnel mais recommandé)
   updateMany: async (resource, params) => {
-    const promises = params.ids.map((id: any) => {
-      const url = `${API_URL}/api/${resource}/${id}`;
-      return httpClient(url, {
-        method: "PUT",
-        body: JSON.stringify(params.data),
-      });
-    });
-    const responses = await Promise.all(promises);
+    await Promise.all(
+      params.ids.map((id) =>
+        httpClient(`${API_URL}/api/${resource}/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(params.data),
+        }),
+      ),
+    );
     return { data: params.ids };
   },
 
-  // DELETE MANY (optionnel mais recommandé)
   deleteMany: async (resource, params) => {
-    const promises = params.ids.map((id: any) => {
-      const url = `${API_URL}/api/${resource}/${id}`;
-      return httpClient(url, { method: "DELETE" });
-    });
-    await Promise.all(promises);
+    await Promise.all(
+      params.ids.map((id) =>
+        httpClient(`${API_URL}/api/${resource}/${id}`, { method: "DELETE" }),
+      ),
+    );
     return { data: params.ids };
   },
 
-  // GET MANY REFERENCE (pour les relations)
   getManyReference: async (resource, params) => {
-    const { page, perPage } = params.pagination || { page: 1, perPage: 10 };
-    const { field, order } = params.sort || { field: 'id', order: 'ASC' };
-    
-    const url = `${API_URL}/api/${resource}?${new URLSearchParams({
+    const { page, perPage } = params.pagination ?? { page: 1, perPage: 10 };
+    const { field, order } = params.sort ?? { field: "id", order: "ASC" };
+
+    const query = new URLSearchParams({
       page: String(page),
       limit: String(perPage),
       sort: field,
       order: order.toLowerCase(),
       [params.target]: params.id,
-    })}`;
+    });
 
-    const response = await httpClient(url);
-
-    let data = [];
-    let total = 0;
-
-    if (response.json && response.json.data) {
-      data = Array.isArray(response.json.data) ? response.json.data : [];
-      total = response.json.pagination?.total || data.length;
-    } else if (Array.isArray(response.json)) {
-      data = response.json;
-      total = data.length;
-    }
-
-    return {
-      data,
-      total,
-    };
+    const url = `${API_URL}/api/${resource}?${query}`;
+    const { json } = await httpClient(url);
+    return normalizeList(json);
   },
 };
