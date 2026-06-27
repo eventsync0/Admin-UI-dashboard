@@ -3,7 +3,12 @@ import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
 import { Login } from "./components/Login";
 import { CustomLayout } from "./components/CustomLayout";
-import { ListGuesser, EditGuesser, ShowGuesser } from "react-admin";
+import {
+  EventList,
+  EventCreate,
+  EventEdit,
+  EventShow,
+} from "./resources/events";
 
 function App() {
   return (
@@ -17,9 +22,11 @@ function App() {
       <Resource
         name="events"
         label="Événements"
-        list={ListGuesser}
-        edit={EditGuesser}
-        show={ShowGuesser}
+        list={EventList}
+        create={EventCreate}
+        edit={EventEdit}
+        show={EventShow}
+        recordRepresentation="title"
       />
     </Admin>
   );
