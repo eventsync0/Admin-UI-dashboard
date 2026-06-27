@@ -3,33 +3,51 @@ import {
   Datagrid,
   TextField,
   DateField,
-  EditButton,
-  ShowButton,
-  DeleteButton,
+  NumberField,
   Filter,
-  TextInput,
-  DateInput,
+  SearchInput,
+  SelectInput,
 } from "react-admin";
 
-const EventFilters = () => (
-  <Filter>
-    <TextInput source="title" label="Titre" alwaysOn />
-    <TextInput source="location" label="Lieu" />
-    <DateInput source="startDate" label="Date début" />
-    <DateInput source="endDate" label="Date fin" />
+const EventFilter = (props: any) => (
+  <Filter {...props}>
+    <SearchInput
+      source="q"
+      placeholder="Rechercher par titre ou description"
+      alwaysOn
+    />
+    <SelectInput
+      source="category"
+      label="Catégorie"
+      choices={[
+        { id: "CONFERENCE", name: "Conférence" },
+        { id: "WORKSHOP", name: "Atelier" },
+        { id: "SEMINAR", name: "Séminaire" },
+        { id: "MEETUP", name: "Meetup" },
+        { id: "WEBINAR", name: "Webinaire" },
+        { id: "SOCIAL", name: "Social" },
+        { id: "FUNDRAISER", name: "Collecte de fonds" },
+        { id: "SPORTS", name: "Sports" },
+        { id: "ARTS", name: "Arts" },
+        { id: "TECHNOLOGY", name: "Technologie" },
+        { id: "BUSINESS", name: "Affaires" },
+        { id: "EDUCATION", name: "Éducation" },
+        { id: "OTHER", name: "Autre" },
+      ]}
+    />
   </Filter>
 );
 
 export const EventList = () => (
-  <List filters={<EventFilters />} sort={{ field: "startDate", order: "DESC" }}>
+  <List filters={<EventFilter />}>
     <Datagrid rowClick="edit">
+      <TextField source="id" label="ID" />
       <TextField source="title" label="Titre" />
+      <TextField source="category" label="Catégorie" />
       <TextField source="location" label="Lieu" />
-      <DateField source="startDate" label="Date début" showTime />
-      <DateField source="endDate" label="Date fin" showTime />
-      <EditButton />
-      <ShowButton />
-      <DeleteButton />
+      <DateField source="startDate" label="Date de début" showTime />
+      <DateField source="endDate" label="Date de fin" showTime />
+      <NumberField source="sessions.length" label="Nombre de sessions" />
     </Datagrid>
   </List>
 );
