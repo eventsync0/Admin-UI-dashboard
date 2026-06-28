@@ -1,6 +1,5 @@
-// src/pages/Dashboard.tsx
-import React, { useState, useEffect } from "react";
-import { useDataProvider, useNotify } from "react-admin";
+
+import React from "react";
 import {
   Box,
   Paper,
@@ -22,18 +21,9 @@ import {
   Refresh,
   EventNote,
 } from "@mui/icons-material";
-import {
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+
+import { useStats } from "./hooks/useStats";
 
 // === COULEURS COFFEE BEAN ===
 const COLORS = {
@@ -57,286 +47,151 @@ const COLORS = {
   info: "#60a5fa",
 };
 
-// === STATS CARD COMPONENT ===
-const StatsCard = ({
-  title,
-  value,
-  icon: Icon,
-  color,
-  change,
-  trend,
-  loading,
-}: any) => (
-  <Card
-    sx={{
-      backgroundColor: COLORS.coffee[900],
-      borderRadius: "1.25rem",
-      border: `1px solid ${COLORS.coffee[800]}`,
-      backdropFilter: "blur(12px)",
-      transition: "all 0.3s ease",
-      height: "100%",
-      "&:hover": {
-        borderColor: COLORS.coffee[500],
-        transform: "translateY(-4px)",
-        boxShadow: "0 8px 30px rgba(205, 91, 50, 0.15)",
-      },
-    }}
-  >
-    <CardContent>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        <Box sx={{ flex: 1 }}>
-          <Typography
-            variant="caption"
-            sx={{
-              color: COLORS.coffee[300],
-              textTransform: "uppercase",
-              fontWeight: 600,
-              letterSpacing: "0.08em",
-              fontSize: "0.65rem",
-            }}
-          >
-            {title}
-          </Typography>
-          {loading ? (
-            <Box sx={{ mt: 1 }}>
-              <LinearProgress
-                sx={{ bgcolor: COLORS.coffee[800], height: 6, borderRadius: 3 }}
-              />
-              <LinearProgress
-                sx={{
-                  bgcolor: COLORS.coffee[800],
-                  height: 6,
-                  borderRadius: 3,
-                  mt: 1,
-                }}
-              />
-            </Box>
-          ) : (
-            <>
-              <Typography
-                variant="h4"
-                sx={{
-                  color: COLORS.coffee[50],
-                  fontWeight: 700,
-                  mt: 0.5,
-                }}
-              >
-                {value}
-              </Typography>
-              {change && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 0.5,
-                    mt: 0.5,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {trend === "up" ? (
-                    <ArrowUpward sx={{ fontSize: 14, color: COLORS.success }} />
-                  ) : (
-                    <ArrowDownward sx={{ fontSize: 14, color: COLORS.error }} />
-                  )}
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: trend === "up" ? COLORS.success : COLORS.error,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {change}
-                  </Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{ color: COLORS.coffee[400] }}
-                  >
-                    vs last month
-                  </Typography>
-                </Box>
-              )}
-            </>
-          )}
-        </Box>
-        <Avatar
+const PIE_COLORS = [
+  "#cd5b32",
+  "#d77c5b",
+  "#ebbdad",
+  "#a44928",
+  "#7b371e",
+  "#e19d84",
+  "#522414",
+];
+
+// === STATS CARD ===
+const StatsCard = React.memo(
+  ({ title, value, icon: Icon, color, change, trend, loading }: any) => (
+    <Card
+      sx={{
+        backgroundColor: COLORS.coffee[900],
+        borderRadius: "1.25rem",
+        border: `1px solid ${COLORS.coffee[800]}`,
+        backdropFilter: "blur(12px)",
+        transition: "all 0.3s ease",
+        height: "100%",
+        "&:hover": {
+          borderColor: COLORS.coffee[500],
+          transform: "translateY(-4px)",
+          boxShadow: "0 8px 30px rgba(205, 91, 50, 0.15)",
+        },
+      }}
+    >
+      <CardContent>
+        <Box
           sx={{
-            bgcolor: `${color}15`,
-            color: color,
-            width: 48,
-            height: 48,
-            flexShrink: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
           }}
         >
-          <Icon />
-        </Avatar>
-      </Box>
-    </CardContent>
-  </Card>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                color: COLORS.coffee[300],
+                textTransform: "uppercase",
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                fontSize: "0.65rem",
+              }}
+            >
+              {title}
+            </Typography>
+            {loading ? (
+              <Box sx={{ mt: 1 }}>
+                <LinearProgress
+                  sx={{
+                    bgcolor: COLORS.coffee[800],
+                    height: 6,
+                    borderRadius: 3,
+                  }}
+                />
+                <LinearProgress
+                  sx={{
+                    bgcolor: COLORS.coffee[800],
+                    height: 6,
+                    borderRadius: 3,
+                    mt: 1,
+                  }}
+                />
+              </Box>
+            ) : (
+              <>
+                <Typography
+                  variant="h4"
+                  sx={{ color: COLORS.coffee[50], fontWeight: 700, mt: 0.5 }}
+                >
+                  {value}
+                </Typography>
+                {change && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      mt: 0.5,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {trend === "up" ? (
+                      <ArrowUpward
+                        sx={{ fontSize: 14, color: COLORS.success }}
+                      />
+                    ) : (
+                      <ArrowDownward
+                        sx={{ fontSize: 14, color: COLORS.error }}
+                      />
+                    )}
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: trend === "up" ? COLORS.success : COLORS.error,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {change}
+                    </Typography>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: COLORS.coffee[400] }}
+                    >
+                      vs last month
+                    </Typography>
+                  </Box>
+                )}
+              </>
+            )}
+          </Box>
+          <Avatar
+            sx={{
+              bgcolor: `${color}15`,
+              color: color,
+              width: 48,
+              height: 48,
+              flexShrink: 0,
+            }}
+          >
+            <Icon />
+          </Avatar>
+        </Box>
+      </CardContent>
+    </Card>
+  ),
 );
 
-// === COMPOSANT PRINCIPAL ===
+StatsCard.displayName = "StatsCard";
+
+// === DASHBOARD ===
 const Dashboard: React.FC = () => {
-  const dataProvider = useDataProvider();
-  const notify = useNotify();
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [stats, setStats] = useState({
-    totalEvents: 0,
-    upcomingEvents: 0,
-    liveEvents: 0,
-    totalUsers: 0,
-    newUsers: 0,
-    totalCities: 0,
-    totalSpeakers: 0,
-    totalQuestions: 0,
-    revenue: 0,
-    revenueChange: "+0%",
-    revenueTrend: "up" as "up" | "down",
-  });
-  const [recentEvents, setRecentEvents] = useState<any[]>([]);
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [categoryData, setCategoryData] = useState<any[]>([]);
-
-  // === FETCH STATS ===
-  const fetchStats = async () => {
-    try {
-      const response = await dataProvider.getList("events", {
-        pagination: { page: 1, perPage: 100 },
-        sort: { field: "createdAt", order: "DESC" },
-        filter: {},
-      });
-
-      const events = response.data || [];
-      const now = new Date();
-
-      const totalEvents = events.length;
-      const upcomingEvents = events.filter(
-        (e: any) => new Date(e.startDate) > now,
-      ).length;
-      const liveEvents = events.filter((e: any) => {
-        const start = new Date(e.startDate);
-        const end = new Date(e.endDate);
-        return start <= now && now <= end;
-      }).length;
-
-      const uniqueCities = new Set(
-        events.map((e: any) => e.location).filter(Boolean),
-      ).size;
-      const totalSpeakers = events.reduce(
-        (acc: number, e: any) => acc + (e.speakers?.length || 0),
-        0,
-      );
-      const totalQuestions = events.reduce(
-        (acc: number, e: any) => acc + (e.questions?.length || 0),
-        0,
-      );
-
-      let totalUsers = 0;
-      let newUsers = 0;
-      try {
-        const usersResponse = await dataProvider.getList("users", {
-          pagination: { page: 1, perPage: 1 },
-          sort: { field: "id", order: "ASC" },
-          filter: {},
-        });
-        totalUsers = usersResponse.total || 0;
-
-        const newUsersResponse = await dataProvider.getList("users", {
-          pagination: { page: 1, perPage: 1 },
-          sort: { field: "id", order: "ASC" },
-          filter: {
-            createdAt: {
-              gte: new Date(now.getFullYear(), now.getMonth(), 1).toISOString(),
-            },
-          },
-        });
-        newUsers = newUsersResponse.total || 0;
-      } catch (error) {
-        totalUsers = 0;
-        newUsers = 0;
-      }
-
-      const mockRevenue = [
-        { month: "Jan", revenue: 4000 },
-        { month: "Feb", revenue: 3000 },
-        { month: "Mar", revenue: 5000 },
-        { month: "Apr", revenue: 4500 },
-        { month: "May", revenue: 6000 },
-        { month: "Jun", revenue: 5500 },
-        { month: "Jul", revenue: 7000 },
-        { month: "Aug", revenue: 6500 },
-        { month: "Sep", revenue: 8000 },
-      ];
-
-      const categoryMap: Record<string, number> = {};
-      events.forEach((e: any) => {
-        const cat = e.category || "OTHER";
-        categoryMap[cat] = (categoryMap[cat] || 0) + 1;
-      });
-      const categoryChartData = Object.entries(categoryMap).map(
-        ([name, value]) => ({
-          name,
-          value,
-        }),
-      );
-
-      const recent = events.slice(0, 6);
-
-      setStats({
-        totalEvents,
-        upcomingEvents,
-        liveEvents,
-        totalUsers,
-        newUsers,
-        totalCities: uniqueCities,
-        totalSpeakers,
-        totalQuestions,
-        revenue: 54893,
-        revenueChange: "+12.5%",
-        revenueTrend: "up",
-      });
-
-      setRevenueData(mockRevenue);
-      setCategoryData(categoryChartData);
-      setRecentEvents(recent);
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-      notify("Erreur lors du chargement des statistiques", { type: "error" });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await fetchStats();
-    setRefreshing(false);
-  };
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000) return (num / 1000).toFixed(1) + "k+";
-    return num + "+";
-  };
-
-  const pieColors = [
-    "#cd5b32",
-    "#d77c5b",
-    "#ebbdad",
-    "#a44928",
-    "#7b371e",
-    "#e19d84",
-    "#522414",
-  ];
+  const {
+    loading,
+    refreshing,
+    stats,
+    recentEvents,
+    categoryData,
+    formatNumber,
+    pastEvents,
+    refresh,
+  } = useStats();
 
   return (
     <Box
@@ -345,8 +200,6 @@ const Dashboard: React.FC = () => {
         backgroundColor: COLORS.background,
         minHeight: "100vh",
         width: "100%",
-        maxWidth: "100%",
-        boxSizing: "border-box",
       }}
     >
       {/* HEADER */}
@@ -393,7 +246,7 @@ const Dashboard: React.FC = () => {
             }}
           />
           <IconButton
-            onClick={handleRefresh}
+            onClick={refresh}
             disabled={refreshing}
             sx={{
               bgcolor: COLORS.coffee[800],
@@ -406,7 +259,7 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
-      {/* STATS CARDS — CSS Grid natif, garanti 100% de largeur */}
+      {/* STATS CARDS */}
       <Box
         sx={{
           display: "grid",
@@ -425,17 +278,13 @@ const Dashboard: React.FC = () => {
           value={formatNumber(stats.totalEvents)}
           icon={CalendarToday}
           color={COLORS.coffee[400]}
-          change={stats.totalEvents > 0 ? "+5%" : undefined}
-          trend="up"
           loading={loading}
         />
         <StatsCard
-          title="Total Users"
-          value={formatNumber(stats.totalUsers)}
+          title="Speakers"
+          value={formatNumber(stats.totalSpeakers)}
           icon={People}
           color={COLORS.coffee[500]}
-          change={stats.newUsers > 0 ? `+${stats.newUsers}` : undefined}
-          trend="up"
           loading={loading}
         />
         <StatsCard
@@ -452,151 +301,11 @@ const Dashboard: React.FC = () => {
           value={stats.totalCities}
           icon={LocationOn}
           color={COLORS.coffee[300]}
-          change={undefined}
-          trend="up"
           loading={loading}
         />
       </Box>
 
-      {/* GRAPHIQUES — CSS Grid natif (8/4 -> 1fr/1fr sur mobile) */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" },
-          gap: 3,
-          mb: 4,
-          width: "100%",
-        }}
-      >
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: "1.25rem",
-            bgcolor: COLORS.coffee[900],
-            border: `1px solid ${COLORS.coffee[800]}`,
-            minWidth: 0,
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontFamily: "Audiowide, cursive",
-                color: COLORS.coffee[50],
-              }}
-            >
-              Revenue Overview
-            </Typography>
-            <Chip
-              label="This year"
-              size="small"
-              sx={{
-                bgcolor: COLORS.coffee[800],
-                color: COLORS.coffee[200],
-              }}
-            />
-          </Box>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={revenueData}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke={COLORS.coffee[800]}
-              />
-              <XAxis dataKey="month" stroke={COLORS.coffee[400]} />
-              <YAxis stroke={COLORS.coffee[400]} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: COLORS.coffee[900],
-                  border: `1px solid ${COLORS.coffee[800]}`,
-                  borderRadius: 8,
-                  color: COLORS.coffee[50],
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="revenue"
-                stroke={COLORS.coffee[400]}
-                strokeWidth={3}
-                dot={{ fill: COLORS.coffee[400] }}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </Paper>
-
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: "1.25rem",
-            bgcolor: COLORS.coffee[900],
-            border: `1px solid ${COLORS.coffee[800]}`,
-            minWidth: 0,
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              fontFamily: "Audiowide, cursive",
-              color: COLORS.coffee[50],
-              mb: 2,
-            }}
-          >
-            Events by Category
-          </Typography>
-          {categoryData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={pieColors[index % pieColors.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: COLORS.coffee[900],
-                    border: `1px solid ${COLORS.coffee[800]}`,
-                    borderRadius: 8,
-                    color: COLORS.coffee[50],
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 250,
-              }}
-            >
-              <Typography sx={{ color: COLORS.coffee[400] }}>
-                No data available
-              </Typography>
-            </Box>
-          )}
-        </Paper>
-      </Box>
-
-      {/* ACTIVITÉ RÉCENTE — CSS Grid natif (7/5 -> 1fr/1fr sur mobile) */}
+      {/* RECENT EVENTS & CATEGORIES */}
       <Box
         sx={{
           display: "grid",
@@ -605,13 +314,13 @@ const Dashboard: React.FC = () => {
           width: "100%",
         }}
       >
+        {/* RECENT EVENTS */}
         <Paper
           sx={{
             p: 3,
             borderRadius: "1.25rem",
             bgcolor: COLORS.coffee[900],
             border: `1px solid ${COLORS.coffee[800]}`,
-            minWidth: 0,
           }}
         >
           <Box
@@ -733,131 +442,186 @@ const Dashboard: React.FC = () => {
           )}
         </Paper>
 
-        <Paper
-          sx={{
-            p: 3,
-            borderRadius: "1.25rem",
-            bgcolor: COLORS.coffee[900],
-            border: `1px solid ${COLORS.coffee[800]}`,
-            minWidth: 0,
-          }}
-        >
-          <Typography
-            variant="h6"
+        {/* RIGHT COLUMN */}
+        <Box sx={{ display: "grid", gridTemplateRows: "auto 1fr", gap: 3 }}>
+          {/* CATEGORY PIE CHART */}
+          <Paper
             sx={{
-              fontFamily: "Audiowide, cursive",
-              color: COLORS.coffee[50],
-              mb: 3,
+              p: 3,
+              borderRadius: "1.25rem",
+              bgcolor: COLORS.coffee[900],
+              border: `1px solid ${COLORS.coffee[800]}`,
             }}
           >
-            Quick Stats
-          </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                fontFamily: "Audiowide, cursive",
+                color: COLORS.coffee[50],
+                mb: 2,
+              }}
+            >
+              Events by Category
+            </Typography>
+            {categoryData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={categoryData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={55}
+                    outerRadius={75}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {categoryData.map((_, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={PIE_COLORS[index % PIE_COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: COLORS.coffee[900],
+                      border: `1px solid ${COLORS.coffee[800]}`,
+                      borderRadius: 8,
+                      color: COLORS.coffee[50],
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 220,
+                }}
+              >
+                <Typography sx={{ color: COLORS.coffee[400] }}>
+                  No data available
+                </Typography>
+              </Box>
+            )}
+          </Paper>
 
-          <Box
+          {/* QUICK STATS */}
+          <Paper
             sx={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: 2,
+              p: 3,
+              borderRadius: "1.25rem",
+              bgcolor: COLORS.coffee[900],
+              border: `1px solid ${COLORS.coffee[800]}`,
             }}
           >
-            <Box
+            <Typography
+              variant="h6"
               sx={{
-                p: 2,
-                borderRadius: "1rem",
-                bgcolor: `${COLORS.coffee[800]}40`,
-                border: `1px solid ${COLORS.coffee[800]}`,
+                fontFamily: "Audiowide, cursive",
+                color: COLORS.coffee[50],
+                mb: 3,
               }}
             >
-              <Typography
-                variant="caption"
-                sx={{
-                  color: COLORS.coffee[400],
-                  textTransform: "uppercase",
-                }}
-              >
-                Upcoming
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-              >
-                {loading ? "..." : stats.upcomingEvents}
-              </Typography>
-            </Box>
+              Quick Stats
+            </Typography>
+
             <Box
               sx={{
-                p: 2,
-                borderRadius: "1rem",
-                bgcolor: `${COLORS.coffee[800]}40`,
-                border: `1px solid ${COLORS.coffee[800]}`,
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+                gap: 2,
               }}
             >
-              <Typography
-                variant="caption"
+              <Box
                 sx={{
-                  color: COLORS.coffee[400],
-                  textTransform: "uppercase",
+                  p: 2,
+                  borderRadius: "1rem",
+                  bgcolor: `${COLORS.coffee[800]}40`,
+                  border: `1px solid ${COLORS.coffee[800]}`,
                 }}
               >
-                Speakers
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-              >
-                {loading ? "..." : formatNumber(stats.totalSpeakers)}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: "1rem",
-                bgcolor: `${COLORS.coffee[800]}40`,
-                border: `1px solid ${COLORS.coffee[800]}`,
-              }}
-            >
-              <Typography
-                variant="caption"
+                <Typography
+                  variant="caption"
+                  sx={{ color: COLORS.coffee[400], textTransform: "uppercase" }}
+                >
+                  Upcoming
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+                >
+                  {loading ? "..." : stats.upcomingEvents}
+                </Typography>
+              </Box>
+              <Box
                 sx={{
-                  color: COLORS.coffee[400],
-                  textTransform: "uppercase",
+                  p: 2,
+                  borderRadius: "1rem",
+                  bgcolor: `${COLORS.coffee[800]}40`,
+                  border: `1px solid ${COLORS.coffee[800]}`,
                 }}
               >
-                Questions
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-              >
-                {loading ? "..." : formatNumber(stats.totalQuestions)}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: "1rem",
-                bgcolor: `${COLORS.coffee[800]}40`,
-                border: `1px solid ${COLORS.coffee[800]}`,
-              }}
-            >
-              <Typography
-                variant="caption"
+                <Typography
+                  variant="caption"
+                  sx={{ color: COLORS.coffee[400], textTransform: "uppercase" }}
+                >
+                  Past Events
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+                >
+                  {loading ? "..." : pastEvents}
+                </Typography>
+              </Box>
+              <Box
                 sx={{
-                  color: COLORS.coffee[400],
-                  textTransform: "uppercase",
+                  p: 2,
+                  borderRadius: "1rem",
+                  bgcolor: `${COLORS.coffee[800]}40`,
+                  border: `1px solid ${COLORS.coffee[800]}`,
                 }}
               >
-                Revenue
-              </Typography>
-              <Typography
-                variant="h5"
-                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+                <Typography
+                  variant="caption"
+                  sx={{ color: COLORS.coffee[400], textTransform: "uppercase" }}
+                >
+                  Questions
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+                >
+                  {loading ? "..." : formatNumber(stats.totalQuestions)}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: "1rem",
+                  bgcolor: `${COLORS.coffee[800]}40`,
+                  border: `1px solid ${COLORS.coffee[800]}`,
+                }}
               >
-                {loading ? "..." : `$${formatNumber(stats.revenue)}`}
-              </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{ color: COLORS.coffee[400], textTransform: "uppercase" }}
+                >
+                  Capacity
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+                >
+                  {loading ? "..." : formatNumber(stats.totalCapacity)}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        </Paper>
+          </Paper>
+        </Box>
       </Box>
     </Box>
   );
