@@ -1,131 +1,92 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   TAILWIND v4 THEME — Custom coffee tokens registered as utilities
+   1. RESET & BASE
    ========================================================================== */
-@theme {
-  /* Coffee palette */
-  --color-coffee-50:  #ede1db;
-  --color-coffee-100: #f5ded6;
-  --color-coffee-200: #ebbdad;
-  --color-coffee-300: #e19d84;
-  --color-coffee-400: #d77c5b;
-  --color-coffee-500: #cd5b32;
-  --color-coffee-600: #a44928;
-  --color-coffee-700: #7b371e;
-  --color-coffee-800: #522414;
-  --color-coffee-900: #29120a;
-  --color-coffee-950: #1d0d07;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-  /* Fonts */
-  --font-sans: "Inter", "Roboto", ui-sans-serif, system-ui, sans-serif;
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #0B0B14;
+  color: #f5ded6;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ==========================================================================
-   CSS DESIGN TOKENS
+   2. PALETTE DE BASE — Coffee Bean
    ========================================================================== */
 :root {
-  /* Backgrounds & surfaces */
-  --background:    #ede1db;
-  --bg-card:       #ffffff;
-  --bg-subtle:     #f5ded6;
-  --border:        #ebbdad;
+  /* === COFFEE BEAN COLORS === */
+  --coffee-50:  #ede1db;
+  --coffee-100: #f5ded6;
+  --coffee-200: #ebbdad;
+  --coffee-300: #e19d84;
+  --coffee-400: #d77c5b;
+  --coffee-500: #cd5b32;
+  --coffee-600: #a44928;
+  --coffee-700: #7b371e;
+  --coffee-800: #522414;
+  --coffee-900: #29120a;
+  --coffee-950: #1d0d07;
 
-  /* Typography */
-  --txt-title:     #29120a;
-  --txt-body:      #522414;
-  --txt-secondary: #a44928;
-  --txt-disabled:  #e19d84;
-  --txt-on-dark:   #ede1db;
+  color-scheme: dark;
 
-  /* Primary button */
-  --btn-primary:          #cd5b32;
-  --btn-primary-hover:    #a44928;
-  --btn-primary-active:   #7b371e;
-  --btn-primary-disabled: #e19d84;
-  --btn-primary-txt:      #ede1db;
+  /* === FONDS & SURFACES === */
+  --background: #0B0B14;
+  --bg-card:    var(--coffee-900);
+  --bg-subtle:  var(--coffee-800);
+  --border:     var(--coffee-800);
 
-  /* Secondary button */
-  --btn-secondary:          #f5ded6;
-  --btn-secondary-hover:    #ebbdad;
-  --btn-secondary-active:   #e19d84;
-  --btn-secondary-disabled: #ede1db;
-  --btn-secondary-txt:      #522414;
+  /* === TYPOGRAPHIE === */
+  --txt-title:     var(--coffee-50);
+  --txt-body:      var(--coffee-100);
+  --txt-secondary: var(--coffee-300);
+  --txt-disabled:  var(--coffee-700);
+  --txt-on-dark:   var(--coffee-950);
 
-  /* Ghost button */
-  --btn-ghost:          transparent;
-  --btn-ghost-hover:    rgba(205, 91, 50, 0.08);
-  --btn-ghost-active:   rgba(205, 91, 50, 0.15);
-  --btn-ghost-disabled: transparent;
-  --btn-ghost-txt:      #a44928;
+  /* === BOUTON PRIMARY === */
+  --btn-primary:          var(--coffee-400);
+  --btn-primary-hover:    var(--coffee-500);
+  --btn-primary-active:   var(--coffee-600);
+  --btn-primary-disabled: var(--coffee-800);
+  --btn-primary-txt:      var(--coffee-950);
 
-  /* Danger button */
-  --btn-danger:          #dc2626;
-  --btn-danger-hover:    #b91c1c;
-  --btn-danger-active:   #991b1b;
-  --btn-danger-disabled: #fca5a5;
-  --btn-danger-txt:      #ffffff;
-
-  /* Badges */
-  --badge-bg:  #f5ded6;
-  --badge-txt: #7b371e;
-
-  /* Semantic feedback */
-  --success:     #16a34a;
-  --success-bg:  #dcfce7;
-  --warning:     #d97706;
-  --warning-bg:  #fef3c7;
-  --error:       #dc2626;
-  --error-bg:    #fee2e2;
-  --info:        #2563eb;
-  --info-bg:     #dbeafe;
-
-  /* Focus ring */
-  --focus-ring: #cd5b32;
-}
-
-/* ==========================================================================
-   DARK MODE
-   ========================================================================== */
-.dark {
-  --background: #1d0d07;
-  --bg-card:    #29120a;
-  --bg-subtle:  #522414;
-  --border:     #522414;
-
-  --txt-title:     #ede1db;
-  --txt-body:      #f5ded6;
-  --txt-secondary: #e19d84;
-  --txt-disabled:  #7b371e;
-  --txt-on-dark:   #1d0d07;
-
-  --btn-primary:          #d77c5b;
-  --btn-primary-hover:    #cd5b32;
-  --btn-primary-active:   #a44928;
-  --btn-primary-disabled: #522414;
-  --btn-primary-txt:      #1d0d07;
-
+  /* === BOUTON SECONDARY === */
   --btn-secondary:          rgba(41, 18, 10, 0.5);
   --btn-secondary-hover:    rgba(82, 36, 20, 0.7);
   --btn-secondary-active:   rgba(82, 36, 20, 0.9);
   --btn-secondary-disabled: rgba(41, 18, 10, 0.2);
-  --btn-secondary-txt:      #ebbdad;
+  --btn-secondary-txt:      var(--coffee-200);
 
+  /* === BOUTON GHOST === */
   --btn-ghost:          transparent;
   --btn-ghost-hover:    rgba(215, 124, 91, 0.1);
   --btn-ghost-active:   rgba(215, 124, 91, 0.2);
   --btn-ghost-disabled: transparent;
-  --btn-ghost-txt:      #e19d84;
+  --btn-ghost-txt:      var(--coffee-300);
 
+  /* === BOUTON DANGER === */
   --btn-danger:          #ef4444;
   --btn-danger-hover:    #dc2626;
   --btn-danger-active:   #b91c1c;
   --btn-danger-disabled: #7f1d1d;
   --btn-danger-txt:      #ffffff;
 
+  /* === BADGES & LABELS === */
   --badge-bg:  rgba(41, 18, 10, 0.6);
-  --badge-txt: #ebbdad;
+  --badge-txt: var(--coffee-200);
 
+  /* === FEEDBACK === */
   --success:     #4ade80;
   --success-bg:  rgba(22, 163, 74, 0.15);
   --warning:     #fbbf24;
@@ -135,183 +96,204 @@
   --info:        #60a5fa;
   --info-bg:     rgba(37, 99, 235, 0.15);
 
-  --focus-ring: #d77c5b;
+  /* === FOCUS === */
+  --focus-ring: var(--coffee-400);
+
+  /* === POLICES === */
+  --font-audiowide: 'Audiowide', cursive;
+  --font-quicksand: 'Quicksand', sans-serif;
 }
 
 /* ==========================================================================
-   GLOBAL STYLES
+   3. MAPPING TAILWIND V4
    ========================================================================== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+@theme inline {
+  /* Fonds & surfaces */
+  --color-background:  var(--background);
+  --color-bg-card:     var(--bg-card);
+  --color-bg-subtle:   var(--bg-subtle);
+  --color-border:      var(--border);
+
+  /* Typographie */
+  --color-txt-title:     var(--txt-title);
+  --color-txt-body:      var(--txt-body);
+  --color-txt-secondary: var(--txt-secondary);
+  --color-txt-disabled:  var(--txt-disabled);
+  --color-txt-on-dark:   var(--txt-on-dark);
+
+  /* Boutons */
+  --color-btn-primary:          var(--btn-primary);
+  --color-btn-primary-hover:    var(--btn-primary-hover);
+  --color-btn-primary-active:   var(--btn-primary-active);
+  --color-btn-primary-disabled: var(--btn-primary-disabled);
+  --color-btn-primary-txt:      var(--btn-primary-txt);
+
+  --color-btn-secondary:          var(--btn-secondary);
+  --color-btn-secondary-hover:    var(--btn-secondary-hover);
+  --color-btn-secondary-active:   var(--btn-secondary-active);
+  --color-btn-secondary-disabled: var(--btn-secondary-disabled);
+  --color-btn-secondary-txt:      var(--btn-secondary-txt);
+
+  --color-btn-ghost:          var(--btn-ghost);
+  --color-btn-ghost-hover:    var(--btn-ghost-hover);
+  --color-btn-ghost-active:   var(--btn-ghost-active);
+  --color-btn-ghost-disabled: var(--btn-ghost-disabled);
+  --color-btn-ghost-txt:      var(--btn-ghost-txt);
+
+  --color-btn-danger:          var(--btn-danger);
+  --color-btn-danger-hover:    var(--btn-danger-hover);
+  --color-btn-danger-active:   var(--btn-danger-active);
+  --color-btn-danger-disabled: var(--btn-danger-disabled);
+  --color-btn-danger-txt:      var(--btn-danger-txt);
+
+  /* Badges */
+  --color-badge-bg:  var(--badge-bg);
+  --color-badge-txt: var(--badge-txt);
+
+  /* Feedback */
+  --color-success:    var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-warning:    var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-error:      var(--error);
+  --color-error-bg:   var(--error-bg);
+  --color-info:       var(--info);
+  --color-info-bg:    var(--info-bg);
+
+  /* Focus */
+  --color-focus-ring: var(--focus-ring);
+
+  /* Palette Coffee Bean */
+  --color-coffee-50:  var(--coffee-50);
+  --color-coffee-100: var(--coffee-100);
+  --color-coffee-200: var(--coffee-200);
+  --color-coffee-300: var(--coffee-300);
+  --color-coffee-400: var(--coffee-400);
+  --color-coffee-500: var(--coffee-500);
+  --color-coffee-600: var(--coffee-600);
+  --color-coffee-700: var(--coffee-700);
+  --color-coffee-800: var(--coffee-800);
+  --color-coffee-900: var(--coffee-900);
+  --color-coffee-950: var(--coffee-950);
+
+  /* Polices */
+  --font-sans: var(--font-quicksand), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-audiowide: var(--font-audiowide);
+  --font-quicksand: var(--font-quicksand);
+
+  /* Rayons */
+  --radius-lg:  0.75rem;
+  --radius-xl:  1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
 }
 
-html {
-  font-family: var(--font-sans);
+/* ==========================================================================
+   4. CLASSES UTILITAIRES TAILWIND PERSONNALISÉES
+   ========================================================================== */
+@layer utilities {
+  .font-audiowide {
+    font-family: var(--font-audiowide);
+  }
+  
+  .font-quicksand {
+    font-family: var(--font-quicksand);
+  }
+  
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+  }
+  
+  .blur-2xl {
+    filter: blur(48px);
+  }
+  
+  .blur-3xl {
+    filter: blur(64px);
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 25s linear infinite;
+  }
+  
+  .animate-spin-slower {
+    animation: spin-slower 30s linear infinite;
+  }
+  
+  .animate-spin-slowest {
+    animation: spin-slowest 35s linear infinite;
+  }
 }
 
-body {
-  background-color: var(--background);
-  color: var(--txt-body);
-  font-family: var(--font-sans);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-:focus-visible {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-}
-
-/* Custom scrollbar */
+/* ==========================================================================
+   5. SCROLLBAR PERSONNALISÉE
+   ========================================================================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--background);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--txt-disabled);
 }
 
 /* ==========================================================================
-   ANIMATIONS
+   6. ACCESSIBILITÉ
    ========================================================================== */
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes spin-slower {
-  from { transform: rotate(360deg); }
-  to   { transform: rotate(0deg); }
-}
-@keyframes spin-slowest {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-@keyframes fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(205, 91, 50, 0.3); }
-  50%       { box-shadow: 0 0 0 8px rgba(205, 91, 50, 0); }
-}
-
-.animate-spin-slow    { animation: spin-slow    25s linear infinite; }
-.animate-spin-slower  { animation: spin-slower  30s linear infinite; }
-.animate-spin-slowest { animation: spin-slowest 35s linear infinite; }
-.animate-fade-in      { animation: fade-in 0.4s ease-out both; }
-.animate-pulse-glow   { animation: pulse-glow 2s ease-in-out infinite; }
-
-/* Radial gradient utility */
-.bg-gradient-radial {
-  background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* ==========================================================================
-   REACT-ADMIN OVERRIDES — Harmonise MUI with our design system
+   7. ANIMATIONS
    ========================================================================== */
-
-/* Toolbar & AppBar */
-.RaLayout-appFrame .MuiAppBar-root {
-  background-color: var(--bg-card) !important;
-  color: var(--txt-body) !important;
-  box-shadow: 0 1px 0 var(--border) !important;
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Sidebar */
-.RaLayout-appFrame .MuiDrawer-root .MuiPaper-root {
-  background-color: var(--bg-card) !important;
-  border-right: 1px solid var(--border) !important;
+@keyframes spin-slower {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 }
 
-/* Menu items */
-.RaMenuItemLink-root {
-  color: var(--txt-secondary) !important;
-  border-radius: 10px !important;
-  margin: 2px 8px !important;
-  transition: all 0.2s !important;
-}
-.RaMenuItemLink-root:hover {
-  background-color: var(--bg-subtle) !important;
-  color: var(--txt-title) !important;
-}
-.RaMenuItemLink-active {
-  background-color: var(--coffee-500, #cd5b32) !important;
-  color: #fff !important;
+@keyframes spin-slowest {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-/* Main content area */
-.RaLayout-content {
-  background-color: var(--background) !important;
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
 }
 
-/* MUI form inputs — outlined variant */
-.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
-  border-color: var(--border) !important;
-}
-.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--btn-primary) !important;
-}
-.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--btn-primary) !important;
-  border-width: 2px !important;
-}
-.MuiInputBase-input {
-  color: var(--txt-title) !important;
-}
-.MuiInputLabel-root {
-  color: var(--txt-secondary) !important;
-}
-.MuiInputLabel-root.Mui-focused {
-  color: var(--btn-primary) !important;
+/* ==========================================================================
+   8. ANIMATIONS D'ENTRÉE POUR LA NAVIGATION
+   ========================================================================== */
+nav a {
+  animation: fadeInRight 0.6s ease-out both;
 }
 
-/* MUI Select */
-.MuiSelect-select {
-  background-color: var(--bg-card) !important;
-}
-.MuiMenu-paper {
-  background-color: var(--bg-card) !important;
-  border: 1px solid var(--border) !important;
-}
-.MuiMenuItem-root:hover {
-  background-color: var(--bg-subtle) !important;
-}
-.MuiMenuItem-root.Mui-selected {
-  background-color: var(--btn-ghost-hover) !important;
-  color: var(--btn-primary) !important;
-}
-
-/* MUI buttons in react-admin toolbar */
-.RaToolbar-defaultToolbar .MuiButton-containedPrimary {
-  background-color: var(--btn-primary) !important;
-  color: var(--btn-primary-txt) !important;
-  border-radius: 10px !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-}
-.RaToolbar-defaultToolbar .MuiButton-containedPrimary:hover {
-  background-color: var(--btn-primary-hover) !important;
-  box-shadow: 0 4px 12px rgba(205, 91, 50, 0.25) !important;
-}
-
-/* Paper / Card */
-.MuiPaper-root {
-  background-color: var(--bg-card) !important;
-}
-
-/* Notification snackbar */
-.RaNotification-success { background-color: var(--success) !important; }
-.RaNotification-error   { background-color: var(--error) !important; }
-.RaNotification-warning { background-color: var(--warning) !important; }
+nav a:nth-child(1) { animation-delay: 0.1s; }
+nav a:nth-child(2) { animation-delay: 0.2s; }
+nav a:nth-child(3) { animation-delay: 0.3s; }
+nav a:nth-child(4) { animation-delay: 0.4s; }
+nav a:nth-child(5) { animation-delay: 0.5s; }
+nav a:nth-child(6) { animation-delay: 0.6s; }
