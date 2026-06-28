@@ -1,3 +1,4 @@
+// pages/events/EventCreate.tsx
 import React from "react";
 import {
   Create,
@@ -13,23 +14,41 @@ import {
   AutocompleteInput,
 } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, FileText, Layers } from "lucide-react";
+import { ArrowLeft, FileText, Layers, Sparkles, Clock } from "lucide-react";
 
-// Style réutilisable pour les cartes en Glassmorphism
-const sectionCard = {
-  backgroundColor: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  borderRadius: "24px",
-  padding: "32px",
-  boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
-  color: "#ffffff",
-  position: "relative",
-  zIndex: 10,
-} as const;
+// === COFFEE BEAN COLORS ===
+const COLORS = {
+  coffee: {
+    50: "#ede1db",
+    100: "#f5ded6",
+    200: "#ebbdad",
+    300: "#e19d84",
+    400: "#d77c5b",
+    500: "#cd5b32",
+    600: "#a44928",
+    700: "#7b371e",
+    800: "#522414",
+    900: "#29120a",
+    950: "#1d0d07",
+  },
+  background: "#0B0B14",
+  success: "#4ade80",
+  warning: "#fbbf24",
+  error: "#f87171",
+  info: "#60a5fa",
+};
 
-// En-tête de section avec l'icône
+// === STYLES ===
+const cardStyle = {
+  backgroundColor: COLORS.coffee[900],
+  border: `1px solid ${COLORS.coffee[800]}`,
+  borderRadius: "1.25rem",
+  padding: "24px",
+  backdropFilter: "blur(12px)",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+};
+
 const sectionHeader = (Icon: React.FC<any>, label: string) => (
   <div
     style={{
@@ -38,29 +57,27 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
       gap: "12px",
       paddingBottom: "16px",
       marginBottom: "24px",
-      borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+      borderBottom: `1px solid ${COLORS.coffee[800]}`,
     }}
   >
     <div
       style={{
-        padding: "10px",
-        borderRadius: "12px",
-        backgroundColor: "rgba(205, 91, 50, 0.15)",
-        border: "1px solid rgba(205, 91, 50, 0.3)",
-        color: "#cd5b32",
+        padding: "8px",
+        borderRadius: "10px",
+        backgroundColor: `${COLORS.coffee[400]}20`,
+        color: COLORS.coffee[400],
         display: "flex",
-        boxShadow: "inset 0 0 10px rgba(205, 91, 50, 0.1)",
       }}
     >
-      <Icon size={20} />
+      <Icon size={18} />
     </div>
     <h3
       style={{
-        fontSize: "18px",
+        fontSize: "16px",
         fontWeight: 700,
-        color: "#ffffff",
+        color: COLORS.coffee[50],
         margin: 0,
-        letterSpacing: "-0.01em",
+        fontFamily: "Audiowide, cursive",
       }}
     >
       {label}
@@ -68,56 +85,15 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
   </div>
 );
 
+// === MAIN COMPONENT ===
 export const EventCreate = () => (
   <div
     style={{
-      position: "relative",
-      minHeight: "100%",
+      minHeight: "100vh",
       padding: "24px",
-      // Si votre layout global n'est pas déjà sombre, ce fond assure que le glassmorphism ressorte
-      backgroundColor: "#0f0c29",
-      borderRadius: "24px",
-      overflow: "hidden",
+      backgroundColor: COLORS.background,
     }}
   >
-    {/* Orbes lumineux décoratifs en arrière-plan (Style Login) */}
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        overflow: "hidden",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: "10%",
-          left: "5%",
-          width: "400px",
-          height: "400px",
-          borderRadius: "50%",
-          background: "#cd5b32",
-          filter: "blur(120px)",
-          opacity: 0.3,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: "10%",
-          right: "5%",
-          width: "500px",
-          height: "500px",
-          borderRadius: "50%",
-          background: "#4a00e0",
-          filter: "blur(150px)",
-          opacity: 0.2,
-        }}
-      />
-    </div>
-
     <Create
       component="div"
       actions={false}
@@ -126,79 +102,178 @@ export const EventCreate = () => (
       <SimpleForm
         sx={{
           p: 0,
+          maxWidth: "1400px",
+          margin: "0 auto",
           backgroundColor: "transparent",
-          position: "relative",
-          zIndex: 10,
+          
+          // === INPUT STYLES ===
           "& .MuiFormControl-root": { width: "100%" },
-
-          /* Style global des inputs Mui (Text, Select, Date, etc.) */
           "& .MuiOutlinedInput-root": {
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-            borderRadius: "12px",
-            color: "#ffffff",
-            transition: "all 0.3s ease",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "10px",
+            transition: "all 0.2s ease",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: COLORS.coffee[400],
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: COLORS.coffee[400],
+              borderWidth: "2px",
+              boxShadow: `0 0 0 4px ${COLORS.coffee[400]}15`,
+            },
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(255, 255, 255, 0.1)",
-            borderWidth: "1px",
+            borderColor: COLORS.coffee[800],
+            borderWidth: "1.5px",
           },
-          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(255, 255, 255, 0.3)",
-          },
-          "& .MuiOutlinedInput-root.Mui-focused": {
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-          },
-          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-            {
-              borderColor: "rgba(205, 91, 50, 0.8)",
-              borderWidth: "1px",
-              boxShadow: "0 0 0 4px rgba(205, 91, 50, 0.2)",
+          "& .MuiInputBase-input": {
+            color: COLORS.coffee[50],
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "14px",
+            padding: "12px 14px",
+            "&::placeholder": {
+              color: COLORS.coffee[400],
+              opacity: 0.5,
             },
-
-          /* Style des labels */
+          },
           "& .MuiInputLabel-root": {
-            color: "rgba(255, 255, 255, 0.6)",
-            fontFamily: "Inter, Roboto, sans-serif",
+            color: COLORS.coffee[300],
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "13px",
+            "&.Mui-focused": {
+              color: COLORS.coffee[400],
+            },
           },
-          "& .MuiInputLabel-root.Mui-focused": {
-            color: "#cd5b32",
+          "& .MuiSelect-select": {
+            color: COLORS.coffee[50],
+            padding: "12px 14px",
           },
-          "& .MuiSvgIcon-root": {
-            color: "rgba(255, 255, 255, 0.5)",
+          "& .MuiSelect-icon": {
+            color: COLORS.coffee[400],
+          },
+          "& .MuiFormHelperText-root": {
+            color: COLORS.coffee[400],
+            fontFamily: "Quicksand, sans-serif",
+            fontSize: "12px",
+          },
+          "& .MuiInputAdornment-root": {
+            color: COLORS.coffee[400],
+          },
+          "& .MuiAutocomplete-root .MuiOutlinedInput-root": {
+            padding: "0",
+          },
+          "& .MuiAutocomplete-root .MuiInputBase-input": {
+            padding: "12px 14px",
+          },
+          "& .MuiInputBase-multiline": {
+            padding: "12px 14px",
           },
 
-          /* Toolbar de soumission (Bouton Enregistrer) */
+          // === TOOLBAR ===
           "& .RaToolbar-root": {
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-            backdropFilter: "blur(16px)",
-            padding: "16px 24px",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            borderRadius: "20px",
-            marginTop: "24px",
+            backgroundColor: "transparent",
+            padding: "24px 0 0",
+            borderTop: `1px solid ${COLORS.coffee[800]}`,
+            marginTop: "8px",
             display: "flex",
+            gap: "12px",
             justifyContent: "flex-end",
+            flexWrap: "wrap",
           },
-
-          /* Bouton Principal (Save) reproduisant le bouton de login */
           "& .MuiButton-containedPrimary": {
-            background: "linear-gradient(90deg, #cd5b32 0%, #d4704b 100%)",
-            color: "#ffffff",
-            borderRadius: "12px",
-            padding: "10px 24px",
+            backgroundColor: COLORS.coffee[400],
+            color: "#fff",
+            borderRadius: "10px",
             fontWeight: 600,
+            fontFamily: "Quicksand, sans-serif",
+            padding: "10px 28px",
+            boxShadow: `0 2px 12px ${COLORS.coffee[400]}40`,
+            transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             textTransform: "none",
             fontSize: "14px",
-            fontFamily: "Inter, Roboto, sans-serif",
-            boxShadow: "0 4px 15px rgba(205, 91, 50, 0.4)",
-            transition: "all 0.3s ease",
             "&:hover": {
-              boxShadow: "0 6px 20px rgba(205, 91, 50, 0.6)",
-              transform: "translateY(-1px)",
+              backgroundColor: COLORS.coffee[500],
+              boxShadow: `0 6px 24px ${COLORS.coffee[400]}50`,
+              transform: "translateY(-2px) scale(1.01)",
+            },
+          },
+          "& .MuiButton-text": {
+            color: COLORS.coffee[300],
+            fontFamily: "Quicksand, sans-serif",
+            padding: "10px 20px",
+            borderRadius: "10px",
+            textTransform: "none",
+            fontSize: "14px",
+            "&:hover": {
+              color: COLORS.coffee[50],
+              backgroundColor: `${COLORS.coffee[800]}40`,
+            },
+          },
+
+          // === ARRAY INPUT (SESSIONS) ===
+          "& .RaSimpleFormIterator-form": {
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            gap: "14px",
+            padding: "20px",
+            marginBottom: "14px",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "14px",
+            border: `1px solid ${COLORS.coffee[800]}`,
+            transition: "all 0.3s ease",
+            position: "relative",
+            "&:hover": {
+              borderColor: COLORS.coffee[400],
+              boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
+            },
+            "&:before": {
+              content: '""',
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              height: "3px",
+              background: `linear-gradient(90deg, ${COLORS.coffee[400]}, ${COLORS.coffee[600]})`,
+              borderRadius: "14px 14px 0 0",
+              opacity: 0,
+              transition: "opacity 0.3s ease",
+            },
+            "&:hover:before": {
+              opacity: 1,
+            },
+          },
+          "& .RaSimpleFormIterator-add button": {
+            backgroundColor: `${COLORS.coffee[400]}12`,
+            color: COLORS.coffee[400],
+            borderRadius: "10px",
+            fontWeight: 600,
+            fontFamily: "Quicksand, sans-serif",
+            padding: "12px 20px",
+            border: `2px dashed ${COLORS.coffee[400]}30`,
+            transition: "all 0.3s ease",
+            textTransform: "none",
+            fontSize: "14px",
+            width: "100%",
+            justifyContent: "center",
+            "&:hover": {
+              backgroundColor: `${COLORS.coffee[400]}20`,
+              borderColor: COLORS.coffee[400],
+              transform: "translateY(-2px)",
+            },
+          },
+          "& .RaSimpleFormIterator-remove button": {
+            color: COLORS.coffee[400],
+            padding: "6px 12px",
+            borderRadius: "8px",
+            transition: "all 0.2s ease",
+            "&:hover": {
+              color: COLORS.error,
+              backgroundColor: `${COLORS.error}15`,
             },
           },
         }}
       >
-        {/* En-tête de la page */}
+        {/* === HEADER === */}
         <div
           style={{
             display: "flex",
@@ -206,34 +281,37 @@ export const EventCreate = () => (
             justifyContent: "space-between",
             alignItems: "center",
             gap: "16px",
-            paddingBottom: "24px",
+            paddingBottom: "20px",
             marginBottom: "24px",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+            borderBottom: `1px solid ${COLORS.coffee[800]}`,
             width: "100%",
           }}
         >
           <div>
-            <h1
-              style={{
-                fontSize: "28px",
-                fontWeight: 800,
-                color: "#ffffff",
-                letterSpacing: "-0.03em",
-                margin: "0 0 6px",
-                textShadow: "0 2px 10px rgba(0,0,0,0.3)",
-              }}
-            >
-              Créer un événement
-            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Sparkles size={24} color={COLORS.coffee[400]} />
+              <h1
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 400,
+                  color: COLORS.coffee[50],
+                  letterSpacing: "-0.02em",
+                  margin: 0,
+                  fontFamily: "Audiowide, cursive",
+                }}
+              >
+                Create Event
+              </h1>
+            </div>
             <p
               style={{
                 fontSize: "14px",
-                color: "rgba(255, 255, 255, 0.6)",
-                margin: 0,
+                color: COLORS.coffee[300],
+                margin: "4px 0 0 34px",
+                fontFamily: "Quicksand, sans-serif",
               }}
             >
-              Saisissez les informations de base et configurez les sessions
-              associées.
+              Enter the basic information and configure the associated sessions
             </p>
           </div>
 
@@ -243,35 +321,36 @@ export const EventCreate = () => (
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              fontSize: "13px",
+              fontSize: "14px",
               fontWeight: 600,
-              color: "rgba(255, 255, 255, 0.8)",
+              color: COLORS.coffee[300],
               textDecoration: "none",
-              padding: "10px 16px",
-              borderRadius: "12px",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
-              backdropFilter: "blur(10px)",
+              padding: "8px 18px",
+              borderRadius: "10px",
+              border: `1.5px solid ${COLORS.coffee[800]}`,
+              backgroundColor: "transparent",
               transition: "all 0.3s ease",
+              fontFamily: "Quicksand, sans-serif",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#ffffff";
-              e.currentTarget.style.borderColor = "rgba(205, 91, 50, 0.5)";
-              e.currentTarget.style.backgroundColor = "rgba(205, 91, 50, 0.1)";
+              e.currentTarget.style.color = COLORS.coffee[50];
+              e.currentTarget.style.borderColor = COLORS.coffee[400];
+              e.currentTarget.style.backgroundColor = `${COLORS.coffee[400]}10`;
+              e.currentTarget.style.transform = "translateX(-2px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "rgba(255, 255, 255, 0.8)";
-              e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-              e.currentTarget.style.backgroundColor =
-                "rgba(255, 255, 255, 0.05)";
+              e.currentTarget.style.color = COLORS.coffee[300];
+              e.currentTarget.style.borderColor = COLORS.coffee[800];
+              e.currentTarget.style.backgroundColor = "transparent";
+              e.currentTarget.style.transform = "translateX(0)";
             }}
           >
             <ArrowLeft size={16} />
-            Retour
+            Back
           </Link>
         </div>
 
-        {/* Grille du Formulaire */}
+        {/* === FORM GRID (2 columns) === */}
         <div
           style={{
             display: "grid",
@@ -281,47 +360,50 @@ export const EventCreate = () => (
             alignItems: "start",
           }}
         >
-          {/* Colonne Gauche: Informations Générales */}
-          <div
-            style={{ ...sectionCard, display: "flex", flexDirection: "column" }}
-          >
-            {sectionHeader(FileText, "Informations Générales")}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "20px",
-              }}
-            >
+          {/* === LEFT COLUMN - General Information === */}
+          <div style={cardStyle}>
+            {sectionHeader(FileText, "General Information")}
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div style={{ gridColumn: "span 2" }}>
                 <TextInput
                   source="title"
-                  label="Titre de l'événement"
+                  label="Event Title"
                   validate={required()}
                   fullWidth
                   variant="outlined"
+                  placeholder="Ex: Tech Conference 2024"
                 />
               </div>
               <div style={{ gridColumn: "span 2" }}>
                 <TextInput
                   source="description"
-                  label="Description détaillée"
+                  label="Detailed Description"
                   multiline
                   rows={4}
                   fullWidth
                   variant="outlined"
+                  placeholder="Describe the event in a few sentences..."
                 />
               </div>
               <div>
                 <SelectInput
                   source="category"
-                  label="Catégorie"
+                  label="Category"
                   choices={[
-                    { id: "CONFERENCE", name: "Conférence" },
-                    { id: "WORKSHOP", name: "Atelier" },
-                    { id: "SEMINAR", name: "Séminaire" },
+                    { id: "CONFERENCE", name: "Conference" },
+                    { id: "WORKSHOP", name: "Workshop" },
+                    { id: "SEMINAR", name: "Seminar" },
                     { id: "MEETUP", name: "Meetup" },
-                    { id: "WEBINAR", name: "Webinaire" },
+                    { id: "WEBINAR", name: "Webinar" },
+                    { id: "SOCIAL", name: "Social" },
+                    { id: "FUNDRAISER", name: "Fundraiser" },
+                    { id: "SPORTS", name: "Sports" },
+                    { id: "ARTS", name: "Arts" },
+                    { id: "TECHNOLOGY", name: "Technology" },
+                    { id: "BUSINESS", name: "Business" },
+                    { id: "EDUCATION", name: "Education" },
+                    { id: "OTHER", name: "Other" },
                   ]}
                   validate={required()}
                   fullWidth
@@ -331,16 +413,17 @@ export const EventCreate = () => (
               <div>
                 <TextInput
                   source="location"
-                  label="Lieu (adresse ou en ligne)"
+                  label="Location"
                   validate={required()}
                   fullWidth
                   variant="outlined"
+                  placeholder="Address or online link"
                 />
               </div>
               <div>
                 <DateTimeInput
                   source="startDate"
-                  label="Début"
+                  label="Start Date & Time"
                   validate={required()}
                   fullWidth
                   variant="outlined"
@@ -349,7 +432,7 @@ export const EventCreate = () => (
               <div>
                 <DateTimeInput
                   source="endDate"
-                  label="Fin"
+                  label="End Date & Time"
                   validate={required()}
                   fullWidth
                   variant="outlined"
@@ -358,19 +441,18 @@ export const EventCreate = () => (
             </div>
           </div>
 
-          {/* Colonne Droite: Sessions */}
-          <div
-            style={{ ...sectionCard, display: "flex", flexDirection: "column" }}
-          >
-            {sectionHeader(Layers, "Sessions de l'événement")}
+          {/* === RIGHT COLUMN - Sessions === */}
+          <div style={cardStyle}>
+            {sectionHeader(Layers, "Event Sessions")}
             <p
               style={{
                 fontSize: "13px",
-                color: "rgba(255, 255, 255, 0.6)",
+                color: COLORS.coffee[300],
                 marginBottom: "20px",
+                fontFamily: "Quicksand, sans-serif",
               }}
             >
-              Configurez les créneaux ou ateliers internes.
+              Configure one or more sessions or workshops for this event.
             </p>
 
             <ArrayInput source="sessions" label=" ">
@@ -378,47 +460,76 @@ export const EventCreate = () => (
                 inline
                 sx={{
                   width: "100%",
-                  /* Style de chaque bloc session */
                   "& .RaSimpleFormIterator-form": {
                     width: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "16px",
-                    p: "20px",
-                    mb: "16px",
-                    backgroundColor: "rgba(0, 0, 0, 0.25)",
-                    borderRadius: "16px",
-                    border: "1px solid rgba(255, 255, 255, 0.05)",
-                  },
-                  /* Bouton d'ajout d'une session */
-                  "& .RaSimpleFormIterator-add button": {
-                    backgroundColor: "rgba(205, 91, 50, 0.1)",
-                    color: "#cd5b32",
-                    borderRadius: "10px",
-                    fontWeight: 600,
-                    textTransform: "none",
-                    border: "1px dashed rgba(205, 91, 50, 0.4)",
-                    padding: "8px 16px",
+                    gap: "14px",
+                    padding: "20px",
+                    marginBottom: "14px",
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    borderRadius: "14px",
+                    border: `1px solid ${COLORS.coffee[800]}`,
+                    transition: "all 0.3s ease",
+                    position: "relative",
                     "&:hover": {
-                      backgroundColor: "rgba(205, 91, 50, 0.2)",
+                      borderColor: COLORS.coffee[400],
+                      boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
+                    },
+                    "&:before": {
+                      content: '""',
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: "3px",
+                      background: `linear-gradient(90deg, ${COLORS.coffee[400]}, ${COLORS.coffee[600]})`,
+                      borderRadius: "14px 14px 0 0",
+                      opacity: 0,
+                      transition: "opacity 0.3s ease",
+                    },
+                    "&:hover:before": {
+                      opacity: 1,
                     },
                   },
-                  /* Bouton de suppression d'une session */
-                  "& .RaSimpleFormIterator-remove button": {
-                    color: "rgba(255, 255, 255, 0.4)",
+                  "& .RaSimpleFormIterator-add button": {
+                    backgroundColor: `${COLORS.coffee[400]}12`,
+                    color: COLORS.coffee[400],
+                    borderRadius: "10px",
+                    fontWeight: 600,
+                    fontFamily: "Quicksand, sans-serif",
+                    padding: "12px 20px",
+                    border: `2px dashed ${COLORS.coffee[400]}30`,
+                    transition: "all 0.3s ease",
+                    textTransform: "none",
+                    fontSize: "14px",
+                    width: "100%",
+                    justifyContent: "center",
                     "&:hover": {
-                      color: "#ef4444",
-                      backgroundColor: "rgba(239, 68, 68, 0.1)",
+                      backgroundColor: `${COLORS.coffee[400]}20`,
+                      borderColor: COLORS.coffee[400],
+                      transform: "translateY(-2px)",
+                    },
+                  },
+                  "& .RaSimpleFormIterator-remove button": {
+                    color: COLORS.coffee[400],
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      color: COLORS.error,
+                      backgroundColor: `${COLORS.error}15`,
                     },
                   },
                 }}
               >
                 <TextInput
                   source="title"
-                  label="Titre de la session"
+                  label="Session Title"
                   validate={required()}
                   fullWidth
                   variant="outlined"
+                  placeholder="Ex: React Workshop"
                 />
                 <TextInput
                   source="description"
@@ -427,17 +538,14 @@ export const EventCreate = () => (
                   rows={2}
                   fullWidth
                   variant="outlined"
+                  placeholder="Session description..."
                 />
-                <ReferenceInput
-                  source="roomId"
-                  reference="rooms"
-                  label="Salle"
-                  fullWidth
-                >
+                <ReferenceInput source="roomId" reference="rooms" label="Room" fullWidth>
                   <AutocompleteInput
                     optionText="name"
                     validate={required()}
                     variant="outlined"
+                    placeholder="Choose a room"
                   />
                 </ReferenceInput>
                 <div
@@ -450,14 +558,14 @@ export const EventCreate = () => (
                 >
                   <DateTimeInput
                     source="startTime"
-                    label="Début"
+                    label="Start Time"
                     validate={required()}
                     fullWidth
                     variant="outlined"
                   />
                   <DateTimeInput
                     source="endTime"
-                    label="Fin"
+                    label="End Time"
                     validate={required()}
                     fullWidth
                     variant="outlined"
@@ -465,15 +573,46 @@ export const EventCreate = () => (
                 </div>
                 <NumberInput
                   source="capacity"
-                  label="Capacité (pers.)"
+                  label="Capacity"
                   validate={required()}
                   fullWidth
                   variant="outlined"
+                  placeholder="Number of seats"
                 />
               </SimpleFormIterator>
             </ArrayInput>
+
+            {/* Footer */}
+            <div
+              style={{
+                marginTop: "16px",
+                paddingTop: "16px",
+                borderTop: `1px solid ${COLORS.coffee[800]}`,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <Clock size={14} color={COLORS.coffee[400]} />
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: COLORS.coffee[400],
+                  fontFamily: "Quicksand, sans-serif",
+                }}
+              >
+                Add one or more sessions to your event
+              </span>
+            </div>
           </div>
         </div>
+
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
       </SimpleForm>
     </Create>
   </div>
