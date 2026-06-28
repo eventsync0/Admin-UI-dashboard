@@ -16,22 +16,19 @@ import {
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText, Layers, Sparkles, Clock } from "lucide-react";
 
-// === COFFEE BEAN COLORS ===
+// === ORANGE COLORS ===
 const COLORS = {
-  coffee: {
-    50: "#ede1db",
-    100: "#f5ded6",
-    200: "#ebbdad",
-    300: "#e19d84",
-    400: "#d77c5b",
-    500: "#cd5b32",
-    600: "#a44928",
-    700: "#7b371e",
-    800: "#522414",
-    900: "#29120a",
-    950: "#1d0d07",
-  },
+  primary: "#ea580c",
+  primaryDark: "#d94a00",
+  primaryGlow: "rgba(234, 88, 12, 0.25)",
   background: "#0B0B14",
+  darkCard: "rgba(255, 255, 255, 0.03)",
+  darkBorder: "rgba(255, 255, 255, 0.08)",
+  text: {
+    primary: "#ffffff",
+    secondary: "rgba(255, 255, 255, 0.7)",
+    muted: "rgba(255, 255, 255, 0.5)",
+  },
   success: "#4ade80",
   warning: "#fbbf24",
   error: "#f87171",
@@ -40,8 +37,8 @@ const COLORS = {
 
 // === STYLES ===
 const cardStyle = {
-  backgroundColor: COLORS.coffee[900],
-  border: `1px solid ${COLORS.coffee[800]}`,
+  backgroundColor: COLORS.darkCard,
+  border: `1px solid ${COLORS.darkBorder}`,
   borderRadius: "1.25rem",
   padding: "24px",
   backdropFilter: "blur(12px)",
@@ -57,15 +54,15 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
       gap: "12px",
       paddingBottom: "16px",
       marginBottom: "24px",
-      borderBottom: `1px solid ${COLORS.coffee[800]}`,
+      borderBottom: `1px solid ${COLORS.darkBorder}`,
     }}
   >
     <div
       style={{
         padding: "8px",
         borderRadius: "10px",
-        backgroundColor: `${COLORS.coffee[400]}20`,
-        color: COLORS.coffee[400],
+        backgroundColor: `${COLORS.primary}20`,
+        color: COLORS.primary,
         display: "flex",
       }}
     >
@@ -75,9 +72,8 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
       style={{
         fontSize: "16px",
         fontWeight: 700,
-        color: COLORS.coffee[50],
+        color: COLORS.text.primary,
         margin: 0,
-        fontFamily: "Audiowide, cursive",
       }}
     >
       {label}
@@ -92,8 +88,31 @@ export const EventCreate = () => (
       minHeight: "100vh",
       padding: "24px",
       backgroundColor: COLORS.background,
+      position: "relative",
     }}
   >
+    {/* GLOW EFFECT */}
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        pointerEvents: "none",
+        overflow: "hidden",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: "10%",
+          right: "5%",
+          width: "400px",
+          height: "400px",
+          background: `radial-gradient(circle, ${COLORS.primaryGlow} 0%, transparent 60%)`,
+          filter: "blur(80px)",
+        }}
+      />
+    </div>
+
     <Create
       component="div"
       actions={false}
@@ -105,6 +124,8 @@ export const EventCreate = () => (
           maxWidth: "1400px",
           margin: "0 auto",
           backgroundColor: "transparent",
+          position: "relative",
+          zIndex: 1,
           
           // === INPUT STYLES ===
           "& .MuiFormControl-root": { width: "100%" },
@@ -113,50 +134,47 @@ export const EventCreate = () => (
             borderRadius: "10px",
             transition: "all 0.2s ease",
             "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: COLORS.coffee[400],
+              borderColor: COLORS.primary,
             },
             "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: COLORS.coffee[400],
+              borderColor: COLORS.primary,
               borderWidth: "2px",
-              boxShadow: `0 0 0 4px ${COLORS.coffee[400]}15`,
+              boxShadow: `0 0 0 4px ${COLORS.primary}25`,
             },
           },
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: COLORS.coffee[800],
+            borderColor: COLORS.darkBorder,
             borderWidth: "1.5px",
           },
           "& .MuiInputBase-input": {
-            color: COLORS.coffee[50],
-            fontFamily: "Quicksand, sans-serif",
+            color: COLORS.text.primary,
             fontSize: "14px",
             padding: "12px 14px",
             "&::placeholder": {
-              color: COLORS.coffee[400],
+              color: COLORS.text.muted,
               opacity: 0.5,
             },
           },
           "& .MuiInputLabel-root": {
-            color: COLORS.coffee[300],
-            fontFamily: "Quicksand, sans-serif",
+            color: COLORS.text.secondary,
             fontSize: "13px",
             "&.Mui-focused": {
-              color: COLORS.coffee[400],
+              color: COLORS.primary,
             },
           },
           "& .MuiSelect-select": {
-            color: COLORS.coffee[50],
+            color: COLORS.text.primary,
             padding: "12px 14px",
           },
           "& .MuiSelect-icon": {
-            color: COLORS.coffee[400],
+            color: COLORS.primary,
           },
           "& .MuiFormHelperText-root": {
-            color: COLORS.coffee[400],
-            fontFamily: "Quicksand, sans-serif",
+            color: COLORS.text.muted,
             fontSize: "12px",
           },
           "& .MuiInputAdornment-root": {
-            color: COLORS.coffee[400],
+            color: COLORS.primary,
           },
           "& .MuiAutocomplete-root .MuiOutlinedInput-root": {
             padding: "0",
@@ -172,7 +190,7 @@ export const EventCreate = () => (
           "& .RaToolbar-root": {
             backgroundColor: "transparent",
             padding: "24px 0 0",
-            borderTop: `1px solid ${COLORS.coffee[800]}`,
+            borderTop: `1px solid ${COLORS.darkBorder}`,
             marginTop: "8px",
             display: "flex",
             gap: "12px",
@@ -180,32 +198,30 @@ export const EventCreate = () => (
             flexWrap: "wrap",
           },
           "& .MuiButton-containedPrimary": {
-            backgroundColor: COLORS.coffee[400],
+            backgroundColor: COLORS.primary,
             color: "#fff",
             borderRadius: "10px",
             fontWeight: 600,
-            fontFamily: "Quicksand, sans-serif",
             padding: "10px 28px",
-            boxShadow: `0 2px 12px ${COLORS.coffee[400]}40`,
+            boxShadow: `0 2px 12px ${COLORS.primary}40`,
             transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             textTransform: "none",
             fontSize: "14px",
             "&:hover": {
-              backgroundColor: COLORS.coffee[500],
-              boxShadow: `0 6px 24px ${COLORS.coffee[400]}50`,
+              backgroundColor: COLORS.primaryDark,
+              boxShadow: `0 6px 24px ${COLORS.primary}50`,
               transform: "translateY(-2px) scale(1.01)",
             },
           },
           "& .MuiButton-text": {
-            color: COLORS.coffee[300],
-            fontFamily: "Quicksand, sans-serif",
+            color: COLORS.text.secondary,
             padding: "10px 20px",
             borderRadius: "10px",
             textTransform: "none",
             fontSize: "14px",
             "&:hover": {
-              color: COLORS.coffee[50],
-              backgroundColor: `${COLORS.coffee[800]}40`,
+              color: COLORS.text.primary,
+              backgroundColor: `${COLORS.darkBorder}40`,
             },
           },
 
@@ -219,11 +235,11 @@ export const EventCreate = () => (
             marginBottom: "14px",
             backgroundColor: "rgba(0,0,0,0.2)",
             borderRadius: "14px",
-            border: `1px solid ${COLORS.coffee[800]}`,
+            border: `1px solid ${COLORS.darkBorder}`,
             transition: "all 0.3s ease",
             position: "relative",
             "&:hover": {
-              borderColor: COLORS.coffee[400],
+              borderColor: COLORS.primary,
               boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
             },
             "&:before": {
@@ -233,7 +249,7 @@ export const EventCreate = () => (
               left: 0,
               right: 0,
               height: "3px",
-              background: `linear-gradient(90deg, ${COLORS.coffee[400]}, ${COLORS.coffee[600]})`,
+              background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
               borderRadius: "14px 14px 0 0",
               opacity: 0,
               transition: "opacity 0.3s ease",
@@ -243,26 +259,25 @@ export const EventCreate = () => (
             },
           },
           "& .RaSimpleFormIterator-add button": {
-            backgroundColor: `${COLORS.coffee[400]}12`,
-            color: COLORS.coffee[400],
+            backgroundColor: `${COLORS.primary}12`,
+            color: COLORS.primary,
             borderRadius: "10px",
             fontWeight: 600,
-            fontFamily: "Quicksand, sans-serif",
             padding: "12px 20px",
-            border: `2px dashed ${COLORS.coffee[400]}30`,
+            border: `2px dashed ${COLORS.primary}30`,
             transition: "all 0.3s ease",
             textTransform: "none",
             fontSize: "14px",
             width: "100%",
             justifyContent: "center",
             "&:hover": {
-              backgroundColor: `${COLORS.coffee[400]}20`,
-              borderColor: COLORS.coffee[400],
+              backgroundColor: `${COLORS.primary}20`,
+              borderColor: COLORS.primary,
               transform: "translateY(-2px)",
             },
           },
           "& .RaSimpleFormIterator-remove button": {
-            color: COLORS.coffee[400],
+            color: COLORS.primary,
             padding: "6px 12px",
             borderRadius: "8px",
             transition: "all 0.2s ease",
@@ -283,21 +298,20 @@ export const EventCreate = () => (
             gap: "16px",
             paddingBottom: "20px",
             marginBottom: "24px",
-            borderBottom: `1px solid ${COLORS.coffee[800]}`,
+            borderBottom: `1px solid ${COLORS.darkBorder}`,
             width: "100%",
           }}
         >
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <Sparkles size={24} color={COLORS.coffee[400]} />
+              <Sparkles size={24} color={COLORS.primary} />
               <h1
                 style={{
                   fontSize: "26px",
-                  fontWeight: 400,
-                  color: COLORS.coffee[50],
+                  fontWeight: 700,
+                  color: COLORS.text.primary,
                   letterSpacing: "-0.02em",
                   margin: 0,
-                  fontFamily: "Audiowide, cursive",
                 }}
               >
                 Create Event
@@ -306,9 +320,8 @@ export const EventCreate = () => (
             <p
               style={{
                 fontSize: "14px",
-                color: COLORS.coffee[300],
+                color: COLORS.text.secondary,
                 margin: "4px 0 0 34px",
-                fontFamily: "Quicksand, sans-serif",
               }}
             >
               Enter the basic information and configure the associated sessions
@@ -323,24 +336,23 @@ export const EventCreate = () => (
               gap: "8px",
               fontSize: "14px",
               fontWeight: 600,
-              color: COLORS.coffee[300],
+              color: COLORS.text.secondary,
               textDecoration: "none",
               padding: "8px 18px",
               borderRadius: "10px",
-              border: `1.5px solid ${COLORS.coffee[800]}`,
+              border: `1.5px solid ${COLORS.darkBorder}`,
               backgroundColor: "transparent",
               transition: "all 0.3s ease",
-              fontFamily: "Quicksand, sans-serif",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = COLORS.coffee[50];
-              e.currentTarget.style.borderColor = COLORS.coffee[400];
-              e.currentTarget.style.backgroundColor = `${COLORS.coffee[400]}10`;
+              e.currentTarget.style.color = COLORS.text.primary;
+              e.currentTarget.style.borderColor = COLORS.primary;
+              e.currentTarget.style.backgroundColor = `${COLORS.primary}10`;
               e.currentTarget.style.transform = "translateX(-2px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = COLORS.coffee[300];
-              e.currentTarget.style.borderColor = COLORS.coffee[800];
+              e.currentTarget.style.color = COLORS.text.secondary;
+              e.currentTarget.style.borderColor = COLORS.darkBorder;
               e.currentTarget.style.backgroundColor = "transparent";
               e.currentTarget.style.transform = "translateX(0)";
             }}
@@ -447,9 +459,8 @@ export const EventCreate = () => (
             <p
               style={{
                 fontSize: "13px",
-                color: COLORS.coffee[300],
+                color: COLORS.text.secondary,
                 marginBottom: "20px",
-                fontFamily: "Quicksand, sans-serif",
               }}
             >
               Configure one or more sessions or workshops for this event.
@@ -469,11 +480,11 @@ export const EventCreate = () => (
                     marginBottom: "14px",
                     backgroundColor: "rgba(0,0,0,0.2)",
                     borderRadius: "14px",
-                    border: `1px solid ${COLORS.coffee[800]}`,
+                    border: `1px solid ${COLORS.darkBorder}`,
                     transition: "all 0.3s ease",
                     position: "relative",
                     "&:hover": {
-                      borderColor: COLORS.coffee[400],
+                      borderColor: COLORS.primary,
                       boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
                     },
                     "&:before": {
@@ -483,7 +494,7 @@ export const EventCreate = () => (
                       left: 0,
                       right: 0,
                       height: "3px",
-                      background: `linear-gradient(90deg, ${COLORS.coffee[400]}, ${COLORS.coffee[600]})`,
+                      background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
                       borderRadius: "14px 14px 0 0",
                       opacity: 0,
                       transition: "opacity 0.3s ease",
@@ -493,26 +504,25 @@ export const EventCreate = () => (
                     },
                   },
                   "& .RaSimpleFormIterator-add button": {
-                    backgroundColor: `${COLORS.coffee[400]}12`,
-                    color: COLORS.coffee[400],
+                    backgroundColor: `${COLORS.primary}12`,
+                    color: COLORS.primary,
                     borderRadius: "10px",
                     fontWeight: 600,
-                    fontFamily: "Quicksand, sans-serif",
                     padding: "12px 20px",
-                    border: `2px dashed ${COLORS.coffee[400]}30`,
+                    border: `2px dashed ${COLORS.primary}30`,
                     transition: "all 0.3s ease",
                     textTransform: "none",
                     fontSize: "14px",
                     width: "100%",
                     justifyContent: "center",
                     "&:hover": {
-                      backgroundColor: `${COLORS.coffee[400]}20`,
-                      borderColor: COLORS.coffee[400],
+                      backgroundColor: `${COLORS.primary}20`,
+                      borderColor: COLORS.primary,
                       transform: "translateY(-2px)",
                     },
                   },
                   "& .RaSimpleFormIterator-remove button": {
-                    color: COLORS.coffee[400],
+                    color: COLORS.primary,
                     padding: "6px 12px",
                     borderRadius: "8px",
                     transition: "all 0.2s ease",
@@ -587,18 +597,17 @@ export const EventCreate = () => (
               style={{
                 marginTop: "16px",
                 paddingTop: "16px",
-                borderTop: `1px solid ${COLORS.coffee[800]}`,
+                borderTop: `1px solid ${COLORS.darkBorder}`,
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
               }}
             >
-              <Clock size={14} color={COLORS.coffee[400]} />
+              <Clock size={14} color={COLORS.primary} />
               <span
                 style={{
                   fontSize: "12px",
-                  color: COLORS.coffee[400],
-                  fontFamily: "Quicksand, sans-serif",
+                  color: COLORS.text.muted,
                 }}
               >
                 Add one or more sessions to your event

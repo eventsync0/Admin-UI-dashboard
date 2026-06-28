@@ -1,4 +1,4 @@
-// pages/events/EventShow.tsx (extrait de la bannière corrigée)
+// pages/events/EventShow.tsx
 import { useShowContext, Show } from "react-admin";
 import { Link } from "react-router-dom";
 import {
@@ -17,37 +17,34 @@ import {
 // === CATEGORIES ===
 const CATEGORIES: Record<string, { label: string; color: string; bg: string }> =
   {
-    CONFERENCE: { label: "Conférence", color: "#7c3aed", bg: "#f5f3ff" },
-    WORKSHOP: { label: "Atelier", color: "#2563eb", bg: "#eff6ff" },
-    SEMINAR: { label: "Séminaire", color: "#4338ca", bg: "#eef2ff" },
+    CONFERENCE: { label: "Conference", color: "#7c3aed", bg: "#f5f3ff" },
+    WORKSHOP: { label: "Workshop", color: "#2563eb", bg: "#eff6ff" },
+    SEMINAR: { label: "Seminar", color: "#4338ca", bg: "#eef2ff" },
     MEETUP: { label: "Meetup", color: "#059669", bg: "#ecfdf5" },
-    WEBINAR: { label: "Webinaire", color: "#0d9488", bg: "#f0fdfa" },
+    WEBINAR: { label: "Webinar", color: "#0d9488", bg: "#f0fdfa" },
     SOCIAL: { label: "Social", color: "#db2777", bg: "#fdf2f8" },
-    FUNDRAISER: { label: "Collecte", color: "#e11d48", bg: "#fff1f2" },
+    FUNDRAISER: { label: "Fundraiser", color: "#e11d48", bg: "#fff1f2" },
     SPORTS: { label: "Sports", color: "#dc2626", bg: "#fef2f2" },
     ARTS: { label: "Arts", color: "#c026d3", bg: "#fdf4ff" },
-    TECHNOLOGY: { label: "Technologie", color: "#0891b2", bg: "#ecfeff" },
-    BUSINESS: { label: "Affaires", color: "#d97706", bg: "#fffbeb" },
-    EDUCATION: { label: "Éducation", color: "#65a30d", bg: "#f7fee7" },
-    OTHER: { label: "Autre", color: "#6b7280", bg: "#f9fafb" },
+    TECHNOLOGY: { label: "Technology", color: "#0891b2", bg: "#ecfeff" },
+    BUSINESS: { label: "Business", color: "#d97706", bg: "#fffbeb" },
+    EDUCATION: { label: "Education", color: "#65a30d", bg: "#f7fee7" },
+    OTHER: { label: "Other", color: "#6b7280", bg: "#f9fafb" },
   };
 
-// === COULEURS COFFEE BEAN ===
+// === ORANGE COLORS ===
 const COLORS = {
-  coffee: {
-    50: "#ede1db",
-    100: "#f5ded6",
-    200: "#ebbdad",
-    300: "#e19d84",
-    400: "#d77c5b",
-    500: "#cd5b32",
-    600: "#a44928",
-    700: "#7b371e",
-    800: "#522414",
-    900: "#29120a",
-    950: "#1d0d07",
-  },
+  primary: "#ea580c",
+  primaryDark: "#d94a00",
+  primaryGlow: "rgba(234, 88, 12, 0.25)",
   background: "#0B0B14",
+  darkCard: "rgba(255, 255, 255, 0.03)",
+  darkBorder: "rgba(255, 255, 255, 0.08)",
+  text: {
+    primary: "#ffffff",
+    secondary: "rgba(255, 255, 255, 0.7)",
+    muted: "rgba(255, 255, 255, 0.5)",
+  },
   success: "#4ade80",
   warning: "#fbbf24",
   error: "#f87171",
@@ -58,7 +55,7 @@ const COLORS = {
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
+  return d.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -71,7 +68,7 @@ const formatDate = (dateStr: string) => {
 const formatTimeOnly = (dateStr: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleTimeString("fr-FR", {
+  return d.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -79,15 +76,15 @@ const formatTimeOnly = (dateStr: string) => {
 
 // === STYLES ===
 const cardStyle = {
-  backgroundColor: "#29120a",
-  border: "1px solid #522414",
+  backgroundColor: COLORS.darkCard,
+  border: `1px solid ${COLORS.darkBorder}`,
   borderRadius: "1.25rem",
   padding: "24px",
   backdropFilter: "blur(12px)",
   transition: "all 0.3s ease",
 };
 
-// === COMPOSANT PRINCIPAL ===
+// === MAIN COMPONENT ===
 const EventShowDetail = () => {
   const { record, isLoading } = useShowContext();
 
@@ -99,7 +96,7 @@ const EventShowDetail = () => {
           flexDirection: "column",
           gap: "24px",
           padding: "24px",
-          backgroundColor: "#0B0B14",
+          backgroundColor: COLORS.background,
           minHeight: "100vh",
         }}
       >
@@ -122,31 +119,58 @@ const EventShowDetail = () => {
       <div
         style={{
           padding: "24px",
-          backgroundColor: "#0B0B14",
+          backgroundColor: COLORS.background,
           minHeight: "100vh",
+          position: "relative",
         }}
       >
+        {/* GLOW EFFECT */}
         <div
-          style={{ ...cardStyle, textAlign: "center", padding: "48px 24px" }}
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            overflow: "hidden",
+          }}
         >
-          <Info size={48} style={{ color: "#d77c5b", marginBottom: "16px" }} />
+          <div
+            style={{
+              position: "absolute",
+              top: "10%",
+              right: "5%",
+              width: "400px",
+              height: "400px",
+              background: `radial-gradient(circle, ${COLORS.primaryGlow} 0%, transparent 60%)`,
+              filter: "blur(80px)",
+            }}
+          />
+        </div>
+
+        <div
+          style={{
+            ...cardStyle,
+            textAlign: "center",
+            padding: "48px 24px",
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
+          <Info size={48} style={{ color: COLORS.primary, marginBottom: "16px" }} />
           <h3
             style={{
-              color: "#ede1db",
+              color: COLORS.text.primary,
               marginBottom: "8px",
-              fontFamily: "Audiowide, cursive",
             }}
           >
-            Événement introuvable
+            Event Not Found
           </h3>
           <p
             style={{
-              color: "#e19d84",
+              color: COLORS.text.secondary,
               marginBottom: "16px",
-              fontFamily: "Quicksand, sans-serif",
             }}
           >
-            L'événement que vous recherchez n'existe pas ou a été supprimé.
+            The event you are looking for does not exist or has been deleted.
           </p>
           <Link
             to="/events"
@@ -155,7 +179,7 @@ const EventShowDetail = () => {
               alignItems: "center",
               gap: "8px",
               padding: "10px 20px",
-              background: "linear-gradient(90deg, #d77c5b, #a44928)",
+              background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
               color: "#fff",
               borderRadius: "12px",
               fontWeight: 600,
@@ -172,7 +196,7 @@ const EventShowDetail = () => {
             }}
           >
             <ArrowLeft size={16} />
-            Retourner aux événements
+            Back to Events
           </Link>
         </div>
       </div>
@@ -185,10 +209,33 @@ const EventShowDetail = () => {
     <div
       style={{
         padding: "24px",
-        backgroundColor: "#0B0B14",
+        backgroundColor: COLORS.background,
         minHeight: "100vh",
+        position: "relative",
       }}
     >
+      {/* GLOW EFFECT */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+          overflow: "hidden",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "10%",
+            right: "5%",
+            width: "400px",
+            height: "400px",
+            background: `radial-gradient(circle, ${COLORS.primaryGlow} 0%, transparent 60%)`,
+            filter: "blur(80px)",
+          }}
+        />
+      </div>
+
       <div
         style={{
           display: "flex",
@@ -196,9 +243,11 @@ const EventShowDetail = () => {
           gap: "24px",
           maxWidth: "1400px",
           margin: "0 auto",
+          position: "relative",
+          zIndex: 1,
         }}
       >
-        {/* HEADER avec navigation */}
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -207,7 +256,7 @@ const EventShowDetail = () => {
             flexWrap: "wrap",
             gap: "16px",
             paddingBottom: "16px",
-            borderBottom: "1px solid #522414",
+            borderBottom: `1px solid ${COLORS.darkBorder}`,
           }}
         >
           <Link
@@ -218,22 +267,21 @@ const EventShowDetail = () => {
               gap: "8px",
               fontSize: "14px",
               fontWeight: 600,
-              color: "#e19d84",
+              color: COLORS.text.secondary,
               textDecoration: "none",
               transition: "all 0.2s ease",
-              fontFamily: "Quicksand, sans-serif",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = "#ede1db";
+              e.currentTarget.style.color = COLORS.text.primary;
               e.currentTarget.style.transform = "translateX(-2px)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#e19d84";
+              e.currentTarget.style.color = COLORS.text.secondary;
               e.currentTarget.style.transform = "translateX(0)";
             }}
           >
             <ArrowLeft size={16} />
-            Retour aux événements
+            Back to Events
           </Link>
           <Link
             to={`/events/${record.id}`}
@@ -242,39 +290,36 @@ const EventShowDetail = () => {
               alignItems: "center",
               gap: "8px",
               padding: "10px 18px",
-              background: "linear-gradient(90deg, #d77c5b, #a44928)",
+              background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
               color: "#fff",
               borderRadius: "12px",
               fontSize: "14px",
               fontWeight: 600,
               textDecoration: "none",
-              boxShadow: "0 2px 12px rgba(205, 91, 50, 0.3)",
+              boxShadow: `0 2px 12px ${COLORS.primary}40`,
               transition: "all 0.3s ease",
-              fontFamily: "Quicksand, sans-serif",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.opacity = "0.85";
               e.currentTarget.style.transform = "translateY(-2px)";
-              e.currentTarget.style.boxShadow =
-                "0 4px 20px rgba(205, 91, 50, 0.4)";
+              e.currentTarget.style.boxShadow = `0 4px 20px ${COLORS.primary}50`;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.opacity = "1";
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 2px 12px rgba(205, 91, 50, 0.3)";
+              e.currentTarget.style.boxShadow = `0 2px 12px ${COLORS.primary}40`;
             }}
           >
             <Edit size={15} />
-            Modifier l'événement
+            Edit Event
           </Link>
         </div>
 
-        {/* BANNIÈRE HERO - fond uniforme comme le Dashboard */}
+        {/* HERO BANNER */}
         <div
           style={{
             ...cardStyle,
-            backgroundColor: "#29120a",
+            backgroundColor: COLORS.darkCard,
             borderLeft: `4px solid ${cat.color}`,
             padding: "28px 24px",
           }}
@@ -299,7 +344,6 @@ const EventShowDetail = () => {
                 border: `1px solid ${cat.color}33`,
                 letterSpacing: "0.04em",
                 textTransform: "uppercase",
-                fontFamily: "Quicksand, sans-serif",
               }}
             >
               {cat.label}
@@ -307,7 +351,7 @@ const EventShowDetail = () => {
             <span
               style={{
                 fontSize: "12px",
-                color: "#d77c5b",
+                color: COLORS.primary,
                 fontWeight: 500,
                 fontFamily: "monospace",
               }}
@@ -319,11 +363,10 @@ const EventShowDetail = () => {
             style={{
               fontSize: "28px",
               fontWeight: 700,
-              color: "#ede1db",
+              color: COLORS.text.primary,
               lineHeight: 1.25,
               letterSpacing: "-0.02em",
               margin: 0,
-              fontFamily: "Audiowide, cursive",
             }}
           >
             {record.title}
@@ -331,16 +374,15 @@ const EventShowDetail = () => {
           <p
             style={{
               fontSize: "14px",
-              color: "#e19d84",
+              color: COLORS.text.secondary,
               marginTop: "8px",
-              fontFamily: "Quicksand, sans-serif",
             }}
           >
             {record.location}
           </p>
         </div>
 
-        {/* CONTENU PRINCIPAL - 2 colonnes */}
+        {/* MAIN CONTENT - 2 Columns */}
         <div
           style={{
             display: "grid",
@@ -348,7 +390,7 @@ const EventShowDetail = () => {
             gap: "24px",
           }}
         >
-          {/* COLONNE GAUCHE */}
+          {/* LEFT COLUMN */}
           <div
             style={{ display: "flex", flexDirection: "column", gap: "24px" }}
           >
@@ -366,8 +408,8 @@ const EventShowDetail = () => {
                   style={{
                     padding: "8px",
                     borderRadius: "10px",
-                    backgroundColor: "rgba(215, 124, 91, 0.2)",
-                    color: "#d77c5b",
+                    backgroundColor: `${COLORS.primary}20`,
+                    color: COLORS.primary,
                     display: "flex",
                   }}
                 >
@@ -377,9 +419,8 @@ const EventShowDetail = () => {
                   style={{
                     fontSize: "16px",
                     fontWeight: 700,
-                    color: "#ede1db",
+                    color: COLORS.text.primary,
                     margin: 0,
-                    fontFamily: "Audiowide, cursive",
                   }}
                 >
                   Description
@@ -388,15 +429,13 @@ const EventShowDetail = () => {
               <p
                 style={{
                   fontSize: "14px",
-                  color: "#e19d84",
+                  color: COLORS.text.secondary,
                   lineHeight: "1.7",
                   whiteSpace: "pre-line",
                   margin: 0,
-                  fontFamily: "Quicksand, sans-serif",
                 }}
               >
-                {record.description ||
-                  "Aucune description fournie pour cet événement."}
+                {record.description || "No description provided for this event."}
               </p>
             </div>
 
@@ -414,8 +453,8 @@ const EventShowDetail = () => {
                   style={{
                     padding: "8px",
                     borderRadius: "10px",
-                    backgroundColor: "rgba(215, 124, 91, 0.2)",
-                    color: "#d77c5b",
+                    backgroundColor: `${COLORS.primary}20`,
+                    color: COLORS.primary,
                     display: "flex",
                   }}
                 >
@@ -425,18 +464,17 @@ const EventShowDetail = () => {
                   style={{
                     fontSize: "16px",
                     fontWeight: 700,
-                    color: "#ede1db",
+                    color: COLORS.text.primary,
                     margin: 0,
-                    fontFamily: "Audiowide, cursive",
                   }}
                 >
-                  Sessions associées
+                  Sessions
                   <span
                     style={{
                       fontSize: "13px",
                       fontWeight: 600,
-                      color: "#e19d84",
-                      backgroundColor: "#522414",
+                      color: COLORS.text.secondary,
+                      backgroundColor: COLORS.darkBorder,
                       padding: "2px 8px",
                       borderRadius: "999px",
                       marginLeft: "6px",
@@ -452,20 +490,19 @@ const EventShowDetail = () => {
                   style={{
                     textAlign: "center",
                     padding: "32px 16px",
-                    backgroundColor: "#522414",
+                    backgroundColor: COLORS.darkBorder,
                     borderRadius: "12px",
-                    border: "2px dashed #522414",
+                    border: `2px dashed ${COLORS.darkBorder}`,
                   }}
                 >
                   <p
                     style={{
                       fontSize: "14px",
-                      color: "#e19d84",
+                      color: COLORS.text.secondary,
                       margin: 0,
-                      fontFamily: "Quicksand, sans-serif",
                     }}
                   >
-                    Aucune session n'est planifiée pour cet événement.
+                    No sessions planned for this event.
                   </p>
                 </div>
               ) : (
@@ -481,17 +518,17 @@ const EventShowDetail = () => {
                       key={idx}
                       style={{
                         padding: "20px",
-                        backgroundColor: "#522414",
+                        backgroundColor: COLORS.darkBorder,
                         borderRadius: "14px",
-                        border: "1px solid #522414",
+                        border: `1px solid ${COLORS.darkBorder}`,
                         transition: "all 0.3s ease",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#d77c5b";
+                        e.currentTarget.style.borderColor = COLORS.primary;
                         e.currentTarget.style.transform = "translateX(4px)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#522414";
+                        e.currentTarget.style.borderColor = COLORS.darkBorder;
                         e.currentTarget.style.transform = "translateX(0)";
                       }}
                     >
@@ -509,9 +546,8 @@ const EventShowDetail = () => {
                           style={{
                             fontSize: "15px",
                             fontWeight: 700,
-                            color: "#ede1db",
+                            color: COLORS.text.primary,
                             margin: 0,
-                            fontFamily: "Quicksand, sans-serif",
                           }}
                         >
                           {session.title}
@@ -532,14 +568,13 @@ const EventShowDetail = () => {
                               fontWeight: 600,
                               padding: "3px 8px",
                               borderRadius: "6px",
-                              backgroundColor: "#29120a",
-                              color: "#e19d84",
-                              border: "1px solid #522414",
-                              fontFamily: "Quicksand, sans-serif",
+                              backgroundColor: COLORS.darkCard,
+                              color: COLORS.text.secondary,
+                              border: `1px solid ${COLORS.darkBorder}`,
                             }}
                           >
                             <Home size={11} />
-                            Salle: {session.roomId || "N/A"}
+                            Room: {session.roomId || "N/A"}
                           </span>
                           <span
                             style={{
@@ -550,28 +585,25 @@ const EventShowDetail = () => {
                               fontWeight: 600,
                               padding: "3px 8px",
                               borderRadius: "6px",
-                              backgroundColor: "rgba(215, 124, 91, 0.2)",
-                              color: "#d77c5b",
-                              border: "1px solid rgba(215, 124, 91, 0.3)",
-                              fontFamily: "Quicksand, sans-serif",
+                              backgroundColor: `${COLORS.primary}20`,
+                              color: COLORS.primary,
+                              border: `1px solid ${COLORS.primary}30`,
                             }}
                           >
                             <Users size={11} />
-                            Capacité: {session.capacity || "N/A"}
+                            Capacity: {session.capacity || "N/A"}
                           </span>
                         </div>
                       </div>
                       <p
                         style={{
                           fontSize: "13px",
-                          color: "#e19d84",
+                          color: COLORS.text.secondary,
                           marginBottom: "12px",
                           lineHeight: "1.55",
-                          fontFamily: "Quicksand, sans-serif",
                         }}
                       >
-                        {session.description ||
-                          "Aucune description pour cette session."}
+                        {session.description || "No description for this session."}
                       </p>
                       <div
                         style={{
@@ -579,9 +611,8 @@ const EventShowDetail = () => {
                           alignItems: "center",
                           gap: "12px",
                           fontSize: "12px",
-                          color: "#d77c5b",
+                          color: COLORS.primary,
                           fontWeight: 500,
-                          fontFamily: "Quicksand, sans-serif",
                         }}
                       >
                         <div
@@ -613,20 +644,19 @@ const EventShowDetail = () => {
             </div>
           </div>
 
-          {/* COLONNE DROITE - Logistique */}
+          {/* RIGHT COLUMN - Logistics */}
           <div style={cardStyle}>
             <h3
               style={{
                 fontSize: "16px",
                 fontWeight: 700,
-                color: "#ede1db",
+                color: COLORS.text.primary,
                 marginBottom: "20px",
                 paddingBottom: "14px",
-                borderBottom: "1px solid #522414",
-                fontFamily: "Audiowide, cursive",
+                borderBottom: `1px solid ${COLORS.darkBorder}`,
               }}
             >
-              Logistique & Dates
+              Logistics & Dates
             </h3>
             <div
               style={{ display: "flex", flexDirection: "column", gap: "16px" }}
@@ -636,21 +666,21 @@ const EventShowDetail = () => {
                   icon: <MapPin size={16} />,
                   bg: "rgba(220, 38, 38, 0.1)",
                   color: "#dc2626",
-                  label: "Lieu",
-                  value: record.location || "Non spécifié",
+                  label: "Location",
+                  value: record.location || "Not specified",
                 },
                 {
                   icon: <Calendar size={16} />,
                   bg: "rgba(37, 99, 235, 0.1)",
                   color: "#2563eb",
-                  label: "Date de début",
+                  label: "Start Date",
                   value: formatDate(record.startDate),
                 },
                 {
                   icon: <Calendar size={16} />,
                   bg: "rgba(5, 150, 105, 0.1)",
                   color: "#059669",
-                  label: "Date de fin",
+                  label: "End Date",
                   value: formatDate(record.endDate),
                 },
                 ...(record.maxAttendees !== undefined
@@ -659,7 +689,7 @@ const EventShowDetail = () => {
                         icon: <Users size={16} />,
                         bg: "rgba(124, 58, 237, 0.1)",
                         color: "#7c3aed",
-                        label: "Capacité max",
+                        label: "Max Capacity",
                         value: `${record.maxAttendees} participants`,
                       },
                     ]
@@ -693,11 +723,10 @@ const EventShowDetail = () => {
                         display: "block",
                         fontSize: "11px",
                         fontWeight: 700,
-                        color: "#d77c5b",
+                        color: COLORS.primary,
                         textTransform: "uppercase",
                         letterSpacing: "0.06em",
                         marginBottom: "3px",
-                        fontFamily: "Quicksand, sans-serif",
                       }}
                     >
                       {item.label}
@@ -706,8 +735,7 @@ const EventShowDetail = () => {
                       style={{
                         fontSize: "14px",
                         fontWeight: 600,
-                        color: "#ede1db",
-                        fontFamily: "Quicksand, sans-serif",
+                        color: COLORS.text.primary,
                       }}
                     >
                       {item.value}
@@ -717,30 +745,29 @@ const EventShowDetail = () => {
               ))}
             </div>
 
-            {/* STATUT */}
+            {/* STATUS */}
             <div
               style={{
                 marginTop: "24px",
                 paddingTop: "20px",
-                borderTop: "1px solid #522414",
+                borderTop: `1px solid ${COLORS.darkBorder}`,
               }}
             >
               <div
                 style={{ display: "flex", alignItems: "center", gap: "8px" }}
               >
-                <CheckCircle size={16} style={{ color: "#4ade80" }} />
+                <CheckCircle size={16} style={{ color: COLORS.success }} />
                 <span
                   style={{
-                    color: "#e19d84",
+                    color: COLORS.text.secondary,
                     fontSize: "13px",
-                    fontFamily: "Quicksand, sans-serif",
                   }}
                 >
-                  Statut:{" "}
-                  <strong style={{ color: "#ede1db" }}>
+                  Status:{" "}
+                  <strong style={{ color: COLORS.text.primary }}>
                     {new Date(record.startDate) > new Date()
-                      ? "À venir"
-                      : "Terminé"}
+                      ? "Upcoming"
+                      : "Completed"}
                   </strong>
                 </span>
               </div>
