@@ -2,7 +2,9 @@ import { Admin, Resource } from "react-admin";
 import { dataProvider } from "./providers/dataProvider";
 import { authProvider } from "./providers/authProvider";
 import { Login } from "./components/Login";
-import { CustomLayout } from "./components/CustomLayout";
+import Dashboard from "./Dashboard";
+import { Layout } from "./layout/Layout";
+
 import {
   EventList,
   EventCreate,
@@ -13,10 +15,11 @@ import {
 function App() {
   return (
     <Admin
+      dashboard={Dashboard}
       dataProvider={dataProvider}
       authProvider={authProvider}
+      layout={Layout}
       loginPage={Login}
-      layout={CustomLayout}
       title="EventSync - Administration"
     >
       <Resource
