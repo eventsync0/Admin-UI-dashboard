@@ -12,6 +12,13 @@ import {
   EventShow,
 } from "./resources/events";
 
+import {
+  RoomList,
+  RoomCreate,
+  RoomEdit,
+  RoomShow,
+} from "./resources/rooms";
+
 function App() {
   return (
     <Admin
@@ -31,6 +38,17 @@ function App() {
         show={EventShow}
         recordRepresentation="title"
       />
+
+      <Resource
+        name="rooms"
+        label="Salles"
+        list={RoomList}
+        create={RoomCreate}
+        edit={RoomEdit}
+        show={RoomShow}
+        recordRepresentation="name"
+      />
+
     </Admin>
   );
 }
