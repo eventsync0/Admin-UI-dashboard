@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { useDataProvider, useNotify } from "react-admin";
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -18,15 +17,10 @@ import {
   CalendarToday,
   People,
   LocationOn,
-  TrendingUp,
-  TrendingDown,
   ArrowUpward,
   ArrowDownward,
-  MoreVert,
   Refresh,
   EventNote,
-  AttachMoney,
-  QuestionAnswer,
 } from "@mui/icons-material";
 import {
   LineChart,
@@ -80,6 +74,7 @@ const StatsCard = ({
       border: `1px solid ${COLORS.coffee[800]}`,
       backdropFilter: "blur(12px)",
       transition: "all 0.3s ease",
+      height: "100%",
       "&:hover": {
         borderColor: COLORS.coffee[500],
         transform: "translateY(-4px)",
@@ -95,7 +90,7 @@ const StatsCard = ({
           alignItems: "flex-start",
         }}
       >
-        <Box>
+        <Box sx={{ flex: 1 }}>
           <Typography
             variant="caption"
             sx={{
@@ -141,6 +136,7 @@ const StatsCard = ({
                     alignItems: "center",
                     gap: 0.5,
                     mt: 0.5,
+                    flexWrap: "wrap",
                   }}
                 >
                   {trend === "up" ? (
@@ -174,6 +170,7 @@ const StatsCard = ({
             color: color,
             width: 48,
             height: 48,
+            flexShrink: 0,
           }}
         >
           <Icon />
@@ -409,101 +406,169 @@ const Dashboard: React.FC = () => {
         </Box>
       </Box>
 
-      {/* STATS CARDS */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Total Events"
-            value={formatNumber(stats.totalEvents)}
-            icon={CalendarToday}
-            color={COLORS.coffee[400]}
-            change={stats.totalEvents > 0 ? "+5%" : undefined}
-            trend="up"
-            loading={loading}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Total Users"
-            value={formatNumber(stats.totalUsers)}
-            icon={People}
-            color={COLORS.coffee[500]}
-            change={stats.newUsers > 0 ? `+${stats.newUsers}` : undefined}
-            trend="up"
-            loading={loading}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Live Events"
-            value={stats.liveEvents}
-            icon={EventNote}
-            color={COLORS.success}
-            change={
-              stats.liveEvents > 0 ? `${stats.liveEvents} now` : undefined
-            }
-            trend="up"
-            loading={loading}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatsCard
-            title="Cities"
-            value={stats.totalCities}
-            icon={LocationOn}
-            color={COLORS.coffee[300]}
-            change={undefined}
-            trend="up"
-            loading={loading}
-          />
-        </Grid>
-      </Grid>
+      {/* STATS CARDS — CSS Grid natif, garanti 100% de largeur */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(4, 1fr)",
+          },
+          gap: 3,
+          mb: 4,
+          width: "100%",
+        }}
+      >
+        <StatsCard
+          title="Total Events"
+          value={formatNumber(stats.totalEvents)}
+          icon={CalendarToday}
+          color={COLORS.coffee[400]}
+          change={stats.totalEvents > 0 ? "+5%" : undefined}
+          trend="up"
+          loading={loading}
+        />
+        <StatsCard
+          title="Total Users"
+          value={formatNumber(stats.totalUsers)}
+          icon={People}
+          color={COLORS.coffee[500]}
+          change={stats.newUsers > 0 ? `+${stats.newUsers}` : undefined}
+          trend="up"
+          loading={loading}
+        />
+        <StatsCard
+          title="Live Events"
+          value={stats.liveEvents}
+          icon={EventNote}
+          color={COLORS.success}
+          change={stats.liveEvents > 0 ? `${stats.liveEvents} now` : undefined}
+          trend="up"
+          loading={loading}
+        />
+        <StatsCard
+          title="Cities"
+          value={stats.totalCities}
+          icon={LocationOn}
+          color={COLORS.coffee[300]}
+          change={undefined}
+          trend="up"
+          loading={loading}
+        />
+      </Box>
 
-      {/* GRAPHIQUES */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={8}>
-          <Paper
+      {/* GRAPHIQUES — CSS Grid natif (8/4 -> 1fr/1fr sur mobile) */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "2fr 1fr" },
+          gap: 3,
+          mb: 4,
+          width: "100%",
+        }}
+      >
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "1.25rem",
+            bgcolor: COLORS.coffee[900],
+            border: `1px solid ${COLORS.coffee[800]}`,
+            minWidth: 0,
+          }}
+        >
+          <Box
             sx={{
-              p: 3,
-              borderRadius: "1.25rem",
-              bgcolor: COLORS.coffee[900],
-              border: `1px solid ${COLORS.coffee[800]}`,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
             }}
           >
-            <Box
+            <Typography
+              variant="h6"
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 3,
+                fontFamily: "Audiowide, cursive",
+                color: COLORS.coffee[50],
               }}
             >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontFamily: "Audiowide, cursive",
+              Revenue Overview
+            </Typography>
+            <Chip
+              label="This year"
+              size="small"
+              sx={{
+                bgcolor: COLORS.coffee[800],
+                color: COLORS.coffee[200],
+              }}
+            />
+          </Box>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={revenueData}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={COLORS.coffee[800]}
+              />
+              <XAxis dataKey="month" stroke={COLORS.coffee[400]} />
+              <YAxis stroke={COLORS.coffee[400]} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: COLORS.coffee[900],
+                  border: `1px solid ${COLORS.coffee[800]}`,
+                  borderRadius: 8,
                   color: COLORS.coffee[50],
                 }}
-              >
-                Revenue Overview
-              </Typography>
-              <Chip
-                label="This year"
-                size="small"
-                sx={{
-                  bgcolor: COLORS.coffee[800],
-                  color: COLORS.coffee[200],
-                }}
               />
-            </Box>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={revenueData}>
-                <CartesianGrid
-                  strokeDasharray="3 3"
-                  stroke={COLORS.coffee[800]}
-                />
-                <XAxis dataKey="month" stroke={COLORS.coffee[400]} />
-                <YAxis stroke={COLORS.coffee[400]} />
+              <Line
+                type="monotone"
+                dataKey="revenue"
+                stroke={COLORS.coffee[400]}
+                strokeWidth={3}
+                dot={{ fill: COLORS.coffee[400] }}
+                activeDot={{ r: 8 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </Paper>
+
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "1.25rem",
+            bgcolor: COLORS.coffee[900],
+            border: `1px solid ${COLORS.coffee[800]}`,
+            minWidth: 0,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontFamily: "Audiowide, cursive",
+              color: COLORS.coffee[50],
+              mb: 2,
+            }}
+          >
+            Events by Category
+          </Typography>
+          {categoryData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={categoryData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {categoryData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={pieColors[index % pieColors.length]}
+                    />
+                  ))}
+                </Pie>
                 <Tooltip
                   contentStyle={{
                     backgroundColor: COLORS.coffee[900],
@@ -512,27 +577,49 @@ const Dashboard: React.FC = () => {
                     color: COLORS.coffee[50],
                   }}
                 />
-                <Line
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke={COLORS.coffee[400]}
-                  strokeWidth={3}
-                  dot={{ fill: COLORS.coffee[400] }}
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
+              </PieChart>
             </ResponsiveContainer>
-          </Paper>
-        </Grid>
+          ) : (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 250,
+              }}
+            >
+              <Typography sx={{ color: COLORS.coffee[400] }}>
+                No data available
+              </Typography>
+            </Box>
+          )}
+        </Paper>
+      </Box>
 
-        <Grid item xs={12} md={4}>
-          <Paper
+      {/* ACTIVITÉ RÉCENTE — CSS Grid natif (7/5 -> 1fr/1fr sur mobile) */}
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "7fr 5fr" },
+          gap: 3,
+          width: "100%",
+        }}
+      >
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "1.25rem",
+            bgcolor: COLORS.coffee[900],
+            border: `1px solid ${COLORS.coffee[800]}`,
+            minWidth: 0,
+          }}
+        >
+          <Box
             sx={{
-              p: 3,
-              borderRadius: "1.25rem",
-              bgcolor: COLORS.coffee[900],
-              border: `1px solid ${COLORS.coffee[800]}`,
-              height: "100%",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
             }}
           >
             <Typography
@@ -540,316 +627,238 @@ const Dashboard: React.FC = () => {
               sx={{
                 fontFamily: "Audiowide, cursive",
                 color: COLORS.coffee[50],
-                mb: 2,
               }}
             >
-              Events by Category
+              Recent Events
             </Typography>
-            {categoryData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={pieColors[index % pieColors.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: COLORS.coffee[900],
-                      border: `1px solid ${COLORS.coffee[800]}`,
-                      borderRadius: 8,
-                      color: COLORS.coffee[50],
+            <Chip
+              label="View All"
+              size="small"
+              sx={{
+                bgcolor: COLORS.coffee[800],
+                color: COLORS.coffee[200],
+                cursor: "pointer",
+                "&:hover": { bgcolor: COLORS.coffee[700] },
+              }}
+              onClick={() => (window.location.href = "/#/events")}
+            />
+          </Box>
+
+          {loading ? (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {[1, 2, 3, 4].map((_, index) => (
+                <Box
+                  key={index}
+                  sx={{ display: "flex", gap: 2, alignItems: "center" }}
+                >
+                  <LinearProgress
+                    sx={{
+                      bgcolor: COLORS.coffee[800],
+                      height: 6,
+                      borderRadius: 3,
+                      flex: 1,
                     }}
                   />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: 250,
-                }}
-              >
-                <Typography sx={{ color: COLORS.coffee[400] }}>
-                  No data available
-                </Typography>
-              </Box>
-            )}
-          </Paper>
-        </Grid>
-      </Grid>
+                </Box>
+              ))}
+            </Box>
+          ) : recentEvents.length > 0 ? (
+            recentEvents.map((event: any, index: number) => (
+              <React.Fragment key={event.id}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    py: 1.5,
+                    "&:hover": {
+                      bgcolor: `${COLORS.coffee[800]}40`,
+                      borderRadius: 2,
+                      px: 1,
+                      mx: -1,
+                    },
+                  }}
+                >
+                  <Avatar
+                    sx={{
+                      bgcolor: COLORS.coffee[800],
+                      color: COLORS.coffee[400],
+                      width: 40,
+                      height: 40,
+                      fontSize: "0.8rem",
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {event.title?.charAt(0) || "E"}
+                  </Avatar>
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ fontWeight: 500, color: COLORS.coffee[50] }}
+                    >
+                      {event.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: COLORS.coffee[400], fontSize: "0.75rem" }}
+                    >
+                      {event.location} •{" "}
+                      {new Date(event.startDate).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                  <Chip
+                    label={event.category || "OTHER"}
+                    size="small"
+                    sx={{
+                      bgcolor: `${COLORS.coffee[500]}20`,
+                      color: COLORS.coffee[400],
+                      fontSize: "0.6rem",
+                      height: 20,
+                      flexShrink: 0,
+                    }}
+                  />
+                </Box>
+                {index < recentEvents.length - 1 && (
+                  <Divider sx={{ borderColor: COLORS.coffee[800] }} />
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            <Typography
+              sx={{ color: COLORS.coffee[400], textAlign: "center", py: 4 }}
+            >
+              No recent events found
+            </Typography>
+          )}
+        </Paper>
 
-      {/* ACTIVITÉ RÉCENTE */}
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={7}>
-          <Paper
+        <Paper
+          sx={{
+            p: 3,
+            borderRadius: "1.25rem",
+            bgcolor: COLORS.coffee[900],
+            border: `1px solid ${COLORS.coffee[800]}`,
+            minWidth: 0,
+          }}
+        >
+          <Typography
+            variant="h6"
             sx={{
-              p: 3,
-              borderRadius: "1.25rem",
-              bgcolor: COLORS.coffee[900],
-              border: `1px solid ${COLORS.coffee[800]}`,
+              fontFamily: "Audiowide, cursive",
+              color: COLORS.coffee[50],
+              mb: 3,
+            }}
+          >
+            Quick Stats
+          </Typography>
+
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: 2,
             }}
           >
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 3,
+                p: 2,
+                borderRadius: "1rem",
+                bgcolor: `${COLORS.coffee[800]}40`,
+                border: `1px solid ${COLORS.coffee[800]}`,
               }}
             >
               <Typography
-                variant="h6"
+                variant="caption"
                 sx={{
-                  fontFamily: "Audiowide, cursive",
-                  color: COLORS.coffee[50],
+                  color: COLORS.coffee[400],
+                  textTransform: "uppercase",
                 }}
               >
-                Recent Events
+                Upcoming
               </Typography>
-              <Chip
-                label="View All"
-                size="small"
-                sx={{
-                  bgcolor: COLORS.coffee[800],
-                  color: COLORS.coffee[200],
-                  cursor: "pointer",
-                  "&:hover": { bgcolor: COLORS.coffee[700] },
-                }}
-                onClick={() => (window.location.href = "/#/events")}
-              />
+              <Typography
+                variant="h5"
+                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+              >
+                {loading ? "..." : stats.upcomingEvents}
+              </Typography>
             </Box>
-
-            {loading ? (
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                {[1, 2, 3, 4].map((_, index) => (
-                  <Box
-                    key={index}
-                    sx={{ display: "flex", gap: 2, alignItems: "center" }}
-                  >
-                    <LinearProgress
-                      sx={{
-                        bgcolor: COLORS.coffee[800],
-                        height: 6,
-                        borderRadius: 3,
-                        flex: 1,
-                      }}
-                    />
-                  </Box>
-                ))}
-              </Box>
-            ) : recentEvents.length > 0 ? (
-              recentEvents.map((event: any, index: number) => (
-                <React.Fragment key={event.id}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      py: 1.5,
-                      "&:hover": {
-                        bgcolor: `${COLORS.coffee[800]}40`,
-                        borderRadius: 2,
-                        px: 1,
-                        mx: -1,
-                      },
-                    }}
-                  >
-                    <Avatar
-                      sx={{
-                        bgcolor: COLORS.coffee[800],
-                        color: COLORS.coffee[400],
-                        width: 40,
-                        height: 40,
-                        fontSize: "0.8rem",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {event.title?.charAt(0) || "E"}
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ fontWeight: 500, color: COLORS.coffee[50] }}
-                      >
-                        {event.title}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{ color: COLORS.coffee[400], fontSize: "0.75rem" }}
-                      >
-                        {event.location} •{" "}
-                        {new Date(event.startDate).toLocaleDateString()}
-                      </Typography>
-                    </Box>
-                    <Chip
-                      label={event.category || "OTHER"}
-                      size="small"
-                      sx={{
-                        bgcolor: `${COLORS.coffee[500]}20`,
-                        color: COLORS.coffee[400],
-                        fontSize: "0.6rem",
-                        height: 20,
-                      }}
-                    />
-                  </Box>
-                  {index < recentEvents.length - 1 && (
-                    <Divider sx={{ borderColor: COLORS.coffee[800] }} />
-                  )}
-                </React.Fragment>
-              ))
-            ) : (
-              <Typography
-                sx={{ color: COLORS.coffee[400], textAlign: "center", py: 4 }}
-              >
-                No recent events found
-              </Typography>
-            )}
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={5}>
-          <Paper
-            sx={{
-              p: 3,
-              borderRadius: "1.25rem",
-              bgcolor: COLORS.coffee[900],
-              border: `1px solid ${COLORS.coffee[800]}`,
-            }}
-          >
-            <Typography
-              variant="h6"
+            <Box
               sx={{
-                fontFamily: "Audiowide, cursive",
-                color: COLORS.coffee[50],
-                mb: 3,
+                p: 2,
+                borderRadius: "1rem",
+                bgcolor: `${COLORS.coffee[800]}40`,
+                border: `1px solid ${COLORS.coffee[800]}`,
               }}
             >
-              Quick Stats
-            </Typography>
-
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: "1rem",
-                    bgcolor: `${COLORS.coffee[800]}40`,
-                    border: `1px solid ${COLORS.coffee[800]}`,
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: COLORS.coffee[400],
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Upcoming
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-                  >
-                    {loading ? "..." : stats.upcomingEvents}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: "1rem",
-                    bgcolor: `${COLORS.coffee[800]}40`,
-                    border: `1px solid ${COLORS.coffee[800]}`,
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: COLORS.coffee[400],
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Speakers
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-                  >
-                    {loading ? "..." : formatNumber(stats.totalSpeakers)}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: "1rem",
-                    bgcolor: `${COLORS.coffee[800]}40`,
-                    border: `1px solid ${COLORS.coffee[800]}`,
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: COLORS.coffee[400],
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Questions
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-                  >
-                    {loading ? "..." : formatNumber(stats.totalQuestions)}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: "1rem",
-                    bgcolor: `${COLORS.coffee[800]}40`,
-                    border: `1px solid ${COLORS.coffee[800]}`,
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      color: COLORS.coffee[400],
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    Revenue
-                  </Typography>
-                  <Typography
-                    variant="h5"
-                    sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
-                  >
-                    {loading ? "..." : `$${formatNumber(stats.revenue)}`}
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Paper>
-        </Grid>
-      </Grid>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: COLORS.coffee[400],
+                  textTransform: "uppercase",
+                }}
+              >
+                Speakers
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+              >
+                {loading ? "..." : formatNumber(stats.totalSpeakers)}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: "1rem",
+                bgcolor: `${COLORS.coffee[800]}40`,
+                border: `1px solid ${COLORS.coffee[800]}`,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  color: COLORS.coffee[400],
+                  textTransform: "uppercase",
+                }}
+              >
+                Questions
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+              >
+                {loading ? "..." : formatNumber(stats.totalQuestions)}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                p: 2,
+                borderRadius: "1rem",
+                bgcolor: `${COLORS.coffee[800]}40`,
+                border: `1px solid ${COLORS.coffee[800]}`,
+              }}
+            >
+              <Typography
+                variant="caption"
+                sx={{
+                  color: COLORS.coffee[400],
+                  textTransform: "uppercase",
+                }}
+              >
+                Revenue
+              </Typography>
+              <Typography
+                variant="h5"
+                sx={{ color: COLORS.coffee[50], fontWeight: 700 }}
+              >
+                {loading ? "..." : `$${formatNumber(stats.revenue)}`}
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Box>
     </Box>
   );
 };
