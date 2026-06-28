@@ -9,15 +9,19 @@ export const Layout = ({ children }: { children: ReactNode }) => (
     appBar={CustomAppBar}
     menu={CustomMenu}
     sx={{
-      // fond global de l'app
       "& .RaLayout-appFrame": {
         background: "var(--background)",
       },
-
-      // zone content (pages)
       "& .RaLayout-content": {
         background: "var(--background)",
         padding: "20px",
+        maxWidth: "100%",
+        width: "100%",
+        boxSizing: "border-box",
+      },
+      // certaines versions de react-admin ajoutent un container interne
+      "& .RaLayout-contentWithSidebar": {
+        width: "100%",
       },
     }}
   >

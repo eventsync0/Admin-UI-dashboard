@@ -1,9 +1,32 @@
 @import "tailwindcss";
 
 /* ==========================================================================
+   1. RESET & BASE
+   ========================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background-color: #0B0B14;
+  color: #f5ded6;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ==========================================================================
    2. PALETTE DE BASE — Coffee Bean
    ========================================================================== */
 :root {
+  /* === COFFEE BEAN COLORS === */
   --coffee-50:  #ede1db;
   --coffee-100: #f5ded6;
   --coffee-200: #ebbdad;
@@ -16,71 +39,54 @@
   --coffee-900: #29120a;
   --coffee-950: #1d0d07;
 
-
   color-scheme: dark;
 
-  /* ==========================================================================
-     3. FONDS & SURFACES
-     ========================================================================== */
+  /* === FONDS & SURFACES === */
   --background: #0B0B14;
   --bg-card:    var(--coffee-900);
   --bg-subtle:  var(--coffee-800);
   --border:     var(--coffee-800);
 
-  /* ==========================================================================
-     4. TYPOGRAPHIE
-     ========================================================================== */
+  /* === TYPOGRAPHIE === */
   --txt-title:     var(--coffee-50);
   --txt-body:      var(--coffee-100);
   --txt-secondary: var(--coffee-300);
   --txt-disabled:  var(--coffee-700);
   --txt-on-dark:   var(--coffee-950);
 
-  /* ==========================================================================
-     5. BOUTON PRIMARY
-     ========================================================================== */
+  /* === BOUTON PRIMARY === */
   --btn-primary:          var(--coffee-400);
   --btn-primary-hover:    var(--coffee-500);
   --btn-primary-active:   var(--coffee-600);
   --btn-primary-disabled: var(--coffee-800);
   --btn-primary-txt:      var(--coffee-950);
 
-  /* ==========================================================================
-     6. BOUTON SECONDARY
-     ========================================================================== */
+  /* === BOUTON SECONDARY === */
   --btn-secondary:          rgba(41, 18, 10, 0.5);
   --btn-secondary-hover:    rgba(82, 36, 20, 0.7);
   --btn-secondary-active:   rgba(82, 36, 20, 0.9);
   --btn-secondary-disabled: rgba(41, 18, 10, 0.2);
   --btn-secondary-txt:      var(--coffee-200);
 
-  /* ==========================================================================
-     7. BOUTON TERTIARY / GHOST
-     ========================================================================== */
+  /* === BOUTON GHOST === */
   --btn-ghost:          transparent;
   --btn-ghost-hover:    rgba(215, 124, 91, 0.1);
   --btn-ghost-active:   rgba(215, 124, 91, 0.2);
   --btn-ghost-disabled: transparent;
   --btn-ghost-txt:      var(--coffee-300);
 
-  /* ==========================================================================
-     8. BOUTON DANGER
-     ========================================================================== */
+  /* === BOUTON DANGER === */
   --btn-danger:          #ef4444;
   --btn-danger-hover:    #dc2626;
   --btn-danger-active:   #b91c1c;
   --btn-danger-disabled: #7f1d1d;
   --btn-danger-txt:      #ffffff;
 
-  /* ==========================================================================
-     9. BADGES & LABELS
-     ========================================================================== */
+  /* === BADGES & LABELS === */
   --badge-bg:  rgba(41, 18, 10, 0.6);
   --badge-txt: var(--coffee-200);
 
-  /* ==========================================================================
-     10. FEEDBACK — États sémantiques
-     ========================================================================== */
+  /* === FEEDBACK === */
   --success:     #4ade80;
   --success-bg:  rgba(22, 163, 74, 0.15);
   --warning:     #fbbf24;
@@ -90,14 +96,16 @@
   --info:        #60a5fa;
   --info-bg:     rgba(37, 99, 235, 0.15);
 
-  /* ==========================================================================
-     11. FOCUS (accessibilité)
-     ========================================================================== */
+  /* === FOCUS === */
   --focus-ring: var(--coffee-400);
+
+  /* === POLICES === */
+  --font-audiowide: 'Audiowide', cursive;
+  --font-quicksand: 'Quicksand', sans-serif;
 }
 
 /* ==========================================================================
-   12. MAPPING TAILWIND V4
+   3. MAPPING TAILWIND V4
    ========================================================================== */
 @theme inline {
   /* Fonds & surfaces */
@@ -155,7 +163,7 @@
   /* Focus */
   --color-focus-ring: var(--focus-ring);
 
-  /* Palette brute (pour cas spéciaux) */
+  /* Palette Coffee Bean */
   --color-coffee-50:  var(--coffee-50);
   --color-coffee-100: var(--coffee-100);
   --color-coffee-200: var(--coffee-200);
@@ -169,23 +177,10 @@
   --color-coffee-950: var(--coffee-950);
 
   /* Polices */
-  --font-sans:
-    var(--font-plus-jakarta),
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
-
-  --font-mono:
-    var(--font-fira-code),
-    monospace;
-
-  --font-audiowide:
-    var(--font-audiowide),
-    sans-serif;
-
-  --font-quicksand:
-    var(--font-quicksand),
-    sans-serif;
+  --font-sans: var(--font-quicksand), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --font-audiowide: var(--font-audiowide);
+  --font-quicksand: var(--font-quicksand);
 
   /* Rayons */
   --radius-lg:  0.75rem;
@@ -195,36 +190,74 @@
 }
 
 /* ==========================================================================
-   13. STYLES GLOBAUX
+   4. CLASSES UTILITAIRES TAILWIND PERSONNALISÉES
    ========================================================================== */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@layer utilities {
+  .font-audiowide {
+    font-family: var(--font-audiowide);
+  }
+  
+  .font-quicksand {
+    font-family: var(--font-quicksand);
+  }
+  
+  .bg-gradient-radial {
+    background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+  }
+  
+  .blur-2xl {
+    filter: blur(48px);
+  }
+  
+  .blur-3xl {
+    filter: blur(64px);
+  }
+  
+  .animate-spin-slow {
+    animation: spin-slow 25s linear infinite;
+  }
+  
+  .animate-spin-slower {
+    animation: spin-slower 30s linear infinite;
+  }
+  
+  .animate-spin-slowest {
+    animation: spin-slowest 35s linear infinite;
+  }
 }
 
-body {
-  font-family: var(--font-quicksand);
-  background-color: var(--background);
-  color: var(--txt-body);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* ==========================================================================
+   5. SCROLLBAR PERSONNALISÉE
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-/* Focus visible accessible */
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--txt-disabled);
+}
+
+/* ==========================================================================
+   6. ACCESSIBILITÉ
+   ========================================================================== */
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-/* Scrollbar discrète */
-::-webkit-scrollbar       { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--txt-disabled); }
-
-
+/* ==========================================================================
+   7. ANIMATIONS
+   ========================================================================== */
 @keyframes spin-slow {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -240,28 +273,6 @@ body {
   to { transform: rotate(360deg); }
 }
 
-.animate-spin-slow { animation: spin-slow 25s linear infinite; }
-.animate-spin-slower { animation: spin-slower 30s linear infinite; }
-.animate-spin-slowest { animation: spin-slowest 35s linear infinite; }
-.bg-gradient-radial { background-image: radial-gradient(circle, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%); }
-.blur-2xl { filter: blur(48px); }
-.blur-3xl { filter: blur(64px); }
-
-
-html {
-  scroll-behavior: smooth;
-}
-
-/* Animation d'entrée des icônes */
-nav a {
-  animation: fadeInRight 0.6s ease-out both;
-}
-
-nav a:nth-child(1) { animation-delay: 0.1s; }
-nav a:nth-child(2) { animation-delay: 0.2s; }
-nav a:nth-child(3) { animation-delay: 0.3s; }
-nav a:nth-child(4) { animation-delay: 0.4s; }
-
 @keyframes fadeInRight {
   from {
     opacity: 0;
@@ -272,3 +283,17 @@ nav a:nth-child(4) { animation-delay: 0.4s; }
     transform: translateX(0) scale(1);
   }
 }
+
+/* ==========================================================================
+   8. ANIMATIONS D'ENTRÉE POUR LA NAVIGATION
+   ========================================================================== */
+nav a {
+  animation: fadeInRight 0.6s ease-out both;
+}
+
+nav a:nth-child(1) { animation-delay: 0.1s; }
+nav a:nth-child(2) { animation-delay: 0.2s; }
+nav a:nth-child(3) { animation-delay: 0.3s; }
+nav a:nth-child(4) { animation-delay: 0.4s; }
+nav a:nth-child(5) { animation-delay: 0.5s; }
+nav a:nth-child(6) { animation-delay: 0.6s; }

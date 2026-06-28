@@ -22,20 +22,13 @@ export const CustomAppBar = (props: any) => (
     }}
   >
     <div className="flex items-center gap-3 w-full">
-
       {/* titre */}
-      <div className="text-[16px] font-semibold tracking-[0.05em] bg-gradient-to-r from-[var(--coffee-50)] to-[var(--coffee-400)] text-transparent bg-clip-text">
-        EventSync Admin
+      <div className="font-audiowide text-xs sm:text-sm md:text-base lg:text-lg tracking-tight">
+        <span className="text-foreground">Event</span>
+        <span className="bg-gradient-to-r from-coffee-500 to-coffee-600 bg-clip-text text-transparent">
+          Sync
+        </span>
       </div>
-
-      {/* séparateur */}
-      <div className="h-4 w-px bg-[var(--border)] mx-2" />
-
-      {/* version */}
-      <div className="text-[11px] text-[var(--txt-secondary)] tracking-[0.08em] font-mono">
-        V2.0
-      </div>
-
     </div>
   </AppBar>
 );
