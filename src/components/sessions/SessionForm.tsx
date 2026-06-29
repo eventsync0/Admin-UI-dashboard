@@ -23,12 +23,12 @@ export const SessionForm = () => {
         alignItems: "start",
       }}
     >
-      {/* Informations générales */}
+      {/* General Information */}
       <div style={cardStyle}>
         <SectionHeader
           icon={FileText}
-          label="Informations générales"
-          description="Titre, description et événement associé"
+          label="General Information"
+          description="Title, description and associated event"
         />
 
         <div
@@ -40,11 +40,11 @@ export const SessionForm = () => {
         >
           <TextInput
             source="title"
-            label="Titre"
+            label="Title"
             validate={required()}
             fullWidth
             variant="outlined"
-            placeholder="Ex : Workshop React"
+            placeholder="Ex: React Workshop"
           />
 
           <TextInput
@@ -54,27 +54,27 @@ export const SessionForm = () => {
             rows={4}
             fullWidth
             variant="outlined"
-            placeholder="Décrivez la session..."
+            placeholder="Describe the session..."
           />
 
           <ReferenceInput
             source="eventId"
             reference="events"
-            label="Événement"
+            label="Event"
             fullWidth
           >
             <AutocompleteInput
               optionText="title"
               validate={required()}
               variant="outlined"
-              label="Choisir un événement"
+              label="Choose an event"
             />
           </ReferenceInput>
 
           <ReferenceArrayInput
             source="speakerIds"
             reference="speakers"
-            label="Intervenants"
+            label="Speakers"
             fullWidth
           >
             <SelectArrayInput
@@ -85,12 +85,12 @@ export const SessionForm = () => {
         </div>
       </div>
 
-      {/* Salle / horaires */}
+      {/* Room / Schedule */}
       <div style={cardStyle}>
         <SectionHeader
           icon={Clock}
-          label="Lieu et horaires"
-          description="Salle, capacité et horaires"
+          label="Venue & Schedule"
+          description="Room, capacity and time slots"
         />
 
         <div
@@ -103,29 +103,29 @@ export const SessionForm = () => {
           <ReferenceInput
             source="roomId"
             reference="rooms"
-            label="Salle"
+            label="Room"
             fullWidth
           >
             <AutocompleteInput
               optionText="name"
               validate={required()}
               variant="outlined"
-              label="Choisir une salle"
+              label="Choose a room"
             />
           </ReferenceInput>
 
           <NumberInput
             source="capacity"
-            label="Capacité"
+            label="Capacity"
             validate={required()}
             fullWidth
             variant="outlined"
-            placeholder="Nombre de places"
+            placeholder="Number of seats"
           />
 
           <DateTimeInput
             source="startTime"
-            label="Début"
+            label="Start"
             validate={required()}
             fullWidth
             variant="outlined"
@@ -133,7 +133,7 @@ export const SessionForm = () => {
 
           <DateTimeInput
             source="endTime"
-            label="Fin"
+            label="End"
             validate={required()}
             fullWidth
             variant="outlined"
@@ -157,7 +157,7 @@ export const SessionForm = () => {
               color: COLORS.text.muted,
             }}
           >
-            La session doit démarrer entre 7h et 19h59 et finir avant 20h00.
+            The session must start between 7:00 and 19:59 and end before 20:00.
           </span>
         </div>
       </div>

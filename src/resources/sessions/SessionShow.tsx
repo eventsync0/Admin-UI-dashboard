@@ -29,7 +29,7 @@ const COLORS = {
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
+  return d.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -40,7 +40,7 @@ const formatDate = (dateStr: string) => {
 const formatTime = (dateStr: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 };
 
 const cardStyle = {
@@ -68,9 +68,9 @@ const SessionShowDetail = () => {
       <div style={{ padding: 24, backgroundColor: COLORS.background, minHeight: "100vh" }}>
         <div style={{ ...cardStyle, textAlign: "center", padding: 48 }}>
           <Sparkles size={48} style={{ color: COLORS.primary, marginBottom: 16 }} />
-          <h3 style={{ color: COLORS.text.primary }}>Session introuvable</h3>
+          <h3 style={{ color: COLORS.text.primary }}>Session not found</h3>
           <Link to="/sessions" style={{ color: COLORS.primary, textDecoration: "none" }}>
-            Retour aux sessions
+            Back to Sessions
           </Link>
         </div>
       </div>
@@ -83,14 +83,14 @@ const SessionShowDetail = () => {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
           <Link to="/sessions" style={{ display: "flex", alignItems: "center", gap: 8, color: COLORS.text.secondary, textDecoration: "none" }}>
-            <ArrowLeft size={16} /> Retour
+            <ArrowLeft size={16} /> Back
           </Link>
           <Link to={`/sessions/${record.id}`} style={{
             display: "flex", alignItems: "center", gap: 8,
             padding: "8px 16px", borderRadius: 10,
             background: COLORS.primary, color: "#fff", textDecoration: "none",
           }}>
-            <Edit size={15} /> Modifier
+            <Edit size={15} /> Edit
           </Link>
         </div>
 
@@ -113,7 +113,7 @@ const SessionShowDetail = () => {
           <div style={cardStyle}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
               <Clock size={18} color={COLORS.primary} />
-              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Horaire</span>
+              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Time</span>
             </div>
             <span style={{ color: COLORS.text.primary }}>{formatTime(record.startTime)} — {formatTime(record.endTime)}</span>
           </div>
@@ -121,17 +121,17 @@ const SessionShowDetail = () => {
           <div style={cardStyle}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
               <MapPin size={18} color={COLORS.primary} />
-              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Salle</span>
+              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Room</span>
             </div>
-            <span style={{ color: COLORS.text.primary }}>{record.room?.name || "Non définie"}</span>
+            <span style={{ color: COLORS.text.primary }}>{record.room?.name || "Not defined"}</span>
           </div>
 
           <div style={cardStyle}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
               <Users size={18} color={COLORS.primary} />
-              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Capacité</span>
+              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Capacity</span>
             </div>
-            <span style={{ color: COLORS.text.primary }}>{record.capacity || 0} places</span>
+            <span style={{ color: COLORS.text.primary }}>{record.capacity || 0} seats</span>
           </div>
         </div>
 
@@ -139,7 +139,7 @@ const SessionShowDetail = () => {
           <div style={{ ...cardStyle, marginTop: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
               <User size={18} color={COLORS.primary} />
-              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Intervenants</span>
+              <span style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase" }}>Speakers</span>
             </div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
               {record.speakers.map((s: any) => (
