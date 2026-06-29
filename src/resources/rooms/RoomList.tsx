@@ -135,7 +135,7 @@ const RoomListGrid = () => {
               textDecoration: "none",
             }}
           >
-            <Plus size={16} /> Créer une salle
+            <Plus size={16} /> Create a room
           </Link>
         </div>
 
