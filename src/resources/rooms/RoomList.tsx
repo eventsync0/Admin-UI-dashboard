@@ -41,6 +41,8 @@ const RoomListGrid = () => {
   // ======================
   const totalPages = Math.ceil((total || 0) / perPage);
   const currentPage = page || 1;
+  const hasNext = currentPage < totalPages;
+  const hasPrev = currentPage > 1;
 
   // ======================
   // DELETE
@@ -143,7 +145,6 @@ const RoomListGrid = () => {
             outline: "none",
           }}
         />
-
         <button
           onClick={handleSearch}
           style={{
@@ -258,7 +259,6 @@ const RoomListGrid = () => {
               >
                 <Link
                   to={`/rooms/${room.id}/show`}
-                  title="View"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -278,7 +278,6 @@ const RoomListGrid = () => {
 
                 <Link
                   to={`/rooms/${room.id}`}
-                  title="Edit"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -298,7 +297,6 @@ const RoomListGrid = () => {
 
                 <button
                   onClick={() => handleDelete(room.id, room.name)}
-                  title="Delete"
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -310,6 +308,7 @@ const RoomListGrid = () => {
                     color: "#ef4444",
                     cursor: "pointer",
                     fontSize: 13,
+                    border: "none",
                   }}
                 >
                   <Trash2 size={14} />
@@ -321,7 +320,7 @@ const RoomListGrid = () => {
         </div>
       )}
 
-      {/* PAGINATION */}
+      {/* PAGINATION — Back / Page info / Next */}
       {totalPages > 1 && (
         <div
           style={{
@@ -329,82 +328,59 @@ const RoomListGrid = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: 6,
+            gap: 16,
           }}
         >
-          {/* Prev button */}
-          <button
-            onClick={() => setPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              border: "1px solid #333",
-              background: "transparent",
-              color: currentPage === 1 ? COLORS.text.muted : "#fff",
-              cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            }}
-          >
-            ← Prev
-          </button>
-
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          {/* Back */}
+          {hasPrev && (
             <button
-              key={p}
-              onClick={() => setPage(p)}
+              onClick={() => setPage(currentPage - 1)}
               style={{
-                padding: "6px 12px",
-                borderRadius: 8,
-                border: `1px solid ${p === currentPage ? COLORS.primary : "#333"}`,
-                background: p === currentPage ? COLORS.primary : "transparent",
+                padding: "8px 20px",
+                borderRadius: 10,
+                border: "1px solid #333",
+                background: "transparent",
                 color: "#fff",
-                fontWeight: p === currentPage ? 700 : 400,
                 cursor: "pointer",
-                minWidth: 36,
+                fontWeight: 600,
+                fontSize: 14,
               }}
             >
-              {p}
+              ← Back
             </button>
-          ))}
+          )}
 
-          {/* Next button */}
-          <button
-            onClick={() => setPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 8,
-              border: "1px solid #333",
-              background: "transparent",
-              color: currentPage === totalPages ? COLORS.text.muted : "#fff",
-              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-            }}
-          >
-            Next →
-          </button>
+          {/* Page indicator */}
+          <span style={{ color: COLORS.text.muted, fontSize: 13 }}>
+            Page {currentPage} of {totalPages}
+          </span>
+
+          {/* Next */}
+          {hasNext && (
+            <button
+              onClick={() => setPage(currentPage + 1)}
+              style={{
+                padding: "8px 20px",
+                borderRadius: 10,
+                border: "none",
+                background: COLORS.primary,
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+            >
+              Next →
+            </button>
+          )}
         </div>
-      )}
-
-      {/* Page info */}
-      {totalPages > 1 && (
-        <p
-          style={{
-            textAlign: "center",
-            color: COLORS.text.muted,
-            fontSize: 13,
-            marginTop: 12,
-          }}
-        >
-          Page {currentPage} of {totalPages} — {total} rooms
-        </p>
       )}
     </div>
   );
 };
 
 export const RoomList = () => (
-  <List actions={false} pagination={false} perPage={12}>
+  <List actions={false}  perPage={12}>
     <RoomListGrid />
   </List>
 );
