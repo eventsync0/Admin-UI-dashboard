@@ -23,7 +23,7 @@ export const CustomAppBar = (props: any) => (
   >
     <div className="flex items-center gap-3 w-full">
       {/* titre */}
-      <div className="font-audiowide text-xs sm:text-sm md:text-base lg:text-lg tracking-tight">
+      <div className="font-audiowide text-xs sm:text-sm md:text-base lg:text-xl tracking-tight">
         <span className="text-foreground">Event</span>
         <span className="bg-gradient-to-r from-coffee-500 to-coffee-600 bg-clip-text text-transparent">
           Sync
