@@ -4,6 +4,7 @@ import { authProvider } from "./providers/authProvider";
 import { Login } from "./components/Login";
 import Dashboard from "./Dashboard";
 import { Layout } from "./layout/Layout";
+import { SessionList } from "./resources/sessions/SessionList";
 
 import {
   EventList,
@@ -45,6 +46,12 @@ function App() {
         show={EventShow}
         recordRepresentation="title"
       />
+      
+      <Resource 
+                name="sessions"
+                options={{ label: 'Sessions' }}
+                list={SessionList}
+            />
 
       <Resource
         name="rooms"
