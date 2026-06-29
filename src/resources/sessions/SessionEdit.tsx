@@ -49,7 +49,7 @@ export const SessionEdit = () => {
                     color: COLORS.text.primary,
                   }}
                 >
-                  Modifier la session
+                  Edit Session
                 </h1>
               </div>
 
@@ -59,7 +59,7 @@ export const SessionEdit = () => {
                   color: COLORS.text.secondary,
                 }}
               >
-                Mettez à jour les informations de la session
+                Update the session information
               </p>
             </div>
 
@@ -77,7 +77,7 @@ export const SessionEdit = () => {
               }}
             >
               <ArrowLeft size={16} />
-              Retour aux sessions
+              Back to Sessions
             </Link>
           </div>
 

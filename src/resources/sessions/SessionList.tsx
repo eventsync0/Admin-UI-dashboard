@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { List, useListContext, useDelete, useNotify, useRefresh } from "react-admin";
 import { Link } from "react-router-dom";
-import { Plus, Search, Eye, Edit2, Trash2, Calendar, Users, MapPin, Clock, Sparkles } from "lucide-react";
+import { Plus, Search, Eye, Edit2, Trash2, Calendar, Users, MapPin, Sparkles } from "lucide-react";
 
 const COLORS = {
   primary: "#ea580c",
@@ -15,7 +15,7 @@ const COLORS = {
   kpiColors: ["#ea580c"],
 };
 
-const formatDate = (d: string) => new Date(d).toLocaleDateString("fr-FR", { 
+const formatDate = (d: string) => new Date(d).toLocaleDateString("en-US", { 
   day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" 
 });
 
@@ -36,18 +36,16 @@ const SessionGrid = () => {
   }, [search]);
 
   const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Supprimer la session "${title}" ?`)) {
+    if (window.confirm(`Delete session "${title}"?`)) {
       deleteOne("sessions", { id }, {
-        onSuccess: () => { notify("Session supprimée", { type: "success" }); refresh(); },
-        onError: () => notify("Erreur", { type: "error" }),
+        onSuccess: () => { notify("Session deleted", { type: "success" }); refresh(); },
+        onError: () => notify("Error", { type: "error" }),
       });
     }
   };
 
   const items = data || [];
 
-  // Filtre côté client en filet de sécurité : si le dataProvider ignore le
-  // filtre "q" envoyé au serveur, on filtre quand même ce qui est affiché.
   const normalizedSearch = search.trim().toLowerCase();
   const filteredItems = normalizedSearch
     ? items.filter((s: any) =>
@@ -69,8 +67,8 @@ const SessionGrid = () => {
 
   const kpis = [
     { label: "Total", value: totalSessions, icon: <Sparkles size={18} />, color: COLORS.kpiColors[0] },
-    { label: "Salles", value: roomsCount, icon: <MapPin size={18} />, color: COLORS.kpiColors[0] },
-    { label: "Intervenants", value: speakersCount, icon: <Users size={18} />, color: COLORS.kpiColors[0] },
+    { label: "Rooms", value: roomsCount, icon: <MapPin size={18} />, color: COLORS.kpiColors[0] },
+    { label: "Speakers", value: speakersCount, icon: <Users size={18} />, color: COLORS.kpiColors[0] },
   ];
 
   return (
@@ -79,14 +77,14 @@ const SessionGrid = () => {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: COLORS.text.primary }}>Sessions</h1>
-          <p style={{ fontSize: 14, color: COLORS.text.secondary }}>Gérez toutes les sessions</p>
+          <p style={{ fontSize: 14, color: COLORS.text.secondary }}>Manage all sessions</p>
         </div>
         <Link to="/sessions/create" style={{
           display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
           borderRadius: 10, background: COLORS.primary, color: "#fff",
           fontWeight: 600, textDecoration: "none"
         }}>
-          <Plus size={18} /> Nouvelle session
+          <Plus size={18} /> New Session
         </Link>
       </div>
 
@@ -123,7 +121,7 @@ const SessionGrid = () => {
         <div style={{ position: "relative" }}>
           <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: searchFocused ? COLORS.primary : COLORS.text.muted, transition: "color 0.2s" }} />
           <input
-            type="text" placeholder="Rechercher une session..."
+            type="text" placeholder="Search for a session..."
             value={search} onChange={(e) => setSearch(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
@@ -146,7 +144,7 @@ const SessionGrid = () => {
           ))}
         </div>
       ) : currentData.length === 0 ? (
-        <div style={{ textAlign: "center", padding: 60, color: COLORS.text.muted }}>Aucune session</div>
+        <div style={{ textAlign: "center", padding: 60, color: COLORS.text.muted }}>No sessions</div>
       ) : (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
@@ -172,11 +170,11 @@ const SessionGrid = () => {
                       padding: "2px 10px", 
                       borderRadius: 12,
                     }}>
-                      {session.room?.name || "Salle"}
+                      {session.room?.name || "Room"}
                     </span>
                   </div>
                   <p style={{ fontSize: 13, color: COLORS.text.secondary, margin: "4px 0 12px" }}>
-                    {session.description?.slice(0, 80) || "Aucune description"}
+                    {session.description?.slice(0, 80) || "No description"}
                   </p>
                   <div style={{ display: "flex", gap: 16, fontSize: 12, color: COLORS.text.muted, marginBottom: 12 }}>
                     <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Calendar size={14} color={color} /> {formatDate(session.startTime)}</span>
@@ -194,7 +192,7 @@ const SessionGrid = () => {
 
           {totalPages > 1 && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, padding: "12px 0" }}>
-              <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, effectiveTotal)} sur {effectiveTotal}</span>
+              <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, effectiveTotal)} of {effectiveTotal}</span>
               <div style={{ display: "flex", gap: 4 }}>
                 <button onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1} style={{ padding: "6px 14px", borderRadius: 6, background: "transparent", color: currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>←</button>
                 <span style={{ padding: "6px 14px", color: COLORS.text.primary }}>{currentPage} / {totalPages}</span>

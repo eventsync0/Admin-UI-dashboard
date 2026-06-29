@@ -51,7 +51,7 @@ export const SessionCreate = () => {
                     color: COLORS.text.primary,
                   }}
                 >
-                  Nouvelle session
+                  New Session
                 </h1>
               </div>
 
@@ -61,7 +61,7 @@ export const SessionCreate = () => {
                   color: COLORS.text.secondary,
                 }}
               >
-                Remplissez les informations de la session
+                Fill in the session information
               </p>
             </div>
 
@@ -79,7 +79,7 @@ export const SessionCreate = () => {
               }}
             >
               <ArrowLeft size={16} />
-              Retour aux sessions
+              Back to Sessions
             </Link>
           </div>
 
