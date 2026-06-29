@@ -22,12 +22,16 @@ const formatDate = (d: string) => new Date(d).toLocaleDateString("fr-FR", {
 const SessionGrid = () => {
   const { data, total, isLoading, filterValues, setFilters, page, setPage } = useListContext();
   const [search, setSearch] = useState(filterValues.q || "");
+  const [searchFocused, setSearchFocused] = useState(false);
   const [deleteOne] = useDelete();
   const notify = useNotify();
   const refresh = useRefresh();
 
   useEffect(() => {
-    const timer = setTimeout(() => setFilters({ q: search || undefined }, null), 400);
+    setPage(1);
+    const timer = setTimeout(() => {
+      setFilters({ q: search || undefined }, {});
+    }, 400);
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -41,14 +45,27 @@ const SessionGrid = () => {
   };
 
   const items = data || [];
+
+  // Filtre côté client en filet de sécurité : si le dataProvider ignore le
+  // filtre "q" envoyé au serveur, on filtre quand même ce qui est affiché.
+  const normalizedSearch = search.trim().toLowerCase();
+  const filteredItems = normalizedSearch
+    ? items.filter((s: any) =>
+        s.title?.toLowerCase().includes(normalizedSearch) ||
+        s.description?.toLowerCase().includes(normalizedSearch) ||
+        s.room?.name?.toLowerCase().includes(normalizedSearch)
+      )
+    : items;
+
   const totalSessions = total || 0;
   const roomsCount = new Set(items.map((s: any) => s.roomId)).size;
   const speakersCount = items.reduce((acc: number, s: any) => acc + (s.speakers?.length || 0), 0);
 
-  const totalPages = Math.ceil((total || 0) / 12);
+  const effectiveTotal = normalizedSearch ? filteredItems.length : (total || 0);
+  const totalPages = Math.ceil(effectiveTotal / 12);
   const currentPage = page || 1;
   const start = (currentPage - 1) * 12;
-  const currentData = items.slice(start, start + 12);
+  const currentData = filteredItems.slice(start, start + 12);
 
   const kpis = [
     { label: "Total", value: totalSessions, icon: <Sparkles size={18} />, color: COLORS.kpiColors[0] },
@@ -104,13 +121,18 @@ const SessionGrid = () => {
 
       <div style={{ marginBottom: 24 }}>
         <div style={{ position: "relative" }}>
-          <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: COLORS.text.muted }} />
+          <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: searchFocused ? COLORS.primary : COLORS.text.muted, transition: "color 0.2s" }} />
           <input
             type="text" placeholder="Rechercher une session..."
             value={search} onChange={(e) => setSearch(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             style={{
               width: "100%", padding: "10px 16px 10px 40px", borderRadius: 10,
               background: COLORS.card,
+              border: `1px solid ${searchFocused ? COLORS.primary : "transparent"}`,
+              boxShadow: searchFocused ? `0 0 0 3px ${COLORS.primaryGlow}` : "none",
+              transition: "border-color 0.2s, box-shadow 0.2s",
               color: COLORS.text.primary, fontSize: 14, outline: "none"
             }}
           />
@@ -172,7 +194,7 @@ const SessionGrid = () => {
 
           {totalPages > 1 && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, padding: "12px 0" }}>
-              <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, total || 0)} sur {total}</span>
+              <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, effectiveTotal)} sur {effectiveTotal}</span>
               <div style={{ display: "flex", gap: 4 }}>
                 <button onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1} style={{ padding: "6px 14px", borderRadius: 6, background: "transparent", color: currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>←</button>
                 <span style={{ padding: "6px 14px", color: COLORS.text.primary }}>{currentPage} / {totalPages}</span>
