@@ -1,3 +1,4 @@
+// src/sessions/SessionList.tsx
 import { useState, useEffect } from "react";
 import { List, useListContext, useDelete, useNotify, useRefresh } from "react-admin";
 import { Link } from "react-router-dom";
@@ -12,6 +13,8 @@ const COLORS = {
   text: { primary: "#ffffff", secondary: "rgba(255,255,255,0.7)", muted: "rgba(255,255,255,0.5)" },
   error: "#ef4444",
   success: "#4ade80",
+  // Couleurs pour les KPI
+  kpiColors: ["#ea580c"],
 };
 
 const formatDate = (d: string) => new Date(d).toLocaleDateString("fr-FR", { 
@@ -49,9 +52,16 @@ const SessionGrid = () => {
   const start = (currentPage - 1) * 12;
   const currentData = items.slice(start, start + 12);
 
+  const kpis = [
+    { label: "Total", value: totalSessions, icon: <Sparkles size={18} />, color: COLORS.kpiColors[0] },
+    { label: "Salles", value: roomsCount, icon: <MapPin size={18} />, color: COLORS.kpiColors[0] },
+    { label: "Intervenants", value: speakersCount, icon: <Users size={18} />, color: COLORS.kpiColors[0] },
+  ];
+
   return (
     <div style={{ padding: 24, minHeight: "100vh", backgroundColor: COLORS.background }}>
 
+      {/* HEADER */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: COLORS.text.primary }}>Sessions</h1>
@@ -66,21 +76,39 @@ const SessionGrid = () => {
         </Link>
       </div>
 
+      {/* KPI CARDS AVEC COULEURS */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-        <div style={{ backgroundColor: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 16 }}>
-          <div style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase", letterSpacing: "0.5px" }}>Total</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text.primary }}>{totalSessions}</div>
-        </div>
-        <div style={{ backgroundColor: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 16 }}>
-          <div style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase", letterSpacing: "0.5px" }}>Salles</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text.primary }}>{roomsCount}</div>
-        </div>
-        <div style={{ backgroundColor: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 16 }}>
-          <div style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase", letterSpacing: "0.5px" }}>Intervenants</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text.primary }}>{speakersCount}</div>
-        </div>
+        {kpis.map((kpi, index) => (
+          <div key={index} style={{ 
+            backgroundColor: COLORS.card, 
+            border: `1px solid ${COLORS.border}`, 
+            borderRadius: 12, 
+            padding: 16,
+            borderLeft: `4px solid ${kpi.color}`,
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ fontSize: 12, color: COLORS.text.muted, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {kpi.label}
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text.primary }}>
+                  {kpi.value}
+                </div>
+              </div>
+              <div style={{ 
+                padding: 10, 
+                borderRadius: 10, 
+                background: `${kpi.color}25`,
+                color: kpi.color,
+              }}>
+                {kpi.icon}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
+      {/* SEARCH */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ position: "relative" }}>
           <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: COLORS.text.muted }} />
@@ -96,6 +124,7 @@ const SessionGrid = () => {
         </div>
       </div>
 
+      {/* GRID */}
       {isLoading ? (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {[...Array(6)].map((_, i) => (
@@ -107,35 +136,51 @@ const SessionGrid = () => {
       ) : (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-            {currentData.map((session: any) => (
-              <div key={session.id} style={{
-                backgroundColor: COLORS.card, border: `1px solid ${COLORS.border}`,
-                borderRadius: 12, padding: 16, transition: "all 0.2s"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                  <h3 style={{ fontSize: 16, fontWeight: 600, color: COLORS.text.primary, margin: 0 }}>
-                    {session.title}
-                  </h3>
-                  <span style={{ fontSize: 11, color: COLORS.text.muted, background: "rgba(255,255,255,0.05)", padding: "2px 10px", borderRadius: 12 }}>
-                    {session.room?.name || "Salle"}
-                  </span>
+            {currentData.map((session: any, index: number) => {
+              const colors = ["#ea580c"];
+              const color = colors[index % colors.length];
+              
+              return (
+                <div key={session.id} style={{
+                  backgroundColor: COLORS.card, 
+                  borderRadius: 12, 
+                  padding: 16, 
+                  transition: "all 0.2s",
+                  borderTop: `3px solid ${color}`,
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 600, color: COLORS.text.primary, margin: 0 }}>
+                      {session.title}
+                    </h3>
+                    <span style={{ 
+                      fontSize: 11, 
+                      color: COLORS.text.muted, 
+                      background: `${color}25`,
+                      padding: "2px 10px", 
+                      borderRadius: 12,
+                      border: `1px solid ${color}50`,
+                    }}>
+                      {session.room?.name || "Salle"}
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 13, color: COLORS.text.secondary, margin: "4px 0 12px" }}>
+                    {session.description?.slice(0, 80) || "Aucune description"}
+                  </p>
+                  <div style={{ display: "flex", gap: 16, fontSize: 12, color: COLORS.text.muted, marginBottom: 12 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Calendar size={14} color={color} /> {formatDate(session.startTime)}</span>
+                    <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Users size={14} color={color} /> {session.capacity || 0}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, borderTop: `1px solid ${COLORS.border}`, paddingTop: 12 }}>
+                    <Link to={`/sessions/${session.id}/show`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Eye size={16} /></Link>
+                    <Link to={`/sessions/${session.id}`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Edit2 size={16} /></Link>
+                    <button onClick={() => handleDelete(session.id, session.title)} style={{ padding: "4px 8px", background: "none", border: "none", color: COLORS.text.muted, cursor: "pointer" }}><Trash2 size={16} /></button>
+                  </div>
                 </div>
-                <p style={{ fontSize: 13, color: COLORS.text.secondary, margin: "4px 0 12px" }}>
-                  {session.description?.slice(0, 80) || "Aucune description"}
-                </p>
-                <div style={{ display: "flex", gap: 16, fontSize: 12, color: COLORS.text.muted, marginBottom: 12 }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Calendar size={14} /> {formatDate(session.startTime)}</span>
-                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Users size={14} /> {session.capacity || 0}</span>
-                </div>
-                <div style={{ display: "flex", gap: 6, borderTop: `1px solid ${COLORS.border}`, paddingTop: 12 }}>
-                  <Link to={`/sessions/${session.id}/show`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Eye size={16} /></Link>
-                  <Link to={`/sessions/${session.id}`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Edit2 size={16} /></Link>
-                  <button onClick={() => handleDelete(session.id, session.title)} style={{ padding: "4px 8px", background: "none", border: "none", color: COLORS.text.muted, cursor: "pointer" }}><Trash2 size={16} /></button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
+          {/* PAGINATION */}
           {totalPages > 1 && (
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, padding: "12px 0", borderTop: `1px solid ${COLORS.border}` }}>
               <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, total || 0)} sur {total}</span>
@@ -156,4 +201,4 @@ export const SessionList = () => (
   <List actions={false} pagination={false} component="div" perPage={12}>
     <SessionGrid />
   </List>
-)
+);
