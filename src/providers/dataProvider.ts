@@ -1,203 +1,196 @@
-import { DataProvider } from "react-admin";
+// src/providers/dataProvider.ts
+import { DataProvider, HttpError } from "react-admin";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-const getToken = () => localStorage.getItem("accessToken");
+const token = () => localStorage.getItem("accessToken");
 
-interface ApiResponse {
-  json: any;
-  headers: Headers;
-}
+/**
+ * Appel API unique
+ */
+const call = async (url: string, options: RequestInit = {}) => {
+  const res = await fetch(`${API_URL}${url}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token() ? { Authorization: `Bearer ${token()}` } : {}),
+      ...options.headers,
+    },
+  });
 
-const httpClient = async (
-  url: string,
-  options: RequestInit = {},
-): Promise<ApiResponse> => {
-  const token = getToken();
+  if (res.status === 204) return null;
 
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    ...options.headers,
-  };
+  const data = await res.json().catch(() => ({}));
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  if (!res.ok) {
+    throw new HttpError(data.message || res.statusText, res.status, data);
   }
 
-  const response = await fetch(url, { ...options, headers });
-
-  if (response.status === 401) {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    throw new Error("Unauthorized");
-  }
-
-  if (response.status === 204) {
-    return { json: null, headers: response.headers };
-  }
-
-  const json = await response.json();
-  return { json, headers: response.headers };
-};
-
-const normalizeList = (json: any): { data: any[]; total: number } => {
-  if (json?.data) {
-    const data = Array.isArray(json.data) ? json.data : [];
-    return { data, total: json.pagination?.total ?? data.length };
-  }
-
-  if (Array.isArray(json)) {
-    return { data: json, total: json.length };
-  }
-
-  if (json && typeof json === "object") {
-    const data = Object.values(json).filter(Array.isArray).flat();
-    return { data, total: data.length };
-  }
-
-  return { data: [], total: 0 };
+  return data;
 };
 
 /**
- * Extrait l'objet métier depuis la réponse du backend.
- * Gère les formats :
- *   - { data: { ... } }           → standard
- *   - { room: { ... } }           → POST /rooms
- *   - { event: { ... } }          → POST /events
- *   - { user: { ... } }           → POST /users
- *   - { message: '...', room: {} } → backend avec message + entité
- *   - { id: ..., name: ... }      → objet direct
+ * Extraction générique
+ */
+const extract = (data: any) => data?.data ?? data ?? [];
+
+/**
+ * Transforme pagination / filters react-admin
+ */
+const query = (params: any) => {
+  const { page = 1, perPage = 10 } = params.pagination || {};
+  const { field = "id", order = "ASC" } = params.sort || {};
+  const filter = params.filter || {};
+
+  const q = new URLSearchParams({
+    page: String(page),
+    limit: String(perPage),
+    sort: field,
+    order: order.toLowerCase(),
+  });
+
+  Object.entries(filter).forEach(([key, val]) => {
+    if (val != null && val !== "") {
+      q.set(key === "q" ? "search" : key, String(val));
+    }
+  });
+
+  return q;
+};
+
+/**
+ * Normalisation sécurisée
  */
 const normalizeOne = (json: any): any => {
   if (!json || typeof json !== "object") return json;
 
-  // Format standard react-admin { data: { ... } }
-  if (json.data && typeof json.data === "object" && !Array.isArray(json.data)) {
+  if (json.data && typeof json.data === "object") {
     return json.data;
   }
 
-  // Si l'objet a déjà un id, c'est l'entité directement
-  if (json.id !== undefined) return json;
+  if (json.id) return json;
 
-  // Cherche un sous-objet qui ressemble à l'entité métier
-  // (on ignore les champs scalaires comme "message")
-  const entityKeys = Object.keys(json).filter(
-    (k) => json[k] && typeof json[k] === "object" && !Array.isArray(json[k]),
+  const keys = Object.keys(json).filter(
+    (k) => json[k] && typeof json[k] === "object"
   );
 
-  if (entityKeys.length === 1) {
-    // { message: '...', room: { id, name } } → on prend room
-    return json[entityKeys[0]];
-  }
+  if (keys.length === 1) return json[keys[0]];
 
-  // Plusieurs sous-objets : on cherche celui qui a un id
-  const withId = entityKeys.find((k) => json[k]?.id !== undefined);
+  const withId = keys.find((k) => json[k]?.id);
   if (withId) return json[withId];
 
   return json;
 };
 
+/**
+ * Ensure ID (React Admin obligatoire)
+ */
 const ensureId = (raw: any): any => {
   if (!raw || typeof raw !== "object") return raw;
-  if (raw.id !== undefined) return raw;
+  if (raw.id) return raw;
 
   const id =
-    raw.roomId ??
-    raw.room_id ??
-    raw.eventId ??
-    raw.event_id ??
-    raw.uuid ??
-    raw._id ??
+    raw.roomId ||
+    raw.eventId ||
+    raw.uuid ||
+    raw._id ||
     null;
-
-  if (id === null) {
-    console.warn("[dataProvider] ensureId: aucun champ id trouvé dans", raw);
-  }
 
   return { ...raw, id };
 };
 
 export const dataProvider: DataProvider = {
-  getList: async (resource, _params) => {
-    const url = `${API_URL}/api/${resource}`;
-    const { json } = await httpClient(url);
-    return normalizeList(json);
+  getList: async (resource, params) => {
+    const result = await call(`/api/${resource}?${query(params)}`);
+    const data = extract(result);
+
+    return {
+      data,
+      total: result?.pagination?.total ?? data.length,
+    };
   },
 
   getOne: async (resource, params) => {
-    const url = `${API_URL}/api/${resource}/${params.id}`;
-    const { json } = await httpClient(url);
-    return { data: ensureId(normalizeOne(json)) };
+    const result = await call(`/api/${resource}/${params.id}`);
+    return {
+      data: ensureId(normalizeOne(result)),
+    };
   },
 
   create: async (resource, params) => {
-    const url = `${API_URL}/api/${resource}`;
-    const { json } = await httpClient(url, {
+    const result = await call(`/api/${resource}`, {
       method: "POST",
       body: JSON.stringify(params.data),
     });
-    return { data: ensureId(normalizeOne(json)) };
+
+    return {
+      data: ensureId(normalizeOne(result)),
+    };
   },
 
   update: async (resource, params) => {
-    const url = `${API_URL}/api/${resource}/${params.id}`;
-    const { json } = await httpClient(url, {
+    const result = await call(`/api/${resource}/${params.id}`, {
       method: "PUT",
       body: JSON.stringify(params.data),
     });
-    return { data: ensureId(normalizeOne(json)) };
+
+    return {
+      data: ensureId(normalizeOne(result)),
+    };
   },
 
   delete: async (resource, params) => {
-    const url = `${API_URL}/api/${resource}/${params.id}`;
-    await httpClient(url, { method: "DELETE" });
-    return { data: { id: params.id } as any };
+    await call(`/api/${resource}/${params.id}`, {
+      method: "DELETE",
+    });
+
+    return { data: { id: params.id } };
   },
 
   getMany: async (resource, params) => {
-    const url = `${API_URL}/api/${resource}`;
-    const { json } = await httpClient(url);
-    const { data } = normalizeList(json);
-    const filtered = data.filter((item: any) => params.ids.includes(item.id));
-    return { data: filtered };
+    const result = await call(`/api/${resource}`);
+    const data = extract(result);
+
+    return {
+      data: data.filter((item: any) => params.ids.includes(item.id)),
+    };
   },
 
   updateMany: async (resource, params) => {
     await Promise.all(
       params.ids.map((id) =>
-        httpClient(`${API_URL}/api/${resource}/${id}`, {
+        call(`/api/${resource}/${id}`, {
           method: "PUT",
           body: JSON.stringify(params.data),
-        }),
-      ),
+        })
+      )
     );
+
     return { data: params.ids };
   },
 
   deleteMany: async (resource, params) => {
     await Promise.all(
       params.ids.map((id) =>
-        httpClient(`${API_URL}/api/${resource}/${id}`, { method: "DELETE" }),
-      ),
+        call(`/api/${resource}/${id}`, {
+          method: "DELETE",
+        })
+      )
     );
+
     return { data: params.ids };
   },
 
   getManyReference: async (resource, params) => {
-    const { page, perPage } = params.pagination ?? { page: 1, perPage: 10 };
-    const { field, order } = params.sort ?? { field: "id", order: "ASC" };
+    const q = query(params);
+    q.set(params.target, String(params.id));
 
-    const query = new URLSearchParams({
-      page: String(page),
-      limit: String(perPage),
-      sort: field,
-      order: order.toLowerCase(),
-      [params.target]: params.id,
-    });
+    const result = await call(`/api/${resource}?${q}`);
+    const data = extract(result);
 
-    const url = `${API_URL}/api/${resource}?${query}`;
-    const { json } = await httpClient(url);
-    return normalizeList(json);
+    return {
+      data,
+      total: result?.pagination?.total ?? data.length,
+    };
   },
 };
