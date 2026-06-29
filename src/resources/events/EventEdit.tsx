@@ -4,16 +4,20 @@ import {
   SimpleForm,
   TextInput,
   DateTimeInput,
-  NumberInput,
   required,
   SelectInput,
-  ArrayInput,
-  SimpleFormIterator,
-  ReferenceInput,
-  AutocompleteInput,
+  Toolbar,
+  SaveButton,
+  DeleteButton,
 } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, FileText, Layers, Sparkles, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Sparkles,
+  Save,
+  Trash2,
+} from "lucide-react";
 
 // === ORANGE COLORS ===
 const COLORS = {
@@ -31,6 +35,7 @@ const COLORS = {
   success: "#4ade80",
   warning: "#fbbf24",
   error: "#f87171",
+  errorDark: "#dc2626",
   info: "#60a5fa",
 };
 
@@ -45,7 +50,11 @@ const sectionCard = {
   boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
 };
 
-const sectionHeader = (Icon: React.FC<any>, label: string, description?: string) => (
+const sectionHeader = (
+  Icon: React.FC<any>,
+  label: string,
+  description?: string,
+) => (
   <div style={{ marginBottom: "20px" }}>
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <div
@@ -84,6 +93,72 @@ const sectionHeader = (Icon: React.FC<any>, label: string, description?: string)
   </div>
 );
 
+// === CUSTOM TOOLBAR : Save + Delete avec design dédié ===
+const EventEditToolbar = () => (
+  <Toolbar
+    sx={{
+      backgroundColor: "transparent",
+      padding: "24px 0 0",
+      borderTop: `1px solid ${COLORS.darkBorder}`,
+      marginTop: "8px",
+      display: "flex",
+      gap: "12px",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+    }}
+  >
+    {/* DELETE — bouton rouge, bien distinct, à gauche */}
+    <DeleteButton
+      label="Delete event"
+      icon={<Trash2 size={16} />}
+      sx={{
+        backgroundColor: "transparent",
+        color: COLORS.error,
+        border: `1.5px solid ${COLORS.error}40`,
+        borderRadius: "10px",
+        fontWeight: 600,
+        padding: "10px 22px",
+        textTransform: "none",
+        fontSize: "14px",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          backgroundColor: `${COLORS.error}15`,
+          borderColor: COLORS.error,
+          color: "#fff",
+          boxShadow: `0 4px 16px ${COLORS.error}30`,
+        },
+      }}
+    />
+
+    {/* SAVE — bouton orange premium, à droite */}
+    <SaveButton
+      label="Save changes"
+      icon={<Save size={16} />}
+      sx={{
+        backgroundColor: COLORS.primary,
+        color: "#fff",
+        borderRadius: "10px",
+        fontWeight: 600,
+        padding: "10px 28px",
+        boxShadow: `0 2px 12px ${COLORS.primary}40`,
+        transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+        textTransform: "none",
+        fontSize: "14px",
+        "&:hover": {
+          backgroundColor: COLORS.primaryDark,
+          boxShadow: `0 6px 24px ${COLORS.primary}50`,
+          transform: "translateY(-2px) scale(1.01)",
+        },
+        "&.Mui-disabled": {
+          backgroundColor: `${COLORS.primary}30`,
+          color: COLORS.text.muted,
+          boxShadow: "none",
+        },
+      }}
+    />
+  </Toolbar>
+);
+
 // === MAIN COMPONENT ===
 export const EventEdit = () => (
   <Edit
@@ -92,7 +167,7 @@ export const EventEdit = () => (
     sx={{
       backgroundColor: COLORS.background,
       minHeight: "100vh",
-      padding: "24px",
+      padding: { xs: "16px", md: "24px" },
       position: "relative",
     }}
   >
@@ -120,9 +195,10 @@ export const EventEdit = () => (
 
     <SimpleForm
       className="bg-transparent"
+      toolbar={<EventEditToolbar />}
       sx={{
         p: 0,
-        maxWidth: "1400px",
+        maxWidth: "900px",
         margin: "0 auto",
         position: "relative",
         zIndex: 1,
@@ -176,121 +252,8 @@ export const EventEdit = () => (
         "& .MuiInputAdornment-root": {
           color: COLORS.primary,
         },
-        "& .MuiAutocomplete-root .MuiOutlinedInput-root": {
-          padding: "0",
-        },
-        "& .MuiAutocomplete-root .MuiInputBase-input": {
-          padding: "12px 14px",
-        },
         "& .MuiInputBase-multiline": {
           padding: "12px 14px",
-        },
-
-        // === TOOLBAR ===
-        "& .RaToolbar-root": {
-          backgroundColor: "transparent",
-          padding: "24px 0 0",
-          borderTop: `1px solid ${COLORS.darkBorder}`,
-          marginTop: "8px",
-          display: "flex",
-          gap: "12px",
-          justifyContent: "flex-end",
-          flexWrap: "wrap",
-        },
-        "& .MuiButton-containedPrimary": {
-          backgroundColor: COLORS.primary,
-          color: "#fff",
-          borderRadius: "10px",
-          fontWeight: 600,
-          padding: "10px 28px",
-          boxShadow: `0 2px 12px ${COLORS.primary}40`,
-          transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-          textTransform: "none",
-          fontSize: "14px",
-          "&:hover": {
-            backgroundColor: COLORS.primaryDark,
-            boxShadow: `0 6px 24px ${COLORS.primary}50`,
-            transform: "translateY(-2px) scale(1.01)",
-          },
-        },
-        "& .MuiButton-text": {
-          color: COLORS.text.secondary,
-          padding: "10px 20px",
-          borderRadius: "10px",
-          textTransform: "none",
-          fontSize: "14px",
-          "&:hover": {
-            color: COLORS.text.primary,
-            backgroundColor: `${COLORS.darkBorder}40`,
-          },
-        },
-
-        // === ARRAY INPUT (SESSIONS) - CORRIGÉ ===
-        "& .RaSimpleFormIterator-form": {
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          padding: "20px",
-          marginBottom: "16px",
-          backgroundColor: "rgba(0,0,0,0.25)",
-          borderRadius: "14px",
-          border: `1px solid ${COLORS.darkBorder}`,
-          transition: "all 0.3s ease",
-          position: "relative",
-          "&:hover": {
-            borderColor: COLORS.primary,
-            boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
-          },
-          "&:before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "3px",
-            background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
-            borderRadius: "14px 14px 0 0",
-            opacity: 0,
-            transition: "opacity 0.3s ease",
-          },
-          "&:hover:before": {
-            opacity: 1,
-          },
-        },
-        "& .RaSimpleFormIterator-add button": {
-          backgroundColor: `${COLORS.primary}12`,
-          color: COLORS.primary,
-          borderRadius: "10px",
-          fontWeight: 600,
-          padding: "12px 20px",
-          border: `2px dashed ${COLORS.primary}30`,
-          transition: "all 0.3s ease",
-          textTransform: "none",
-          fontSize: "14px",
-          width: "100%",
-          justifyContent: "center",
-          marginTop: "8px",
-          "&:hover": {
-            backgroundColor: `${COLORS.primary}20`,
-            borderColor: COLORS.primary,
-            transform: "translateY(-2px)",
-          },
-        },
-        "& .RaSimpleFormIterator-remove button": {
-          color: COLORS.primary,
-          padding: "6px 12px",
-          borderRadius: "8px",
-          transition: "all 0.2s ease",
-          "&:hover": {
-            color: COLORS.error,
-            backgroundColor: `${COLORS.error}15`,
-          },
-        },
-        "& .RaSimpleFormIterator-line": {
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
         },
       }}
     >
@@ -330,7 +293,7 @@ export const EventEdit = () => (
               margin: "4px 0 0 34px",
             }}
           >
-            Update event information and manage sessions
+            Update this event's information
           </p>
         </div>
 
@@ -368,284 +331,118 @@ export const EventEdit = () => (
         </Link>
       </div>
 
-      {/* === FORM GRID - 2 COLUMNS === */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
-          gap: "24px",
-          width: "100%",
-          alignItems: "start",
-        }}
-      >
-        {/* === LEFT COLUMN - General Information === */}
-        <div style={sectionCard}>
-          {sectionHeader(FileText, "General Information", "Title, description, category, dates, and location")}
+      {/* === GENERAL INFORMATION === */}
+      <div style={sectionCard}>
+        {sectionHeader(
+          FileText,
+          "General Information",
+          "Title, description, category, dates, and location",
+        )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
-            {/* Title - Full Width */}
-            <div style={{ gridColumn: "span 2" }}>
-              <TextInput
-                source="title"
-                label="Event Title"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-                placeholder="Ex: Tech Conference 2024"
-              />
-            </div>
-
-            {/* Description - Full Width */}
-            <div style={{ gridColumn: "span 2" }}>
-              <TextInput
-                source="description"
-                label="Detailed Description"
-                multiline
-                rows={4}
-                fullWidth
-                variant="outlined"
-                placeholder="Describe the event in a few sentences..."
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <SelectInput
-                source="category"
-                label="Category"
-                choices={[
-                  { id: "CONFERENCE", name: "Conference" },
-                  { id: "WORKSHOP", name: "Workshop" },
-                  { id: "SEMINAR", name: "Seminar" },
-                  { id: "MEETUP", name: "Meetup" },
-                  { id: "WEBINAR", name: "Webinar" },
-                  { id: "SOCIAL", name: "Social" },
-                  { id: "FUNDRAISER", name: "Fundraiser" },
-                  { id: "SPORTS", name: "Sports" },
-                  { id: "ARTS", name: "Arts" },
-                  { id: "TECHNOLOGY", name: "Technology" },
-                  { id: "BUSINESS", name: "Business" },
-                  { id: "EDUCATION", name: "Education" },
-                  { id: "OTHER", name: "Other" },
-                ]}
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
-
-            {/* Location */}
-            <div>
-              <TextInput
-                source="location"
-                label="Location"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-                placeholder="Address or online link"
-              />
-            </div>
-
-            {/* Start Date */}
-            <div>
-              <DateTimeInput
-                source="startDate"
-                label="Start Date & Time"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
-
-            {/* End Date */}
-            <div>
-              <DateTimeInput
-                source="endDate"
-                label="End Date & Time"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+          }}
+          className="event-edit-subgrid"
+        >
+          {/* Title - Full Width */}
+          <div style={{ gridColumn: "span 2" }}>
+            <TextInput
+              source="title"
+              label="Event Title"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+              placeholder="Ex: Tech Conference 2024"
+            />
           </div>
-        </div>
 
-        {/* === RIGHT COLUMN - Sessions (layout corrigé en 2 colonnes) === */}
-        <div style={sectionCard}>
-          {sectionHeader(Layers, "Sessions", "Add or manage event sessions")}
+          {/* Description - Full Width */}
+          <div style={{ gridColumn: "span 2" }}>
+            <TextInput
+              source="description"
+              label="Detailed Description"
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              placeholder="Describe the event in a few sentences..."
+            />
+          </div>
 
-          <ArrayInput source="sessions" label="Session List">
-            <SimpleFormIterator
-              inline
-              sx={{
-                width: "100%",
-                "& .RaSimpleFormIterator-form": {
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  padding: "20px",
-                  marginBottom: "16px",
-                  backgroundColor: "rgba(0,0,0,0.25)",
-                  borderRadius: "14px",
-                  border: `1px solid ${COLORS.darkBorder}`,
-                  transition: "all 0.3s ease",
-                  position: "relative",
-                  "&:hover": {
-                    borderColor: COLORS.primary,
-                    boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
-                  },
-                  "&:before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
-                    borderRadius: "14px 14px 0 0",
-                    opacity: 0,
-                    transition: "opacity 0.3s ease",
-                  },
-                  "&:hover:before": {
-                    opacity: 1,
-                  },
-                },
-                "& .RaSimpleFormIterator-add button": {
-                  backgroundColor: `${COLORS.primary}12`,
-                  color: COLORS.primary,
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  padding: "12px 20px",
-                  border: `2px dashed ${COLORS.primary}30`,
-                  transition: "all 0.3s ease",
-                  textTransform: "none",
-                  fontSize: "14px",
-                  width: "100%",
-                  justifyContent: "center",
-                  marginTop: "8px",
-                  "&:hover": {
-                    backgroundColor: `${COLORS.primary}20`,
-                    borderColor: COLORS.primary,
-                    transform: "translateY(-2px)",
-                  },
-                },
-                "& .RaSimpleFormIterator-remove button": {
-                  color: COLORS.primary,
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    color: COLORS.error,
-                    backgroundColor: `${COLORS.error}15`,
-                  },
-                },
-              }}
-            >
-              {/* === SESSION FORM - 2 COLUMNS GRID === */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
-                {/* Title - Full Width */}
-                <div style={{ gridColumn: "span 2" }}>
-                  <TextInput
-                    source="title"
-                    label="Session Title"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Ex: React Workshop"
-                  />
-                </div>
+          {/* Category */}
+          <div>
+            <SelectInput
+              source="category"
+              label="Category"
+              choices={[
+                { id: "CONFERENCE", name: "Conference" },
+                { id: "WORKSHOP", name: "Workshop" },
+                { id: "SEMINAR", name: "Seminar" },
+                { id: "MEETUP", name: "Meetup" },
+                { id: "WEBINAR", name: "Webinar" },
+                { id: "SOCIAL", name: "Social" },
+                { id: "FUNDRAISER", name: "Fundraiser" },
+                { id: "SPORTS", name: "Sports" },
+                { id: "ARTS", name: "Arts" },
+                { id: "TECHNOLOGY", name: "Technology" },
+                { id: "BUSINESS", name: "Business" },
+                { id: "EDUCATION", name: "Education" },
+                { id: "OTHER", name: "Other" },
+              ]}
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
+          </div>
 
-                {/* Description - Full Width */}
-                <div style={{ gridColumn: "span 2" }}>
-                  <TextInput
-                    source="description"
-                    label="Description"
-                    multiline
-                    rows={2}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Session description..."
-                  />
-                </div>
+          {/* Location */}
+          <div>
+            <TextInput
+              source="location"
+              label="Location"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+              placeholder="Address or online link"
+            />
+          </div>
 
-                {/* Room */}
-                <div>
-                  <ReferenceInput source="roomId" reference="rooms" label="Room" fullWidth>
-                    <AutocompleteInput
-                      optionText="name"
-                      validate={required()}
-                      variant="outlined"
-                      placeholder="Choose a room"
-                    />
-                  </ReferenceInput>
-                </div>
+          {/* Start Date */}
+          <div>
+            <DateTimeInput
+              source="startDate"
+              label="Start Date & Time"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
+          </div>
 
-                {/* Capacity */}
-                <div>
-                  <NumberInput
-                    source="capacity"
-                    label="Capacity"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Number of seats"
-                  />
-                </div>
-
-                {/* Start Time */}
-                <div>
-                  <DateTimeInput
-                    source="startTime"
-                    label="Start Time"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                  />
-                </div>
-
-                {/* End Time */}
-                <div>
-                  <DateTimeInput
-                    source="endTime"
-                    label="End Time"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                  />
-                </div>
-              </div>
-            </SimpleFormIterator>
-          </ArrayInput>
-
-          {/* Footer */}
-          <div
-            style={{
-              marginTop: "16px",
-              paddingTop: "16px",
-              borderTop: `1px solid ${COLORS.darkBorder}`,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <Clock size={14} color={COLORS.primary} />
-            <span
-              style={{
-                fontSize: "12px",
-                color: COLORS.text.muted,
-              }}
-            >
-              Add one or more sessions to your event
-            </span>
+          {/* End Date */}
+          <div>
+            <DateTimeInput
+              source="endDate"
+              label="End Date & Time"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
           </div>
         </div>
       </div>
 
+      {/* Media query pour la responsivité de la grille générale */}
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+        @media (max-width: 600px) {
+          .event-edit-subgrid {
+            grid-template-columns: 1fr !important;
+          }
+          .event-edit-subgrid > div[style*="span 2"] {
+            grid-column: span 1 !important;
+          }
         }
       `}</style>
     </SimpleForm>

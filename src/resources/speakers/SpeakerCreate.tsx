@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Create,
-  SimpleForm,
-  TextInput,
-  required,
-} from "react-admin";
+import { Create, SimpleForm, TextInput, required } from "react-admin";
 import { User, FileText } from "lucide-react";
 
 const sectionCard = {
@@ -19,7 +14,14 @@ const sectionCard = {
 
 const sectionHeader = (Icon: React.FC<any>, label: string) => (
   <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
-    <div style={{ padding: 10, borderRadius: 10, background: "rgba(205,91,50,0.15)", color: "#cd5b32" }}>
+    <div
+      style={{
+        padding: 10,
+        borderRadius: 10,
+        background: "rgba(205,91,50,0.15)",
+        color: "#cd5b32",
+      }}
+    >
       <Icon size={18} />
     </div>
     <h3 style={{ margin: 0, fontSize: 18 }}>{label}</h3>
@@ -57,17 +59,9 @@ export const SpeakerCreate = () => (
             fullWidth
           />
 
-          <TextInput
-            source="jobTitle"
-            label="Poste"
-            fullWidth
-          />
+          <TextInput source="jobTitle" label="Poste" fullWidth />
 
-          <TextInput
-            source="company"
-            label="Entreprise"
-            fullWidth
-          />
+          <TextInput source="company" label="Entreprise" fullWidth />
 
           <TextInput
             source="bio"
@@ -77,11 +71,7 @@ export const SpeakerCreate = () => (
             fullWidth
           />
 
-          <TextInput
-            source="avatar"
-            label="Image (URL)"
-            fullWidth
-          />
+          <TextInput source="avatar" label="Image (URL)" fullWidth />
         </div>
       </SimpleForm>
     </Create>
