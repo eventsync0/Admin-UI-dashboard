@@ -4,6 +4,11 @@ import { authProvider } from "./providers/authProvider";
 import { Login } from "./components/Login";
 import Dashboard from "./Dashboard";
 import { Layout } from "./layout/Layout";
+import { SessionList } from "./resources/sessions/SessionList";
+import { SessionCreate } from "./resources/sessions/SessionCreate";
+import { SessionEdit } from "./resources/sessions/SessionEdit";
+import { SessionShow } from "./resources/sessions/SessionShow";
+
 
 import {
   EventList,
@@ -18,6 +23,13 @@ import {
   RoomEdit,
   RoomShow,
 } from "./resources/rooms";
+
+import {
+  SpeakerList,
+  SpeakerCreate,
+  SpeakerEdit,
+  SpeakerShow,
+} from "./resources/speakers";
 
 function App() {
   return (
@@ -39,6 +51,15 @@ function App() {
         recordRepresentation="title"
       />
 
+      <Resource 
+                name="sessions"
+                options={{ label: 'Sessions' }}
+                list={SessionList}
+                create={SessionCreate}
+                edit={SessionEdit}
+                show={SessionShow}
+            />
+
       <Resource
         name="rooms"
         label="Salles"
@@ -46,6 +67,16 @@ function App() {
         create={RoomCreate}
         edit={RoomEdit}
         show={RoomShow}
+        recordRepresentation="name"
+      />
+
+      <Resource
+        name="speakers"
+        label="Intervenants"
+        list={SpeakerList}
+        create={SpeakerCreate}
+        edit={SpeakerEdit}
+        show={SpeakerShow}
         recordRepresentation="name"
       />
 

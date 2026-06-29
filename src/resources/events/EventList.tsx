@@ -1,6 +1,12 @@
 // pages/events/EventList.tsx
 import { useState, useEffect } from "react";
-import { useListContext, List } from "react-admin";
+import {
+  useListContext,
+  List,
+  useDelete,
+  useNotify,
+  useRefresh,
+} from "react-admin";
 import { Link } from "react-router-dom";
 import {
   Calendar,
@@ -15,35 +21,29 @@ import {
   Info,
   Sparkles,
 } from "lucide-react";
-import { useDelete, useNotify, useRefresh } from "react-admin";
 
-// === CATEGORY MAP ===
-const categoryMap: Record<
-  string,
-  { label: string; color: string; bg: string }
-> = {
-  CONFERENCE: { label: "Conférence", color: "#7c3aed", bg: "#f5f3ff" },
-  WORKSHOP: { label: "Atelier", color: "#2563eb", bg: "#eff6ff" },
-  SEMINAR: { label: "Séminaire", color: "#4338ca", bg: "#eef2ff" },
-  MEETUP: { label: "Meetup", color: "#059669", bg: "#ecfdf5" },
-  WEBINAR: { label: "Webinaire", color: "#0d9488", bg: "#f0fdfa" },
-  SOCIAL: { label: "Social", color: "#db2777", bg: "#fdf2f8" },
-  FUNDRAISER: { label: "Collecte", color: "#e11d48", bg: "#fff1f2" },
-  SPORTS: { label: "Sports", color: "#dc2626", bg: "#fef2f2" },
-  ARTS: { label: "Arts", color: "#c026d3", bg: "#fdf4ff" },
-  TECHNOLOGY: { label: "Technologie", color: "#0891b2", bg: "#ecfeff" },
-  BUSINESS: { label: "Affaires", color: "#d97706", bg: "#fffbeb" },
-  EDUCATION: { label: "Éducation", color: "#65a30d", bg: "#f7fee7" },
-  OTHER: { label: "Autre", color: "#6b7280", bg: "#f9fafb" },
+// === CATEGORIES ===
+const CATEGORIES: Record<string, { label: string; color: string }> = {
+  CONFERENCE: { label: "Conference", color: "#7c3aed" },
+  WORKSHOP: { label: "Workshop", color: "#2563eb" },
+  SEMINAR: { label: "Seminar", color: "#4338ca" },
+  MEETUP: { label: "Meetup", color: "#059669" },
+  WEBINAR: { label: "Webinar", color: "#0d9488" },
+  SOCIAL: { label: "Social", color: "#db2777" },
+  FUNDRAISER: { label: "Fundraiser", color: "#e11d48" },
+  SPORTS: { label: "Sports", color: "#dc2626" },
+  ARTS: { label: "Arts", color: "#c026d3" },
+  TECHNOLOGY: { label: "Technology", color: "#0891b2" },
+  BUSINESS: { label: "Business", color: "#d97706" },
+  EDUCATION: { label: "Education", color: "#65a30d" },
+  OTHER: { label: "Other", color: "#6b7280" },
 };
 
-// === COULEURS ===
+// === ORANGE COLORS ===
 const COLORS = {
   primary: "#ea580c",
-  primaryLight: "#f97316",
   primaryDark: "#d94a00",
-  primaryGlow: "rgba(234, 88, 12, 0.3)",
-  primaryBorder: "rgba(234, 88, 12, 0.2)",
+  primaryGlow: "rgba(234, 88, 12, 0.25)",
   background: "#0B0B14",
   darkCard: "rgba(255, 255, 255, 0.03)",
   darkBorder: "rgba(255, 255, 255, 0.08)",
@@ -52,14 +52,17 @@ const COLORS = {
     secondary: "rgba(255, 255, 255, 0.7)",
     muted: "rgba(255, 255, 255, 0.5)",
   },
+  success: "#4ade80",
+  warning: "#fbbf24",
+  error: "#f87171",
+  info: "#60a5fa",
 };
 
-// === FORMAT DATE ===
+// === DATE FORMAT ===
 const formatDate = (dateStr: string) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  return d.toLocaleDateString("fr-FR", {
-    weekday: "short",
+  return d.toLocaleDateString("en-US", {
     day: "numeric",
     month: "short",
     hour: "2-digit",
@@ -67,17 +70,10 @@ const formatDate = (dateStr: string) => {
   });
 };
 
-// === COMPOSANT PRINCIPAL ===
+// === MAIN COMPONENT ===
 const EventListGrid = () => {
-  const {
-    data,
-    total,
-    isLoading,
-    filterValues,
-    setFilters,
-    page,
-    setPage,
-  } = useListContext();
+  const { data, total, isLoading, filterValues, setFilters, page, setPage } =
+    useListContext();
 
   const [search, setSearch] = useState(filterValues.q || "");
   const [category, setCategory] = useState(filterValues.category || "");
@@ -85,61 +81,64 @@ const EventListGrid = () => {
   const notify = useNotify();
   const refresh = useRefresh();
 
-  const ITEMS_PER_PAGE = 12; // ✅ 12 cartes par page
+  const ITEMS_PER_PAGE = 12;
 
   const totalEvents = total || 0;
   const sessionCount =
     data?.reduce(
       (acc: number, item: any) => acc + (item.sessions?.length || 0),
-      0
+      0,
     ) || 0;
   const categoriesCount = new Set(data?.map((item: any) => item.category)).size;
 
   const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Voulez-vous vraiment supprimer "${title}" ?`)) {
-      deleteOne(
-        "events",
-        { id },
-        {
-          onSuccess: () => {
-            notify("Événement supprimé avec succès", { type: "info" });
-            refresh();
-          },
-          onError: (error: any) => {
-            notify(`Erreur: ${error.message}`, { type: "error" });
-          },
-        }
-      );
-    }
+    if (!confirm(`Delete "${title}"?`)) return;
+    deleteOne(
+      "events",
+      { id },
+      {
+        onSuccess: () => {
+          notify("Event deleted", { type: "info" });
+          refresh();
+        },
+        onError: (e: any) => notify(`Error: ${e.message}`, { type: "error" }),
+      },
+    );
   };
 
   useEffect(() => {
-    const delay = setTimeout(() => {
+    const timer = setTimeout(() => {
       setFilters(
         {
           ...filterValues,
           q: search || undefined,
           category: category || undefined,
         },
-        null
+        null,
       );
     }, 400);
-    return () => clearTimeout(delay);
+    return () => clearTimeout(timer);
   }, [search, category]);
 
   const totalPages = Math.ceil((total || 0) / ITEMS_PER_PAGE);
   const currentPage = page || 1;
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentData = data?.slice(startIndex, endIndex) || [];
 
   return (
     <div
       style={{
         padding: "24px",
         minHeight: "100vh",
+        width: "100%",
+        boxSizing: "border-box",
         backgroundColor: COLORS.background,
         position: "relative",
       }}
     >
-      {/* Effets de fond */}
+      {/* BACKGROUND GLOW */}
       <div
         style={{
           position: "absolute",
@@ -162,7 +161,7 @@ const EventListGrid = () => {
       </div>
 
       <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Header */}
+        {/* HEADER */}
         <div
           style={{
             display: "flex",
@@ -184,44 +183,57 @@ const EventListGrid = () => {
                 gap: "8px",
               }}
             >
-              <Sparkles size={24} color={COLORS.primary} />
-              Gestion des Événements
+              <Sparkles size={22} color={COLORS.primary} />
+              Event Management
             </h1>
-            <p style={{ fontSize: "14px", color: COLORS.text.secondary }}>
-              Planifiez, modifiez et suivez vos événements.
+            <p
+              style={{
+                fontSize: "14px",
+                color: COLORS.text.secondary,
+              }}
+            >
+              Manage all your events
             </p>
           </div>
           <Link
             to="/events/create"
             style={{
-              display: "inline-flex",
+              display: "flex",
               alignItems: "center",
               gap: "8px",
-              padding: "10px 18px",
+              padding: "10px 16px",
+              borderRadius: "12px",
               background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
               color: "#fff",
-              borderRadius: "12px",
               fontWeight: 700,
               textDecoration: "none",
-              boxShadow: `0 2px 12px ${COLORS.primaryGlow}`,
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = "0.85";
+              e.currentTarget.style.transform = "translateY(-2px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            <Plus size={16} /> Créer un événement
+            <Plus size={16} /> Create Event
           </Link>
         </div>
 
-        {/* KPI Cards */}
+        {/* KPI CARDS */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
             gap: "16px",
             marginBottom: "24px",
           }}
         >
           {[
             {
-              label: "Total Événements",
+              label: "Total Events",
               value: totalEvents,
               icon: <Layers size={20} />,
               color: COLORS.primary,
@@ -233,7 +245,7 @@ const EventListGrid = () => {
               color: "#38bdf8",
             },
             {
-              label: "Catégories",
+              label: "Categories",
               value: categoriesCount,
               icon: <Info size={20} />,
               color: "#8b5cf6",
@@ -249,6 +261,15 @@ const EventListGrid = () => {
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = COLORS.primary;
+                e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.3)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = COLORS.darkBorder;
+                e.currentTarget.style.boxShadow = "none";
               }}
             >
               <div>
@@ -259,6 +280,7 @@ const EventListGrid = () => {
                     textTransform: "uppercase",
                     color: COLORS.text.muted,
                     marginBottom: "6px",
+                    letterSpacing: "0.08em",
                   }}
                 >
                   {kpi.label}
@@ -287,7 +309,7 @@ const EventListGrid = () => {
           ))}
         </div>
 
-        {/* Filter Bar */}
+        {/* FILTER BAR */}
         <div
           style={{
             backgroundColor: COLORS.darkCard,
@@ -313,18 +335,27 @@ const EventListGrid = () => {
             />
             <input
               type="text"
-              placeholder="Rechercher..."
+              placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
                 width: "100%",
                 padding: "10px 16px 10px 38px",
                 borderRadius: "10px",
-                border: `1.5px solid ${COLORS.darkBorder}`,
+                border: `1px solid ${COLORS.darkBorder}`,
                 backgroundColor: "rgba(0,0,0,0.2)",
                 color: COLORS.text.primary,
                 fontSize: "14px",
                 outline: "none",
+                transition: "all 0.2s ease",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = COLORS.primary;
+                e.currentTarget.style.boxShadow = `0 0 0 3px ${COLORS.primary}25`;
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = COLORS.darkBorder;
+                e.currentTarget.style.boxShadow = "none";
               }}
             />
           </div>
@@ -334,24 +365,31 @@ const EventListGrid = () => {
             style={{
               padding: "10px 14px",
               borderRadius: "10px",
-              border: `1.5px solid ${COLORS.darkBorder}`,
+              border: `1px solid ${COLORS.darkBorder}`,
               backgroundColor: "rgba(0,0,0,0.2)",
               color: COLORS.text.primary,
               fontSize: "14px",
               outline: "none",
               minWidth: "200px",
+              transition: "all 0.2s ease",
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = COLORS.primary;
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = COLORS.darkBorder;
             }}
           >
-            <option value="">Toutes les catégories</option>
-            {Object.entries(categoryMap).map(([key, value]) => (
+            <option value="">All Categories</option>
+            {Object.entries(CATEGORIES).map(([key, val]) => (
               <option key={key} value={key}>
-                {value.label}
+                {val.label}
               </option>
             ))}
           </select>
         </div>
 
-        {/* ✅ GRILLE 3x4 = 12 CARTES PAR PAGE */}
+        {/* CARDS GRID */}
         {isLoading ? (
           <div
             style={{
@@ -375,7 +413,7 @@ const EventListGrid = () => {
                   style={{
                     height: "16px",
                     backgroundColor: "rgba(255,255,255,0.05)",
-                    borderRadius: "6px",
+                    borderRadius: "4px",
                     marginBottom: "12px",
                     width: "40%",
                   }}
@@ -384,7 +422,7 @@ const EventListGrid = () => {
                   style={{
                     height: "22px",
                     backgroundColor: "rgba(255,255,255,0.05)",
-                    borderRadius: "6px",
+                    borderRadius: "4px",
                     marginBottom: "12px",
                     width: "75%",
                   }}
@@ -393,7 +431,7 @@ const EventListGrid = () => {
                   style={{
                     height: "14px",
                     backgroundColor: "rgba(255,255,255,0.05)",
-                    borderRadius: "6px",
+                    borderRadius: "4px",
                     marginBottom: "12px",
                     width: "100%",
                   }}
@@ -402,7 +440,7 @@ const EventListGrid = () => {
                   style={{
                     height: "14px",
                     backgroundColor: "rgba(255,255,255,0.05)",
-                    borderRadius: "6px",
+                    borderRadius: "4px",
                     width: "60%",
                   }}
                 />
@@ -414,22 +452,30 @@ const EventListGrid = () => {
             style={{
               backgroundColor: COLORS.darkCard,
               border: `2px dashed ${COLORS.darkBorder}`,
-              borderRadius: "20px",
+              borderRadius: "16px",
               padding: "64px",
               textAlign: "center",
             }}
           >
             <Layers size={48} style={{ color: COLORS.text.muted }} />
-            <h3 style={{ color: COLORS.text.primary, marginTop: "16px" }}>
-              Aucun événement
+            <h3
+              style={{
+                color: COLORS.text.primary,
+                marginTop: "16px",
+              }}
+            >
+              No Events
             </h3>
-            <p style={{ color: COLORS.text.secondary }}>
-              Créez votre premier événement dès maintenant.
+            <p
+              style={{
+                color: COLORS.text.secondary,
+              }}
+            >
+              Create your first event now.
             </p>
           </div>
         ) : (
           <>
-            {/* ✅ Affiche uniquement les 12 premiers événements de la page */}
             <div
               style={{
                 display: "grid",
@@ -437,183 +483,215 @@ const EventListGrid = () => {
                 gap: "20px",
               }}
             >
-              {data.slice(0, 12).map((event: any) => {
-                const cat = categoryMap[event.category] || categoryMap.OTHER;
+              {currentData.map((event: any) => {
+                const cat = CATEGORIES[event.category] || CATEGORIES.OTHER;
                 return (
                   <div
                     key={event.id}
                     style={{
                       backgroundColor: COLORS.darkCard,
                       border: `1px solid ${COLORS.darkBorder}`,
-                      borderRadius: "20px",
-                      overflow: "hidden",
+                      borderRadius: "16px",
+                      padding: "20px",
                       transition: "all 0.3s ease",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = COLORS.primaryBorder;
+                      e.currentTarget.style.borderColor = COLORS.primary;
                       e.currentTarget.style.transform = "translateY(-4px)";
+                      e.currentTarget.style.boxShadow = "0 8px 30px rgba(0,0,0,0.4)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = COLORS.darkBorder;
                       e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "none";
                     }}
                   >
                     <div
                       style={{
-                        height: "4px",
-                        backgroundColor: cat.color,
-                        opacity: 0.7,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: "12px",
                       }}
-                    />
-                    <div style={{ padding: "20px" }}>
-                      <div
+                    >
+                      <span
                         style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          marginBottom: "12px",
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontSize: "11px",
-                            fontWeight: 700,
-                            padding: "4px 10px",
-                            borderRadius: "999px",
-                            backgroundColor: cat.bg,
-                            color: cat.color,
-                          }}
-                        >
-                          {cat.label}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "11px",
-                            color: COLORS.text.muted,
-                          }}
-                        >
-                          #{event.id}
-                        </span>
-                      </div>
-
-                      <h3
-                        style={{
-                          fontSize: "16px",
+                          fontSize: "11px",
                           fontWeight: 700,
-                          color: COLORS.text.primary,
-                          marginBottom: "6px",
+                          padding: "4px 10px",
+                          borderRadius: "999px",
+                          backgroundColor: `${cat.color}20`,
+                          color: cat.color,
                         }}
                       >
-                        {event.title}
-                      </h3>
-                      <p
+                        {cat.label}
+                      </span>
+                      <span
                         style={{
-                          fontSize: "13px",
-                          color: COLORS.text.secondary,
-                          marginBottom: "16px",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
+                          fontSize: "11px",
+                          color: COLORS.text.muted,
+                          fontFamily: "monospace",
                         }}
                       >
-                        {event.description || "Aucune description."}
-                      </p>
+                        #{event.id.slice(0, 6)}
+                      </span>
+                    </div>
 
-                      <div style={{ marginBottom: "16px" }}>
-                        {[
-                          { icon: <MapPin size={13} />, text: event.location },
-                          {
-                            icon: <Calendar size={13} />,
-                            text: formatDate(event.startDate),
-                          },
-                          {
-                            icon: <Clock size={13} />,
-                            text: `${event.sessions?.length || 0} sessions`,
-                          },
-                        ].map((item, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "8px",
-                              fontSize: "13px",
-                              color: COLORS.text.secondary,
-                              marginBottom: "4px",
-                            }}
-                          >
-                            <span style={{ color: COLORS.text.muted }}>
-                              {item.icon}
-                            </span>
-                            <span>{item.text}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <h3
+                      style={{
+                        fontSize: "16px",
+                        fontWeight: 700,
+                        color: COLORS.text.primary,
+                        marginBottom: "6px",
+                      }}
+                    >
+                      {event.title}
+                    </h3>
 
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          paddingTop: "14px",
-                          borderTop: `1px solid ${COLORS.darkBorder}`,
-                        }}
-                      >
-                        <div style={{ display: "flex", gap: "4px" }}>
-                          <Link
-                            to={`/events/${event.id}/show`}
-                            style={{
-                              padding: "7px",
-                              borderRadius: "8px",
-                              color: COLORS.text.muted,
-                              textDecoration: "none",
-                            }}
-                          >
-                            <Eye size={15} />
-                          </Link>
-                          <Link
-                            to={`/events/${event.id}`}
-                            style={{
-                              padding: "7px",
-                              borderRadius: "8px",
-                              color: COLORS.text.muted,
-                              textDecoration: "none",
-                            }}
-                          >
-                            <Edit2 size={15} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(event.id, event.title)}
-                            style={{
-                              padding: "7px",
-                              borderRadius: "8px",
-                              border: "none",
-                              background: "transparent",
-                              color: COLORS.text.muted,
-                              cursor: "pointer",
-                            }}
-                          >
-                            <Trash2 size={15} />
-                          </button>
+                    <p
+                      style={{
+                        fontSize: "13px",
+                        color: COLORS.text.secondary,
+                        marginBottom: "16px",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        lineHeight: 1.5,
+                      }}
+                    >
+                      {event.description || "No description."}
+                    </p>
+
+                    <div style={{ marginBottom: "16px" }}>
+                      {[
+                        { icon: <MapPin size={13} />, text: event.location },
+                        {
+                          icon: <Calendar size={13} />,
+                          text: formatDate(event.startDate),
+                        },
+                        {
+                          icon: <Clock size={13} />,
+                          text: `${event.sessions?.length || 0} sessions`,
+                        },
+                      ].map((item, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            fontSize: "13px",
+                            color: COLORS.text.secondary,
+                            marginBottom: "4px",
+                          }}
+                        >
+                          <span style={{ color: COLORS.text.muted, opacity: 0.8 }}>
+                            {item.icon}
+                          </span>
+                          <span>{item.text}</span>
                         </div>
+                      ))}
+                    </div>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        paddingTop: "14px",
+                        borderTop: `1px solid ${COLORS.darkBorder}`,
+                      }}
+                    >
+                      <div style={{ display: "flex", gap: "4px" }}>
                         <Link
                           to={`/events/${event.id}/show`}
                           style={{
-                            fontSize: "12px",
-                            fontWeight: 700,
-                            color: COLORS.primary,
+                            padding: "6px 10px",
+                            borderRadius: "8px",
+                            color: COLORS.text.muted,
                             textDecoration: "none",
+                            transition: "all 0.2s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = `${COLORS.primary}20`;
+                            e.currentTarget.style.color = COLORS.primary;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.color = COLORS.text.muted;
                           }}
                         >
-                          Détails →
+                          <Eye size={14} />
                         </Link>
+                        <Link
+                          to={`/events/${event.id}`}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: "8px",
+                            color: COLORS.text.muted,
+                            textDecoration: "none",
+                            transition: "all 0.2s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = `${COLORS.primary}20`;
+                            e.currentTarget.style.color = COLORS.primary;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.color = COLORS.text.muted;
+                          }}
+                        >
+                          <Edit2 size={14} />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(event.id, event.title)}
+                          style={{
+                            padding: "6px 10px",
+                            borderRadius: "8px",
+                            border: "none",
+                            background: "transparent",
+                            color: COLORS.text.muted,
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = COLORS.error;
+                            e.currentTarget.style.backgroundColor = "rgba(248, 113, 113, 0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = COLORS.text.muted;
+                            e.currentTarget.style.backgroundColor = "transparent";
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </div>
+                      <Link
+                        to={`/events/${event.id}/show`}
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          color: COLORS.primary,
+                          textDecoration: "none",
+                          transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = COLORS.primary;
+                          e.currentTarget.style.transform = "translateX(2px)";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = COLORS.primary;
+                          e.currentTarget.style.transform = "translateX(0)";
+                        }}
+                      >
+                        Details →
+                      </Link>
                     </div>
                   </div>
                 );
               })}
             </div>
 
-            {/* ✅ PAGINATION */}
+            {/* PAGINATION */}
             {totalPages > 1 && (
               <div
                 style={{
@@ -629,36 +707,49 @@ const EventListGrid = () => {
                   gap: "12px",
                 }}
               >
-                <p style={{ fontSize: "13px", color: COLORS.text.secondary }}>
-                  Page <strong style={{ color: COLORS.text.primary }}>{currentPage}</strong>{" "}
-                  sur <strong style={{ color: COLORS.text.primary }}>{totalPages}</strong>
+                <p
+                  style={{
+                    fontSize: "13px",
+                    color: COLORS.text.secondary,
+                  }}
+                >
+                  Showing{" "}
+                  <strong style={{ color: COLORS.text.primary }}>
+                    {startIndex + 1}
+                  </strong>{" "}
+                  to{" "}
+                  <strong style={{ color: COLORS.text.primary }}>
+                    {Math.min(endIndex, total || 0)}
+                  </strong>{" "}
+                  of <strong style={{ color: COLORS.text.primary }}>{total}</strong>{" "}
+                  events
                 </p>
                 <div style={{ display: "flex", gap: "4px" }}>
-                  {/* Bouton Précédent */}
                   <button
                     onClick={() => setPage(currentPage - 1)}
                     disabled={currentPage <= 1}
                     style={{
                       padding: "7px 12px",
                       borderRadius: "8px",
-                      border: `1.5px solid ${COLORS.darkBorder}`,
-                      backgroundColor: COLORS.darkCard,
-                      color:
-                        currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary,
+                      border: `1px solid ${COLORS.darkBorder}`,
+                      backgroundColor: "transparent",
+                      color: currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary,
                       cursor: currentPage <= 1 ? "not-allowed" : "pointer",
+                      transition: "all 0.2s ease",
                     }}
                   >
                     ←
                   </button>
 
-                  {/* Numéros de pages */}
                   {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
-                    let p;
-                    if (totalPages <= 7) p = i + 1;
-                    else if (currentPage <= 4) p = i + 1;
-                    else if (currentPage >= totalPages - 3)
-                      p = totalPages - 6 + i;
-                    else p = currentPage - 3 + i;
+                    let p =
+                      totalPages <= 7
+                        ? i + 1
+                        : currentPage <= 4
+                          ? i + 1
+                          : currentPage >= totalPages - 3
+                            ? totalPages - 6 + i
+                            : currentPage - 3 + i;
                     return (
                       <button
                         key={p}
@@ -666,16 +757,13 @@ const EventListGrid = () => {
                         style={{
                           padding: "7px 12px",
                           borderRadius: "8px",
-                          border: "1.5px solid",
-                          borderColor:
-                            p === currentPage ? COLORS.primary : COLORS.darkBorder,
-                          backgroundColor:
-                            p === currentPage ? COLORS.primary : COLORS.darkCard,
-                          color:
-                            p === currentPage ? "#fff" : COLORS.text.secondary,
+                          border: `1px solid ${p === currentPage ? COLORS.primary : COLORS.darkBorder}`,
+                          backgroundColor: p === currentPage ? COLORS.primary : "transparent",
+                          color: p === currentPage ? "#fff" : COLORS.text.secondary,
                           fontWeight: p === currentPage ? 700 : 400,
                           cursor: "pointer",
                           minWidth: "36px",
+                          transition: "all 0.2s ease",
                         }}
                       >
                         {p}
@@ -683,20 +771,17 @@ const EventListGrid = () => {
                     );
                   })}
 
-                  {/* Bouton Suivant */}
                   <button
                     onClick={() => setPage(currentPage + 1)}
                     disabled={currentPage >= totalPages}
                     style={{
                       padding: "7px 12px",
                       borderRadius: "8px",
-                      border: `1.5px solid ${COLORS.darkBorder}`,
-                      backgroundColor: COLORS.darkCard,
-                      color:
-                        currentPage >= totalPages
-                          ? COLORS.text.muted
-                          : COLORS.text.secondary,
+                      border: `1px solid ${COLORS.darkBorder}`,
+                      backgroundColor: "transparent",
+                      color: currentPage >= totalPages ? COLORS.text.muted : COLORS.text.secondary,
                       cursor: currentPage >= totalPages ? "not-allowed" : "pointer",
+                      transition: "all 0.2s ease",
                     }}
                   >
                     →
