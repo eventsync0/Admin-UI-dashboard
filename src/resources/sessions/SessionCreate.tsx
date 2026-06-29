@@ -42,10 +42,7 @@ export const SessionCreate = () => {
                   gap: "10px",
                 }}
               >
-                <Sparkles
-                  size={24}
-                  color={COLORS.primary}
-                />
+                <Sparkles size={24} color={COLORS.primary} />
 
                 <h1
                   style={{
