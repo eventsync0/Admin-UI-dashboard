@@ -1,30 +1,8 @@
 import { useState, useEffect } from "react";
 import { useListContext, List } from "react-admin";
 import { Link } from "react-router-dom";
-import {
-  Home,
-  MapPin,
-  Users,
-  Layers,
-  Plus,
-  Search,
-  Eye,
-  Edit2,
-  Trash2,
-  Sparkles,
-} from "lucide-react";
+import { Home, Plus, Eye, Edit2, Trash2, Sparkles } from "lucide-react";
 import { useDelete, useNotify, useRefresh } from "react-admin";
-
-// === TYPE MAP ===
-const typeMap: Record<
-  string,
-  { label: string; color: string; bg: string }
-> = {
-  MEETING: { label: "Meeting", color: "#2563eb", bg: "#eff6ff" },
-  CONFERENCE: { label: "Conférence", color: "#7c3aed", bg: "#f5f3ff" },
-  WORKSHOP: { label: "Atelier", color: "#059669", bg: "#ecfdf5" },
-  OTHER: { label: "Autre", color: "#6b7280", bg: "#f9fafb" },
-};
 
 // === COLORS ===
 const COLORS = {
@@ -45,7 +23,6 @@ const RoomListGrid = () => {
     useListContext();
 
   const [search, setSearch] = useState(filterValues.q || "");
-  const [type, setType] = useState(filterValues.type || "");
 
   const [deleteOne] = useDelete();
   const notify = useNotify();
@@ -73,20 +50,12 @@ const RoomListGrid = () => {
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      setFilters({
-        ...filterValues,
-        q: search || undefined,
-        type: type || undefined,
-      });
+      setFilters({ ...filterValues, q: search || undefined });
     }, 400);
-
     return () => clearTimeout(delay);
-  }, [search, type]);
+  }, [search]);
 
   const totalRooms = total || 0;
-  const totalCapacity =
-    data?.reduce((acc: number, r: any) => acc + (r.capacity || 0), 0) || 0;
-
   const totalPages = Math.ceil((total || 0) / ITEMS_PER_PAGE);
   const currentPage = page || 1;
 
@@ -148,7 +117,7 @@ const RoomListGrid = () => {
               Gestion des Salles
             </h1>
             <p style={{ color: COLORS.text.secondary, fontSize: "14px" }}>
-              Gérez vos rooms et leurs capacités.
+              Gérez vos salles.
             </p>
           </div>
 
@@ -179,102 +148,60 @@ const RoomListGrid = () => {
             marginBottom: "24px",
           }}
         >
-          {[
-            {
-              label: "Total salles",
-              value: totalRooms,
-              icon: <Home size={20} />,
-              color: COLORS.primary,
-            },
-            {
-              label: "Capacité totale",
-              value: totalCapacity,
-              icon: <Users size={20} />,
-              color: "#38bdf8",
-            },
-          ].map((kpi) => (
-            <div
-              key={kpi.label}
-              style={{
-                backgroundColor: COLORS.darkCard,
-                border: `1px solid ${COLORS.darkBorder}`,
-                borderRadius: "16px",
-                padding: "20px",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <div>
-                <div style={{ fontSize: "11px", color: COLORS.text.muted }}>
-                  {kpi.label}
-                </div>
-                <div
-                  style={{
-                    fontSize: "26px",
-                    fontWeight: 800,
-                    color: COLORS.text.primary,
-                  }}
-                >
-                  {kpi.value}
-                </div>
+          <div
+            style={{
+              backgroundColor: COLORS.darkCard,
+              border: `1px solid ${COLORS.darkBorder}`,
+              borderRadius: "16px",
+              padding: "20px",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              <div style={{ fontSize: "11px", color: COLORS.text.muted }}>
+                Total salles
               </div>
               <div
                 style={{
-                  padding: "10px",
-                  borderRadius: "10px",
-                  backgroundColor: `${kpi.color}20`,
-                  color: kpi.color,
+                  fontSize: "26px",
+                  fontWeight: 800,
+                  color: COLORS.text.primary,
                 }}
               >
-                {kpi.icon}
+                {totalRooms}
               </div>
             </div>
-          ))}
+            <div
+              style={{
+                padding: "10px",
+                borderRadius: "10px",
+                backgroundColor: `${COLORS.primary}20`,
+                color: COLORS.primary,
+              }}
+            >
+              <Home size={20} />
+            </div>
+          </div>
         </div>
 
-        {/* FILTERS */}
-        <div
-          style={{
-            display: "flex",
-            gap: "12px",
-            flexWrap: "wrap",
-            marginBottom: "24px",
-          }}
-        >
-          <div style={{ flex: 1, minWidth: "200px" }}>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher une salle..."
-              style={{
-                width: "100%",
-                padding: "10px 14px",
-                borderRadius: "10px",
-                backgroundColor: "rgba(0,0,0,0.2)",
-                border: `1px solid ${COLORS.darkBorder}`,
-                color: "#fff",
-              }}
-            />
-          </div>
-
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
+        {/* SEARCH */}
+        <div style={{ marginBottom: "24px" }}>
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher une salle..."
             style={{
+              width: "100%",
+              maxWidth: "400px",
               padding: "10px 14px",
               borderRadius: "10px",
               backgroundColor: "rgba(0,0,0,0.2)",
-              color: "#fff",
               border: `1px solid ${COLORS.darkBorder}`,
+              color: "#fff",
+              boxSizing: "border-box",
             }}
-          >
-            <option value="">Tous les types</option>
-            {Object.entries(typeMap).map(([key, val]) => (
-              <option key={key} value={key}>
-                {val.label}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* GRID */}
@@ -290,7 +217,7 @@ const RoomListGrid = () => {
               <div
                 key={i}
                 style={{
-                  height: "140px",
+                  height: "100px",
                   backgroundColor: COLORS.darkCard,
                   border: `1px solid ${COLORS.darkBorder}`,
                   borderRadius: "16px",
@@ -306,78 +233,122 @@ const RoomListGrid = () => {
               gap: "20px",
             }}
           >
-            {data?.slice(0, 12).map((room: any) => {
-              const t = typeMap[room.type] || typeMap.OTHER;
-
-              return (
+            {data?.slice(0, ITEMS_PER_PAGE).map((room: any) => (
+              <div
+                key={room.id}
+                style={{
+                  backgroundColor: COLORS.darkCard,
+                  border: `1px solid ${COLORS.darkBorder}`,
+                  borderRadius: "18px",
+                  padding: "18px",
+                  transition: "0.3s",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "12px",
+                }}
+              >
                 <div
-                  key={room.id}
                   style={{
-                    backgroundColor: COLORS.darkCard,
-                    border: `1px solid ${COLORS.darkBorder}`,
-                    borderRadius: "18px",
-                    padding: "18px",
-                    transition: "0.3s",
+                    height: "3px",
+                    borderRadius: "2px",
+                    backgroundColor: COLORS.primary,
+                  }}
+                />
+
+                <h3
+                  style={{
+                    color: "#fff",
+                    margin: 0,
+                    fontSize: "16px",
+                    fontWeight: 700,
                   }}
                 >
-                  <div
-                    style={{
-                      height: "4px",
-                      backgroundColor: t.color,
-                      marginBottom: "12px",
-                    }}
-                  />
+                  {room.name}
+                </h3>
 
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      padding: "4px 10px",
-                      borderRadius: "999px",
-                      backgroundColor: t.bg,
-                      color: t.color,
-                    }}
-                  >
-                    {t.label}
-                  </span>
-
-                  <h3 style={{ color: "#fff", marginTop: "10px" }}>
-                    {room.name}
-                  </h3>
-
-                  <p style={{ color: COLORS.text.secondary, fontSize: "13px" }}>
-                    📍 {room.location}
-                  </p>
-
-                  <p style={{ color: COLORS.text.secondary, fontSize: "13px" }}>
-                    👥 Capacité: {room.capacity}
-                  </p>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginTop: "12px",
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <Link to={`/rooms/${room.id}`}>
-                        <Eye size={16} />
-                      </Link>
-                      <Link to={`/rooms/${room.id}`}>
-                        <Edit2 size={16} />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(room.id, room.name)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-
-                    <Link to={`/rooms/${room.id}`}>Détails →</Link>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                    <Link
+                      to={`/rooms/${room.id}/show`}
+                      title="Voir"
+                      style={{ color: COLORS.text.secondary, display: "flex" }}
+                    >
+                      <Eye size={16} />
+                    </Link>
+                    <Link
+                      to={`/rooms/${room.id}`}
+                      title="Modifier"
+                      style={{ color: COLORS.text.secondary, display: "flex" }}
+                    >
+                      <Edit2 size={16} />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(room.id, room.name)}
+                      title="Supprimer"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        color: "#ef4444",
+                        display: "flex",
+                        padding: 0,
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
+
+                  <Link
+                    to={`/rooms/${room.id}/show`}
+                    style={{
+                      color: COLORS.primary,
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      textDecoration: "none",
+                    }}
+                  >
+                    Détails →
+                  </Link>
                 </div>
-              );
-            })}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* PAGINATION */}
+        {totalPages > 1 && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              marginTop: "32px",
+            }}
+          >
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: `1px solid ${p === currentPage ? COLORS.primary : COLORS.darkBorder}`,
+                  backgroundColor:
+                    p === currentPage ? `${COLORS.primary}20` : "transparent",
+                  color: p === currentPage ? COLORS.primary : COLORS.text.secondary,
+                  cursor: "pointer",
+                  fontWeight: p === currentPage ? 700 : 400,
+                }}
+              >
+                {p}
+              </button>
+            ))}
           </div>
         )}
       </div>

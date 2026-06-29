@@ -1,16 +1,8 @@
 import React from "react";
-import {
-  Create,
-  SimpleForm,
-  TextInput,
-  NumberInput,
-  SelectInput,
-  required,
-} from "react-admin";
+import { Create, SimpleForm, TextInput, required } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Home, Layers } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
-// 🎨 Style glassmorphism réutilisé
 const sectionCard = {
   backgroundColor: "rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(16px)",
@@ -24,7 +16,6 @@ const sectionCard = {
   zIndex: 10,
 } as const;
 
-// Header section
 const sectionHeader = (Icon: React.FC<any>, label: string) => (
   <div
     style={{
@@ -48,10 +39,7 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
     >
       <Icon size={20} />
     </div>
-
-    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0 }}>
-      {label}
-    </h3>
+    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0 }}>{label}</h3>
   </div>
 );
 
@@ -111,7 +99,6 @@ export const RoomCreate = () => {
             backgroundColor: "transparent",
             position: "relative",
             zIndex: 10,
-
             "& .MuiOutlinedInput-root": {
               backgroundColor: "rgba(0,0,0,0.2)",
               borderRadius: "12px",
@@ -124,8 +111,7 @@ export const RoomCreate = () => {
               color: "rgba(255,255,255,0.6)",
             },
             "& .MuiButton-containedPrimary": {
-              background:
-                "linear-gradient(90deg, #cd5b32 0%, #d4704b 100%)",
+              background: "linear-gradient(90deg, #cd5b32 0%, #d4704b 100%)",
               borderRadius: "12px",
             },
           }}
@@ -144,7 +130,7 @@ export const RoomCreate = () => {
                 Créer une salle
               </h1>
               <p style={{ color: "rgba(255,255,255,0.6)" }}>
-                Ajoutez une nouvelle room au système
+                Ajoutez une nouvelle salle au système
               </p>
             </div>
 
@@ -166,15 +152,8 @@ export const RoomCreate = () => {
             </Link>
           </div>
 
-          {/* FORM GRID */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-              gap: "24px",
-            }}
-          >
-            {/* LEFT */}
+          {/* FORM */}
+          <div style={{ maxWidth: "480px", width: "100%" }}>
             <div style={sectionCard}>
               {sectionHeader(Home, "Informations de la salle")}
 
@@ -182,43 +161,6 @@ export const RoomCreate = () => {
                 source="name"
                 label="Nom de la salle"
                 validate={required()}
-                fullWidth
-              />
-
-              <TextInput
-                source="location"
-                label="Emplacement"
-                fullWidth
-              />
-
-              <SelectInput
-                source="type"
-                label="Type"
-                choices={[
-                  { id: "MEETING", name: "Meeting" },
-                  { id: "CONFERENCE", name: "Conférence" },
-                  { id: "WORKSHOP", name: "Atelier" },
-                ]}
-                fullWidth
-              />
-            </div>
-
-            {/* RIGHT */}
-            <div style={sectionCard}>
-              {sectionHeader(Layers, "Capacité & détails")}
-
-              <NumberInput
-                source="capacity"
-                label="Capacité"
-                validate={required()}
-                fullWidth
-              />
-
-              <TextInput
-                source="description"
-                label="Description"
-                multiline
-                rows={4}
                 fullWidth
               />
             </div>
