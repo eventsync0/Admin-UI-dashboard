@@ -7,6 +7,7 @@ import { Layout } from "./layout/Layout";
 import { SessionList } from "./resources/sessions/SessionList";
 import { SessionCreate } from "./resources/sessions/SessionCreate";
 import { SessionEdit } from "./resources/sessions/SessionEdit";
+import { SessionShow } from "./resources/sessions/SessionShow";
 
 
 import {
@@ -56,6 +57,7 @@ function App() {
                 list={SessionList}
                 create={SessionCreate}
                 edit={SessionEdit}
+                show={SessionShow}
             />
 
       <Resource
