@@ -1,16 +1,34 @@
 import { List, useListContext } from "react-admin";
 import { Link } from "react-router-dom";
-import { User, Eye, Edit2 } from "lucide-react";
+import { Eye, Edit2 } from "lucide-react";
 
-const COLORS = {
-  bg: "#0B0B14",
-  card: "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
-  text: {
-    primary: "#fff",
-    secondary: "rgba(255,255,255,0.7)",
-  },
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gap: 20,
 };
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: 20,
+  padding: 16,
+  color: "#fff",
+  backdropFilter: "blur(10px)",
+};
+
+const Avatar = ({ url }: { url?: string }) => (
+  <img
+    src={url || "https://via.placeholder.com/80"}
+    style={{
+      width: 60,
+      height: 60,
+      borderRadius: "50%",
+      objectFit: "cover",
+      border: "2px solid rgba(255,255,255,0.2)",
+    }}
+  />
+);
 
 const SpeakerGrid = () => {
   const { data, isLoading } = useListContext();
@@ -18,29 +36,18 @@ const SpeakerGrid = () => {
   if (isLoading) return <p style={{ color: "#fff" }}>Loading...</p>;
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: 20,
-    }}>
+    <div style={gridStyle}>
       {data?.map((s: any) => (
-        <div
-          key={s.id}
-          style={{
-            background: COLORS.card,
-            border: `1px solid ${COLORS.border}`,
-            borderRadius: 20,
-            padding: 20,
-            color: "#fff",
-          }}
-        >
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <User size={18} />
-            <h3>{s.name}</h3>
+        <div key={s.id} style={cardStyle}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Avatar url={s.photoUrl} />
+            <div>
+              <h3 style={{ margin: 0 }}>{s.fullName}</h3>
+              <p style={{ margin: 0, opacity: 0.6, fontSize: 12 }}>
+                {s.bio?.slice(0, 50)}
+              </p>
+            </div>
           </div>
-
-          <p style={{ opacity: 0.7 }}>{s.jobTitle}</p>
-          <p style={{ fontSize: 12, opacity: 0.5 }}>{s.company}</p>
 
           <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
             <Link to={`/speakers/${s.id}/show`}><Eye size={16} /></Link>
