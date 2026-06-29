@@ -73,7 +73,6 @@ const SpeakerGrid = () => {
 
 export const SpeakerList = () => (
   <List
-    actions={false}
     perPage={12}
     sort={{ field: "fullName", order: "ASC" }}
   >

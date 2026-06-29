@@ -1,34 +1,32 @@
-import React from "react";
 import {
   Create,
   SimpleForm,
   TextInput,
-  required,
   ArrayInput,
   SimpleFormIterator,
+  required,
 } from "react-admin";
-import { User, Link as LinkIcon, FileText } from "lucide-react";
-
-const sectionCard = {
-  backgroundColor: "rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(16px)",
-  border: "1px solid rgba(255, 255, 255, 0.1)",
-  borderRadius: "20px",
-  padding: "24px",
-  marginBottom: "20px",
-  color: "#fff",
-};
+import { User } from "lucide-react";
 
 export const SpeakerCreate = () => (
-  <Create actions={false}>
+  <Create redirect="list">
     <SimpleForm
       sx={{
         "& .MuiInputBase-input": { color: "#fff" },
         "& .MuiInputLabel-root": { color: "rgba(255,255,255,0.6)" },
       }}
     >
-      <div style={sectionCard}>
-        <h3><User size={18} /> Informations générales</h3>
+      <div
+        style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: 20,
+          padding: 24,
+        }}
+      >
+        <h2>
+          <User /> Create Speaker
+        </h2>
 
         <TextInput
           source="fullName"
@@ -37,11 +35,7 @@ export const SpeakerCreate = () => (
           fullWidth
         />
 
-        <TextInput
-          source="photoUrl"
-          label="Photo URL"
-          fullWidth
-        />
+        <TextInput source="photoUrl" label="Photo URL" fullWidth />
 
         <TextInput
           source="bio"
@@ -52,12 +46,19 @@ export const SpeakerCreate = () => (
         />
       </div>
 
-      <div style={sectionCard}>
-        <h3><LinkIcon size={18} /> Liens externes</h3>
+      <div
+        style={{
+          marginTop: 20,
+          background: "rgba(255,255,255,0.03)",
+          borderRadius: 20,
+          padding: 24,
+        }}
+      >
+        <h3>Liens externes</h3>
 
-        <ArrayInput source="speakerLinks">
+        <ArrayInput source="links">
           <SimpleFormIterator>
-            <TextInput source="platform" label="Plateforme (LinkedIn, GitHub...)" />
+            <TextInput source="platform" label="Plateforme" />
             <TextInput source="url" label="URL" />
           </SimpleFormIterator>
         </ArrayInput>
