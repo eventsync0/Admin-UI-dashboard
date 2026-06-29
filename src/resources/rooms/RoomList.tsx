@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useListContext, List } from "react-admin";
 import { Link } from "react-router-dom";
 import { Home, Plus, Eye, Edit2, Trash2, Sparkles } from "lucide-react";
@@ -22,7 +22,11 @@ const RoomListGrid = () => {
   const { data, total, isLoading, filterValues, setFilters, page, setPage } =
     useListContext();
 
-  const [search, setSearch] = useState(filterValues.q || "");
+  // ✅ 2 états séparés
+  const [searchInput, setSearchInput] = useState(
+    filterValues?.search || ""
+  );
+  const [search, setSearch] = useState(filterValues?.search || "");
 
   const [deleteOne] = useDelete();
   const notify = useNotify();
@@ -30,6 +34,9 @@ const RoomListGrid = () => {
 
   const ITEMS_PER_PAGE = 12;
 
+  // ========================
+  // DELETE ROOM
+  // ========================
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Supprimer la salle "${name}" ?`)) {
       deleteOne(
@@ -48,15 +55,18 @@ const RoomListGrid = () => {
     }
   };
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      setFilters({ ...filterValues, q: search || undefined });
-    }, 400);
-    return () => clearTimeout(delay);
-  }, [search]);
+  // ========================
+  // SEARCH CLICK HANDLER
+  // ========================
+  const handleSearch = () => {
+    const value = searchInput.trim();
+
+    setSearch(value);
+    setFilters(value ? { search: value } : {});
+  };
 
   const totalRooms = total || 0;
-  const totalPages = Math.ceil((total || 0) / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(totalRooms / ITEMS_PER_PAGE);
   const currentPage = page || 1;
 
   return (
@@ -65,7 +75,6 @@ const RoomListGrid = () => {
         padding: "24px",
         minHeight: "100vh",
         backgroundColor: COLORS.background,
-        position: "relative",
       }}
     >
       {/* BACKGROUND */}
@@ -185,46 +194,51 @@ const RoomListGrid = () => {
           </div>
         </div>
 
-        {/* SEARCH */}
-        <div style={{ marginBottom: "24px" }}>
+        {/* ===================== */}
+        {/* SEARCH BAR + BUTTON */}
+        {/* ===================== */}
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            marginBottom: "24px",
+            alignItems: "center",
+          }}
+        >
           <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             placeholder="Rechercher une salle..."
             style={{
               width: "100%",
               maxWidth: "400px",
-              padding: "10px 14px",
+              padding: "10px",
               borderRadius: "10px",
-              backgroundColor: "rgba(0,0,0,0.2)",
-              border: `1px solid ${COLORS.darkBorder}`,
+              background: "rgba(0,0,0,0.2)",
+              border: "1px solid rgba(255,255,255,0.1)",
               color: "#fff",
-              boxSizing: "border-box",
             }}
           />
+
+          <button
+            onClick={handleSearch}
+            style={{
+              padding: "10px 14px",
+              borderRadius: "10px",
+              background: COLORS.primary,
+              color: "#fff",
+              fontWeight: 700,
+              border: "none",
+              cursor: "pointer",
+            }}
+          >
+            🔍 Search
+          </button>
         </div>
 
         {/* GRID */}
         {isLoading ? (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: "20px",
-            }}
-          >
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div
-                key={i}
-                style={{
-                  height: "100px",
-                  backgroundColor: COLORS.darkCard,
-                  border: `1px solid ${COLORS.darkBorder}`,
-                  borderRadius: "16px",
-                }}
-              />
-            ))}
-          </div>
+          <p style={{ color: "#fff" }}>Loading...</p>
         ) : (
           <div
             style={{
@@ -237,84 +251,31 @@ const RoomListGrid = () => {
               <div
                 key={room.id}
                 style={{
-                  backgroundColor: COLORS.darkCard,
+                  background: COLORS.darkCard,
                   border: `1px solid ${COLORS.darkBorder}`,
-                  borderRadius: "18px",
-                  padding: "18px",
-                  transition: "0.3s",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "12px",
+                  padding: "16px",
+                  borderRadius: "12px",
                 }}
               >
-                <div
-                  style={{
-                    height: "3px",
-                    borderRadius: "2px",
-                    backgroundColor: COLORS.primary,
-                  }}
-                />
+                <h3 style={{ color: "#fff" }}>{room.name}</h3>
 
-                <h3
-                  style={{
-                    color: "#fff",
-                    margin: 0,
-                    fontSize: "16px",
-                    fontWeight: 700,
-                  }}
-                >
-                  {room.name}
-                </h3>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                    <Link
-                      to={`/rooms/${room.id}/show`}
-                      title="Voir"
-                      style={{ color: COLORS.text.secondary, display: "flex" }}
-                    >
-                      <Eye size={16} />
-                    </Link>
-                    <Link
-                      to={`/rooms/${room.id}`}
-                      title="Modifier"
-                      style={{ color: COLORS.text.secondary, display: "flex" }}
-                    >
-                      <Edit2 size={16} />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(room.id, room.name)}
-                      title="Supprimer"
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "#ef4444",
-                        display: "flex",
-                        padding: 0,
-                      }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-
-                  <Link
-                    to={`/rooms/${room.id}/show`}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <Link to={`/rooms/${room.id}/show`}>
+                    <Eye color="white" size={16} />
+                  </Link>
+                  <Link to={`/rooms/${room.id}`}>
+                    <Edit2 color="white" size={16} />
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(room.id, room.name)}
                     style={{
-                      color: COLORS.primary,
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      textDecoration: "none",
+                      background: "none",
+                      border: "none",
+                      color: "red",
                     }}
                   >
-                    Détails →
-                  </Link>
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
             ))}
@@ -323,27 +284,17 @@ const RoomListGrid = () => {
 
         {/* PAGINATION */}
         {totalPages > 1 && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "8px",
-              marginTop: "32px",
-            }}
-          >
+          <div style={{ marginTop: 20, display: "flex", gap: 8 }}>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
               <button
                 key={p}
                 onClick={() => setPage(p)}
                 style={{
-                  padding: "6px 14px",
+                  padding: "6px 12px",
                   borderRadius: "8px",
-                  border: `1px solid ${p === currentPage ? COLORS.primary : COLORS.darkBorder}`,
-                  backgroundColor:
-                    p === currentPage ? `${COLORS.primary}20` : "transparent",
-                  color: p === currentPage ? COLORS.primary : COLORS.text.secondary,
-                  cursor: "pointer",
-                  fontWeight: p === currentPage ? 700 : 400,
+                  border: "1px solid #333",
+                  background: p === currentPage ? COLORS.primary : "transparent",
+                  color: "#fff",
                 }}
               >
                 {p}
