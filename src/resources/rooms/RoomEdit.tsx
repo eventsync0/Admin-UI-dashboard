@@ -1,16 +1,8 @@
 import React from "react";
-import {
-  Edit,
-  SimpleForm,
-  TextInput,
-  NumberInput,
-  SelectInput,
-  required,
-} from "react-admin";
+import { Edit, SimpleForm, TextInput, required } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Home, Layers } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
-// Card style (repris de ton design)
 const sectionCard = {
   backgroundColor: "var(--bg-card)",
   border: "1px solid var(--border)",
@@ -19,7 +11,6 @@ const sectionCard = {
   boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
 } as const;
 
-// Header section
 const sectionHeader = (Icon: React.FC<any>, label: string) => (
   <div
     style={{
@@ -42,7 +33,6 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
     >
       <Icon size={16} />
     </div>
-
     <h3
       style={{
         fontSize: "16px",
@@ -64,7 +54,6 @@ export const RoomEdit = () => {
         sx={{
           p: 0,
           "& .MuiFormControl-root": { width: "100%" },
-
           "& .MuiOutlinedInput-root": {
             backgroundColor: "var(--bg-subtle)",
             borderRadius: "10px",
@@ -72,15 +61,13 @@ export const RoomEdit = () => {
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "var(--border)",
           },
-          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-            {
-              borderColor: "var(--btn-primary)",
-            },
-          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-            {
-              borderColor: "var(--btn-primary)",
-              borderWidth: "2px",
-            },
+          "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "var(--btn-primary)",
+          },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "var(--btn-primary)",
+            borderWidth: "2px",
+          },
           "& .MuiInputBase-input": {
             color: "var(--txt-title)",
             fontFamily: "Inter, Roboto, sans-serif",
@@ -91,7 +78,6 @@ export const RoomEdit = () => {
           "& .MuiInputLabel-root.Mui-focused": {
             color: "var(--btn-primary)",
           },
-
           "& .MuiButton-containedPrimary": {
             backgroundColor: "var(--btn-primary)",
             color: "var(--btn-primary-txt)",
@@ -134,7 +120,7 @@ export const RoomEdit = () => {
                 margin: 0,
               }}
             >
-              Mettez à jour les informations de la room
+              Mettez à jour le nom de la salle
             </p>
           </div>
 
@@ -159,80 +145,15 @@ export const RoomEdit = () => {
           </Link>
         </div>
 
-        {/* GRID */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
-            gap: "24px",
-            width: "100%",
-            alignItems: "start",
-          }}
-        >
-          {/* LEFT */}
-          <div
-            style={{
-              ...sectionCard,
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-            }}
-          >
+        {/* FORM */}
+        <div style={{ maxWidth: "480px", width: "100%" }}>
+          <div style={{ ...sectionCard, display: "flex", flexDirection: "column", gap: "6px" }}>
             {sectionHeader(Home, "Informations de la salle")}
 
             <TextInput
               source="name"
               label="Nom de la salle"
               validate={required()}
-              fullWidth
-              variant="outlined"
-            />
-
-            <TextInput
-              source="location"
-              label="Emplacement"
-              fullWidth
-              variant="outlined"
-            />
-
-            <SelectInput
-              source="type"
-              label="Type"
-              choices={[
-                { id: "MEETING", name: "Meeting" },
-                { id: "CONFERENCE", name: "Conférence" },
-                { id: "WORKSHOP", name: "Atelier" },
-                { id: "OTHER", name: "Autre" },
-              ]}
-              fullWidth
-              variant="outlined"
-            />
-          </div>
-
-          {/* RIGHT */}
-          <div
-            style={{
-              ...sectionCard,
-              display: "flex",
-              flexDirection: "column",
-              gap: "6px",
-            }}
-          >
-            {sectionHeader(Layers, "Capacité & détails")}
-
-            <NumberInput
-              source="capacity"
-              label="Capacité"
-              validate={required()}
-              fullWidth
-              variant="outlined"
-            />
-
-            <TextInput
-              source="description"
-              label="Description"
-              multiline
-              rows={4}
               fullWidth
               variant="outlined"
             />

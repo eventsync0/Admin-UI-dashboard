@@ -106,6 +106,7 @@ export const dataProvider: DataProvider = {
         })
       )
     );
+
     return { data: params.ids };
   },
 
@@ -115,6 +116,7 @@ export const dataProvider: DataProvider = {
         call(`/api/${resource}/${id}`, { method: "DELETE" })
       )
     );
+
     return { data: params.ids };
   },
 
