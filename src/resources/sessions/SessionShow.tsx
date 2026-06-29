@@ -9,7 +9,6 @@ import {
   User,
   ArrowLeft,
   Edit,
-  FileText,
   Sparkles,
 } from "lucide-react";
 
@@ -95,7 +94,6 @@ const SessionShowDetail = () => {
           </Link>
         </div>
 
-        {/* Titre */}
         <div style={{ ...cardStyle, marginBottom: 24 }}>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: COLORS.text.primary, margin: 0 }}>
             {record.title}
@@ -103,7 +101,6 @@ const SessionShowDetail = () => {
           <p style={{ color: COLORS.text.secondary, marginTop: 8 }}>{record.description}</p>
         </div>
 
-        {/* Infos */}
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
           <div style={cardStyle}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
@@ -138,7 +135,6 @@ const SessionShowDetail = () => {
           </div>
         </div>
 
-        {/* Intervenants */}
         {record.speakers && record.speakers.length > 0 && (
           <div style={{ ...cardStyle, marginTop: 16 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>

@@ -1,112 +1,367 @@
-import { Edit, SimpleForm, TextInput, DateTimeInput, NumberInput, ReferenceInput, SelectInput, ReferenceArrayInput, SelectArrayInput } from 'react-admin';
-import { Card, CardContent, Typography, Box } from '@mui/material';
-import { Edit2 } from 'lucide-react';
+import {
+    Edit,
+    SimpleForm,
+    TextInput,
+    DateTimeInput,
+    NumberInput,
+    required,
+    ReferenceInput,
+    AutocompleteInput,
+    ReferenceArrayInput,
+    SelectArrayInput,
+} from "react-admin";
+import { Link } from "react-router-dom";
+import { ArrowLeft, FileText, Sparkles, Clock } from "lucide-react";
 
 const COLORS = {
-  primary: "#ea580c",
-  background: "#0B0B14",
-  card: "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
-  text: { primary: "#ffffff", secondary: "rgba(255,255,255,0.7)", muted: "rgba(255,255,255,0.5)" },
+    primary: "#d77c5b",
+    primaryDark: "#cd5b32",
+    primaryGlow: "rgba(215, 124, 91, 0.25)",
+    background: "#0B0B14",
+    darkCard: "rgba(255,255,255,0.03)",
+    darkBorder: "rgba(255,255,255,0.08)",
+    text: {
+        primary: "#f5ded6",
+        secondary: "#e19d84",
+        muted: "#7b371e",
+    },
 };
 
+const sectionCard = {
+    backgroundColor: COLORS.darkCard,
+    border: `1px solid ${COLORS.darkBorder}`,
+    borderRadius: "1.25rem",
+    padding: "24px",
+    backdropFilter: "blur(12px)",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+};
+
+const sectionHeader = (Icon: React.FC<any>, label: string, description?: string) => (
+    <div style={{ marginBottom: "20px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <div
+                style={{
+                    padding: "8px",
+                    borderRadius: "10px",
+                    backgroundColor: `${COLORS.primary}20`,
+                    color: COLORS.primary,
+                    display: "flex",
+                }}
+            >
+                <Icon size={16} />
+            </div>
+            <h3
+                style={{
+                    fontSize: "16px",
+                    fontWeight: 700,
+                    color: COLORS.text.primary,
+                    margin: 0,
+                }}
+            >
+                {label}
+            </h3>
+        </div>
+        {description && (
+            <p
+                style={{
+                    fontSize: "13px",
+                    color: COLORS.text.secondary,
+                    margin: "4px 0 0 42px",
+                }}
+            >
+                {description}
+            </p>
+        )}
+    </div>
+);
+
 export const SessionEdit = () => (
-  <Box sx={{ p: 3, minHeight: "100vh", bgcolor: COLORS.background }}>
-    <Card sx={{ 
-      maxWidth: 700, 
-      mx: "auto", 
-      bgcolor: "transparent",
-      boxShadow: "none",
-      border: "none",
-    }}>
-      <CardContent sx={{ p: 0 }}>
-        <Box display="flex" alignItems="center" gap={2} m={5}>
-          <Edit2 size={28} color={COLORS.primary} />
-          <Box>
-            <Typography variant="h5" fontWeight={600} color={COLORS.text.primary}>
-              Modifier la session
-            </Typography>
-            <Typography variant="body2" color={COLORS.text.muted}>
-              Modifiez les champs ci-dessous
-            </Typography>
-          </Box>
-        </Box>
-
-        <Edit>
-          <SimpleForm 
-            sx={{ 
-              "& .MuiInputLabel-root": { color: COLORS.text.muted, fontSize: 14 },
-              "& .MuiInputBase-root": { 
-                bgcolor: COLORS.card, 
-                borderRadius: 2,
-                color: COLORS.text.primary,
-                "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: COLORS.primary },
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: COLORS.primary },
-              },
-              "& .MuiOutlinedInput-notchedOutline": { borderColor: COLORS.border },
-              "& .MuiFormControl-root": { width: "100%" },
-              "& .MuiButton-root": { borderRadius: 2, textTransform: "none" },
+    <Edit
+        component="div"
+        actions={false}
+        sx={{
+            backgroundColor: COLORS.background,
+            minHeight: "100vh",
+            padding: "24px",
+            position: "relative",
+        }}
+    >
+        <div
+            style={{
+                position: "absolute",
+                inset: 0,
+                pointerEvents: "none",
+                overflow: "hidden",
             }}
-          >
-            <TextInput source="title" label="Titre" required fullWidth />
-            <TextInput source="description" label="Description" multiline rows={3} fullWidth />
-
-            <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={2} my={1}>
-              <ReferenceInput source="roomId" reference="rooms" label="Salle" fullWidth>
-                <SelectInput optionText="name" />
-              </ReferenceInput>
-              <NumberInput source="capacity" label="Capacité" min={1} fullWidth />
-            </Box>
-
-            <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={2}>
-              <DateTimeInput source="startTime" label="Début" fullWidth />
-              <DateTimeInput source="endTime" label="Fin" fullWidth />
-            </Box>
-
-            <ReferenceArrayInput source="speakerIds" reference="speakers" label="Intervenants" fullWidth>
-              <SelectArrayInput optionText="fullName" />
-            </ReferenceArrayInput>
-
-            <Box display="flex" gap={2} justifyContent="flex-end" mt={2}>
-              <Box 
-                component="button" 
-                type="button"
-                onClick={() => window.history.back()}
-                sx={{
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: 2,
-                  border: `1px solid ${COLORS.border}`,
-                  bgcolor: "transparent",
-                  color: COLORS.text.secondary,
-                  cursor: "pointer",
-                  fontWeight: 500,
-                  "&:hover": { bgcolor: COLORS.card },
+        >
+            <div
+                style={{
+                    position: "absolute",
+                    top: "10%",
+                    right: "5%",
+                    width: "400px",
+                    height: "400px",
+                    background: `radial-gradient(circle, ${COLORS.primaryGlow} 0%, transparent 60%)`,
+                    filter: "blur(80px)",
                 }}
-              >
-                Annuler
-              </Box>
-              <Box 
-                component="button" 
-                type="submit"
-                sx={{
-                  px: 5,
-                  py: 1.5,
-                  borderRadius: 2,
-                  border: "none",
-                  bgcolor: COLORS.primary,
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  "&:hover": { opacity: 0.85 },
+            />
+        </div>
+
+        <SimpleForm
+            className="bg-transparent"
+            sx={{
+                p: 0,
+                maxWidth: "1400px",
+                margin: "0 auto",
+                position: "relative",
+                zIndex: 1,
+
+                "& .MuiFormControl-root": { width: "100%" },
+                "& .MuiOutlinedInput-root": {
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    borderRadius: "10px",
+                    transition: "all 0.2s ease",
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: COLORS.primary,
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: COLORS.primary,
+                        borderWidth: "2px",
+                        boxShadow: `0 0 0 4px ${COLORS.primary}25`,
+                    },
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: COLORS.darkBorder,
+                    borderWidth: "1.5px",
+                },
+                "& .MuiInputBase-input": {
+                    color: COLORS.text.primary,
+                    fontSize: "14px",
+                    padding: "12px 14px",
+                    "&::placeholder": {
+                        color: COLORS.text.muted,
+                        opacity: 0.5,
+                    },
+                },
+                "& .MuiInputLabel-root": {
+                    color: COLORS.text.secondary,
+                    fontSize: "13px",
+                    "&.Mui-focused": {
+                        color: COLORS.primary,
+                    },
+                },
+                "& .MuiSelect-select": {
+                    color: COLORS.text.primary,
+                    padding: "12px 14px",
+                },
+                "& .MuiSelect-icon": {
+                    color: COLORS.primary,
+                },
+
+                "& .RaToolbar-root": {
+                    backgroundColor: "transparent",
+                    padding: "24px 0 0",
+                    borderTop: `1px solid ${COLORS.darkBorder}`,
+                    marginTop: "8px",
+                    display: "flex",
+                    gap: "12px",
+                    justifyContent: "flex-end",
+                    flexWrap: "wrap",
+                },
+                "& .MuiButton-containedPrimary": {
+                    backgroundColor: COLORS.primary,
+                    color: "#fff",
+                    borderRadius: "10px",
+                    fontWeight: 600,
+                    padding: "10px 28px",
+                    boxShadow: `0 2px 12px ${COLORS.primary}40`,
+                    transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+                    textTransform: "none",
+                    fontSize: "14px",
+                    "&:hover": {
+                        backgroundColor: COLORS.primaryDark,
+                        boxShadow: `0 6px 24px ${COLORS.primary}50`,
+                        transform: "translateY(-2px) scale(1.01)",
+                    },
+                },
+                "& .MuiButton-text": {
+                    color: COLORS.text.secondary,
+                    padding: "10px 20px",
+                    borderRadius: "10px",
+                    textTransform: "none",
+                    fontSize: "14px",
+                    "&:hover": {
+                        color: COLORS.text.primary,
+                        backgroundColor: `${COLORS.darkBorder}40`,
+                    },
+                },
+            }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    gap: "16px",
+                    paddingBottom: "20px",
+                    marginBottom: "8px",
+                    borderBottom: `1px solid ${COLORS.darkBorder}`,
+                    width: "100%",
                 }}
-              >
-                Mettre à jour
-              </Box>
-            </Box>
-          </SimpleForm>
-        </Edit>
-      </CardContent>
-    </Card>
-  </Box>
+            >
+                <div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <Sparkles size={24} color={COLORS.primary} />
+                        <h1
+                            style={{
+                                fontSize: "26px",
+                                fontWeight: 700,
+                                color: COLORS.text.primary,
+                                letterSpacing: "-0.02em",
+                                margin: 0,
+                            }}
+                        >
+                            Modifier la session
+                        </h1>
+                    </div>
+                    <p
+                        style={{
+                            fontSize: "14px",
+                            color: COLORS.text.secondary,
+                            margin: "4px 0 0 34px",
+                        }}
+                    >
+                        Mettez à jour les informations de la session
+                    </p>
+                </div>
+
+                <Link
+                    to="/sessions"
+                    style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        color: COLORS.text.secondary,
+                        textDecoration: "none",
+                        padding: "8px 18px",
+                        borderRadius: "10px",
+                        border: `1.5px solid ${COLORS.darkBorder}`,
+                        backgroundColor: "transparent",
+                        transition: "all 0.3s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.color = COLORS.text.primary;
+                        e.currentTarget.style.borderColor = COLORS.primary;
+                        e.currentTarget.style.backgroundColor = `${COLORS.primary}10`;
+                        e.currentTarget.style.transform = "translateX(-2px)";
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.color = COLORS.text.secondary;
+                        e.currentTarget.style.borderColor = COLORS.darkBorder;
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.transform = "translateX(0)";
+                    }}
+                >
+                    <ArrowLeft size={16} />
+                    Retour aux sessions
+                </Link>
+            </div>
+
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
+                    gap: "24px",
+                    width: "100%",
+                    alignItems: "start",
+                }}
+            >
+                <div style={sectionCard}>
+                    {sectionHeader(FileText, "Informations générales", "Titre, description et détails")}
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", height: "20rem" }}>
+                        <div style={{ gridColumn: "span 2" }}>
+                            <TextInput
+                                source="title"
+                                label="Titre"
+                                validate={required()}
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Ex: Workshop React"
+                            />
+                        </div>
+
+                        <div style={{ gridColumn: "span 2" }}>
+                            <TextInput
+                                source="description"
+                                label="Description"
+                                multiline
+                                rows={4}
+                                fullWidth
+                                variant="outlined"
+                                placeholder="Décrivez la session..."
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div style={sectionCard}>
+                    {sectionHeader(Clock, "Lieu et horaires", "Salle, capacité et horaires")}
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "16px", height: "28rem"}}>
+                        <ReferenceInput source="roomId" reference="rooms" label="Salle" fullWidth>
+                            <AutocompleteInput
+                                optionText="name"
+                                validate={required()}
+                                variant="outlined"
+                                label="Choisir une salle"
+                            />
+                        </ReferenceInput>
+
+                        <NumberInput
+                            source="capacity"
+                            label="Capacité"
+                            validate={required()}
+                            fullWidth
+                            variant="outlined"
+                            placeholder="Nombre de places"
+                        />
+
+                        <DateTimeInput
+                            source="startTime"
+                            label="Début"
+                            validate={required()}
+                            fullWidth
+                            variant="outlined"
+                        />
+
+                        <DateTimeInput
+                            source="endTime"
+                            label="Fin"
+                            validate={required()}
+                            fullWidth
+                            variant="outlined"
+                        />
+
+                        <div style={{ marginTop: "8px" }}>
+                            <ReferenceArrayInput source="speakerIds" reference="speakers" label="Intervenants" fullWidth>
+                                <SelectArrayInput optionText="fullName" />
+                            </ReferenceArrayInput>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <style>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
+      `}</style>
+        </SimpleForm>
+    </Edit>
 );
