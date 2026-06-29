@@ -18,7 +18,6 @@ const COLORS = {
   primary: "#ea580c",
   primaryDark: "#d94a00",
   background: "#0B0B14",
-
   darkCard: "rgba(255, 255, 255, 0.03)",
   darkBorder: "rgba(255, 255, 255, 0.08)",
   text: {
@@ -93,137 +92,276 @@ const SectionHeader = ({
 );
 
 export const SessionCreate = () => (
-  <Box sx={{ p: 3, minHeight: "100vh", bgcolor: COLORS.background }}>
-    <Card
-      sx={{
-        maxWidth: 700,
-        mx: "auto",
-        bgcolor: "transparent",
-        boxShadow: "none",
-        border: "none",
-      }}
+  <div
+    style={{
+      minHeight: "100vh",
+      padding: "24px",
+      backgroundColor: COLORS.background,
+    }}
+  >
+    <Create
+      component="div"
+      actions={false}
+      sx={{ "& .RaCreate-main": { marginTop: 0 } }}
     >
-      <CardContent sx={{ p: 0 }}>
-        <Box display="flex" alignItems="center" gap={2} m={5}>
-          <Sparkles size={28} color={COLORS.primary} />
-          <Box>
-            <Typography
-              variant="h5"
-              fontWeight={600}
-              color={COLORS.text.primary}
-            >
-              Nouvelle session
-            </Typography>
-            <Typography variant="body2" color={COLORS.text.muted}>
-              Remplissez les champs ci-dessous
-            </Typography>
-          </Box>
-        </Box>
-
-        <SimpleForm
-          sx={{
-            "& .MuiInputLabel-root": { color: COLORS.text.muted, fontSize: 14 },
-            "& .MuiInputBase-root": {
-              bgcolor: COLORS.card,
-              borderRadius: 2,
+      <SimpleForm
+        sx={{
+          p: 0,
+          maxWidth: "1400px",
+          margin: "0 auto",
+          backgroundColor: "transparent",
+          "& .MuiFormControl-root": { width: "100%" },
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "10px",
+            "&:hover .MuiOutlinedInput-notchedOutline": {
+              borderColor: COLORS.primary,
+            },
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: COLORS.primary,
+              borderWidth: "2px",
+              boxShadow: `0 0 0 4px ${COLORS.primary}25`,
+            },
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: COLORS.darkBorder,
+            borderWidth: "1.5px",
+          },
+          "& .MuiInputBase-input": {
+            color: COLORS.text.primary,
+            fontSize: "14px",
+            padding: "12px 14px",
+          },
+          "& .MuiInputLabel-root": {
+            color: COLORS.text.secondary,
+            fontSize: "13px",
+            "&.Mui-focused": { color: COLORS.primary },
+          },
+          "& .MuiSelect-select": {
+            color: COLORS.text.primary,
+            padding: "12px 14px",
+          },
+          "& .MuiSelect-icon": { color: COLORS.primary },
+          "& .MuiAutocomplete-root .MuiOutlinedInput-root": { padding: 0 },
+          "& .MuiAutocomplete-root .MuiInputBase-input": {
+            padding: "12px 14px",
+          },
+          "& .RaToolbar-root": {
+            backgroundColor: "transparent",
+            padding: "24px 0 0",
+            borderTop: `1px solid ${COLORS.darkBorder}`,
+            marginTop: "8px",
+            display: "flex",
+            gap: "12px",
+            justifyContent: "flex-end",
+          },
+          "& .MuiButton-containedPrimary": {
+            backgroundColor: COLORS.primary,
+            color: "#fff",
+            borderRadius: "10px",
+            fontWeight: 600,
+            padding: "10px 28px",
+            textTransform: "none",
+            "&:hover": { backgroundColor: COLORS.primaryDark },
+          },
+          "& .MuiButton-text": {
+            color: COLORS.text.secondary,
+            padding: "10px 20px",
+            borderRadius: "10px",
+            textTransform: "none",
+            "&:hover": {
               color: COLORS.text.primary,
-              "&:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: COLORS.primary,
-              },
-              "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: COLORS.primary,
-              },
+              backgroundColor: `${COLORS.darkBorder}40`,
             },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: COLORS.border,
-            },
-            "& .MuiFormControl-root": { width: "100%" },
-            "& .MuiButton-root": { borderRadius: 2, textTransform: "none" },
+          },
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "16px",
+            paddingBottom: "20px",
+            marginBottom: "24px",
+            borderBottom: `1px solid ${COLORS.darkBorder}`,
+            width: "100%",
           }}
         >
-          <TextInput source="title" label="Titre" required fullWidth />
-          <TextInput
-            source="description"
-            label="Description"
-            multiline
-            rows={3}
-            fullWidth
-          />
-
-          <Box
-            display="grid"
-            gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-            gap={2}
-            my={1}
-          >
-            <ReferenceInput
-              source="roomId"
-              reference="rooms"
-              label="Salle"
-              fullWidth
-            >
-              <SelectInput optionText="name" />
-            </ReferenceInput>
-            <NumberInput source="capacity" label="Capacité" min={1} fullWidth />
-          </Box>
-
-          <Box
-            display="grid"
-            gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }}
-            gap={2}
-          >
-            <DateTimeInput source="startTime" label="Début" fullWidth />
-            <DateTimeInput source="endTime" label="Fin" fullWidth />
-          </Box>
-
-          <ReferenceArrayInput
-            source="speakerIds"
-            reference="speakers"
-            label="Intervenants"
-            fullWidth
-          >
-            <SelectArrayInput optionText="fullName" />
-          </ReferenceArrayInput>
-
-          <Box display="flex" gap={2} justifyContent="flex-end" mt={2}>
-            <Box
-              component="button"
-              type="button"
-              onClick={() => window.history.back()}
-              sx={{
-                px: 4,
-                py: 1.5,
-                borderRadius: 2,
-                border: `1px solid ${COLORS.border}`,
-                bgcolor: "transparent",
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Sparkles size={24} color={COLORS.primary} />
+              <h1
+                style={{
+                  fontSize: "26px",
+                  fontWeight: 700,
+                  color: COLORS.text.primary,
+                  margin: 0,
+                }}
+              >
+                Nouvelle session
+              </h1>
+            </div>
+            <p
+              style={{
+                fontSize: "14px",
                 color: COLORS.text.secondary,
-                cursor: "pointer",
-                fontWeight: 500,
-                "&:hover": { bgcolor: COLORS.card },
+                margin: "4px 0 0 34px",
               }}
             >
-              Annuler
-            </Box>
-            <Box
-              component="button"
-              type="submit"
-              sx={{
-                px: 5,
-                py: 1.5,
-                borderRadius: 2,
-                border: "none",
-                bgcolor: COLORS.primary,
-                color: "#fff",
-                cursor: "pointer",
-                fontWeight: 600,
-                "&:hover": { opacity: 0.85 },
+              Remplissez les champs ci-dessous
+            </p>
+          </div>
+          <Link
+            to="/sessions"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: COLORS.text.secondary,
+              textDecoration: "none",
+              padding: "8px 18px",
+              borderRadius: "10px",
+              border: `1.5px solid ${COLORS.darkBorder}`,
+            }}
+          >
+            <ArrowLeft size={16} />
+            Retour aux sessions
+          </Link>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
+            gap: "24px",
+            width: "100%",
+            alignItems: "start",
+          }}
+        >
+          <div style={cardStyle}>
+            <SectionHeader
+              icon={FileText}
+              label="Informations générales"
+              description="Titre, description et événement associé"
+            />
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <TextInput
+                source="title"
+                label="Titre"
+                validate={required()}
+                fullWidth
+                variant="outlined"
+                placeholder="Ex: Workshop React"
+              />
+              <TextInput
+                source="description"
+                label="Description"
+                multiline
+                rows={4}
+                fullWidth
+                variant="outlined"
+                placeholder="Décrivez la session..."
+              />
+              <ReferenceInput
+                source="eventId"
+                reference="events"
+                label="Événement"
+                fullWidth
+              >
+                <AutocompleteInput
+                  optionText="title"
+                  validate={required()}
+                  variant="outlined"
+                  label="Choisir un événement"
+                />
+              </ReferenceInput>
+              <ReferenceArrayInput
+                source="speakerIds"
+                reference="speakers"
+                label="Intervenants"
+                fullWidth
+              >
+                <SelectArrayInput
+                  optionText="fullName"
+                  validate={required()}
+                  variant="outlined"
+                />
+              </ReferenceArrayInput>
+            </div>
+          </div>
+
+          <div style={cardStyle}>
+            <SectionHeader
+              icon={Clock}
+              label="Lieu et horaires"
+              description="Salle, capacité et horaires"
+            />
+
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <ReferenceInput
+                source="roomId"
+                reference="rooms"
+                label="Salle"
+                fullWidth
+              >
+                <AutocompleteInput
+                  optionText="name"
+                  validate={required()}
+                  variant="outlined"
+                  label="Choisir une salle"
+                />
+              </ReferenceInput>
+              <NumberInput
+                source="capacity"
+                label="Capacité"
+                validate={required()}
+                fullWidth
+                variant="outlined"
+                placeholder="Nombre de places"
+              />
+              <DateTimeInput
+                source="startTime"
+                label="Début"
+                validate={required()}
+                fullWidth
+                variant="outlined"
+              />
+              <DateTimeInput
+                source="endTime"
+                label="Fin"
+                validate={required()}
+                fullWidth
+                variant="outlined"
+              />
+            </div>
+
+            <div
+              style={{
+                marginTop: "16px",
+                paddingTop: "16px",
+                borderTop: `1px solid ${COLORS.darkBorder}`,
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
               }}
             >
-              Créer
-            </Box>
-          </Box>
-        </SimpleForm>
-      </CardContent>
-    </Card>
-  </Box>
+              <Users size={14} color={COLORS.primary} />
+              <span style={{ fontSize: "12px", color: COLORS.text.muted }}>
+                La session doit démarrer entre 7h et 19h59, et finir avant 20h00
+              </span>
+            </div>
+          </div>
+        </div>
+      </SimpleForm>
+    </Create>
+  </div>
 );
