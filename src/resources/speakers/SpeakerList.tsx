@@ -1,6 +1,6 @@
-import { List, useListContext } from "react-admin";
+import { List, useListContext, useDelete, useNotify, useRefresh } from "react-admin";
 import { Link } from "react-router-dom";
-import { Eye, Edit2 } from "lucide-react";
+import { Eye, Edit2, Trash2 } from "lucide-react";
 
 const gridStyle = {
   display: "grid",
@@ -34,6 +34,28 @@ const Avatar = ({ url }: { url?: string }) => (
 const SpeakerGrid = () => {
   const { data, isLoading } = useListContext();
 
+  const [deleteOne] = useDelete();
+  const notify = useNotify();
+  const refresh = useRefresh();
+
+  const handleDelete = (id: string) => {
+    if (!window.confirm("Delete this speaker ?")) return;
+
+    deleteOne(
+      "speakers",
+      { id },
+      {
+        onSuccess: () => {
+          notify("Speaker deleted", { type: "info" });
+          refresh();
+        },
+        onError: (err: any) => {
+          notify(`Error: ${err.message}`, { type: "error" });
+        },
+      }
+    );
+  };
+
   if (isLoading) {
     return <p style={{ color: "#fff" }}>Loading...</p>;
   }
@@ -56,7 +78,8 @@ const SpeakerGrid = () => {
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+          {/* ACTIONS */}
+          <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
             <Link to={`/speakers/${s.id}/show`} title="View">
               <Eye size={16} color="white" />
             </Link>
@@ -64,6 +87,20 @@ const SpeakerGrid = () => {
             <Link to={`/speakers/${s.id}`} title="Edit">
               <Edit2 size={16} color="white" />
             </Link>
+
+            {/* DELETE BUTTON */}
+            <button
+              onClick={() => handleDelete(s.id)}
+              title="Delete"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              <Trash2 size={16} color="#ef4444" />
+            </button>
           </div>
         </div>
       ))}
@@ -72,10 +109,7 @@ const SpeakerGrid = () => {
 };
 
 export const SpeakerList = () => (
-  <List
-    perPage={12}
-    sort={{ field: "fullName", order: "ASC" }}
-  >
+  <List perPage={12} sort={{ field: "fullName", order: "ASC" }}>
     <SpeakerGrid />
   </List>
 );
