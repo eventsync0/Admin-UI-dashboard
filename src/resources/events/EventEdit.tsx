@@ -11,9 +11,20 @@ import {
   SimpleFormIterator,
   ReferenceInput,
   AutocompleteInput,
+  Toolbar,
+  SaveButton,
+  DeleteButton,
 } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, FileText, Layers, Sparkles, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  FileText,
+  Layers,
+  Sparkles,
+  Clock,
+  Save,
+  Trash2,
+} from "lucide-react";
 
 // === ORANGE COLORS ===
 const COLORS = {
@@ -31,6 +42,7 @@ const COLORS = {
   success: "#4ade80",
   warning: "#fbbf24",
   error: "#f87171",
+  errorDark: "#dc2626",
   info: "#60a5fa",
 };
 
@@ -45,7 +57,113 @@ const sectionCard = {
   boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
 };
 
-const sectionHeader = (Icon: React.FC<any>, label: string, description?: string) => (
+// Styles partagés pour le SimpleFormIterator (sessions),
+// définis une seule fois et réutilisés -> plus de duplication.
+// IMPORTANT : pas de prop `inline` ici — ce style est pensé pour des
+// cartes empilées (column), pas pour des lignes côte à côte.
+const iteratorSx = {
+  width: "100%",
+
+  // Chaque ligne = wrapper autour d'une carte de session.
+  // On le rend position:relative pour pouvoir y ancrer le badge remove.
+  "& .RaSimpleFormIterator-line": {
+    position: "relative",
+    width: "100%",
+    margin: 0,
+    padding: 0,
+    border: "none",
+    "&:not(:last-of-type)": {
+      marginBottom: "16px",
+    },
+  },
+
+  // La carte elle-même
+  "& .RaSimpleFormIterator-form": {
+    width: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+    gap: "16px",
+    padding: "20px",
+    paddingRight: "56px", // laisse la place au badge remove sans chevaucher les champs
+    backgroundColor: "rgba(0,0,0,0.25)",
+    borderRadius: "14px",
+    border: `1px solid ${COLORS.darkBorder}`,
+    transition: "all 0.3s ease",
+    position: "relative",
+    "&:hover": {
+      borderColor: COLORS.primary,
+      boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+    },
+    "&:before": {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      height: "3px",
+      background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
+      borderRadius: "14px 14px 0 0",
+      opacity: 0,
+      transition: "opacity 0.3s ease",
+    },
+    "&:hover:before": {
+      opacity: 1,
+    },
+  },
+
+  // Bouton "Ajouter une session"
+  "& .RaSimpleFormIterator-add": {
+    width: "100%",
+  },
+  "& .RaSimpleFormIterator-add button": {
+    backgroundColor: `${COLORS.primary}12`,
+    color: COLORS.primary,
+    borderRadius: "10px",
+    fontWeight: 600,
+    padding: "12px 20px",
+    border: `2px dashed ${COLORS.primary}30`,
+    transition: "all 0.3s ease",
+    textTransform: "none",
+    fontSize: "14px",
+    width: "100%",
+    justifyContent: "center",
+    marginTop: "8px",
+    "&:hover": {
+      backgroundColor: `${COLORS.primary}20`,
+      borderColor: COLORS.primary,
+      transform: "translateY(-2px)",
+    },
+  },
+
+  // Bouton "Supprimer cette session" : ancré en badge rond,
+  // flottant en haut à droite de la carte plutôt que dans le flux.
+  "& .RaSimpleFormIterator-form .RaSimpleFormIterator-action, & .RaSimpleFormIterator-form .RaSimpleFormIterator-remove":
+    {
+      position: "absolute",
+      top: "10px",
+      right: "10px",
+      margin: 0,
+    },
+  "& .RaSimpleFormIterator-remove button, & .RaSimpleFormIterator-action button": {
+    color: COLORS.text.muted,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    padding: "6px",
+    borderRadius: "8px",
+    minWidth: "unset",
+    transition: "all 0.2s ease",
+    "&:hover": {
+      color: "#fff",
+      backgroundColor: COLORS.errorDark,
+    },
+  },
+} as const;
+
+const sectionHeader = (
+  Icon: React.FC<any>,
+  label: string,
+  description?: string,
+) => (
   <div style={{ marginBottom: "20px" }}>
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <div
@@ -84,6 +202,72 @@ const sectionHeader = (Icon: React.FC<any>, label: string, description?: string)
   </div>
 );
 
+// === CUSTOM TOOLBAR : Save + Delete avec design dédié ===
+const EventEditToolbar = () => (
+  <Toolbar
+    sx={{
+      backgroundColor: "transparent",
+      padding: "24px 0 0",
+      borderTop: `1px solid ${COLORS.darkBorder}`,
+      marginTop: "8px",
+      display: "flex",
+      gap: "12px",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+    }}
+  >
+    {/* DELETE — bouton rouge, bien distinct, à gauche */}
+    <DeleteButton
+      label="Delete event"
+      icon={<Trash2 size={16} />}
+      sx={{
+        backgroundColor: "transparent",
+        color: COLORS.error,
+        border: `1.5px solid ${COLORS.error}40`,
+        borderRadius: "10px",
+        fontWeight: 600,
+        padding: "10px 22px",
+        textTransform: "none",
+        fontSize: "14px",
+        transition: "all 0.3s ease",
+        "&:hover": {
+          backgroundColor: `${COLORS.error}15`,
+          borderColor: COLORS.error,
+          color: "#fff",
+          boxShadow: `0 4px 16px ${COLORS.error}30`,
+        },
+      }}
+    />
+
+    {/* SAVE — bouton orange premium, à droite */}
+    <SaveButton
+      label="Save changes"
+      icon={<Save size={16} />}
+      sx={{
+        backgroundColor: COLORS.primary,
+        color: "#fff",
+        borderRadius: "10px",
+        fontWeight: 600,
+        padding: "10px 28px",
+        boxShadow: `0 2px 12px ${COLORS.primary}40`,
+        transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+        textTransform: "none",
+        fontSize: "14px",
+        "&:hover": {
+          backgroundColor: COLORS.primaryDark,
+          boxShadow: `0 6px 24px ${COLORS.primary}50`,
+          transform: "translateY(-2px) scale(1.01)",
+        },
+        "&.Mui-disabled": {
+          backgroundColor: `${COLORS.primary}30`,
+          color: COLORS.text.muted,
+          boxShadow: "none",
+        },
+      }}
+    />
+  </Toolbar>
+);
+
 // === MAIN COMPONENT ===
 export const EventEdit = () => (
   <Edit
@@ -92,7 +276,7 @@ export const EventEdit = () => (
     sx={{
       backgroundColor: COLORS.background,
       minHeight: "100vh",
-      padding: "24px",
+      padding: { xs: "16px", md: "24px" },
       position: "relative",
     }}
   >
@@ -120,6 +304,7 @@ export const EventEdit = () => (
 
     <SimpleForm
       className="bg-transparent"
+      toolbar={<EventEditToolbar />}
       sx={{
         p: 0,
         maxWidth: "1400px",
@@ -184,113 +369,6 @@ export const EventEdit = () => (
         },
         "& .MuiInputBase-multiline": {
           padding: "12px 14px",
-        },
-
-        // === TOOLBAR ===
-        "& .RaToolbar-root": {
-          backgroundColor: "transparent",
-          padding: "24px 0 0",
-          borderTop: `1px solid ${COLORS.darkBorder}`,
-          marginTop: "8px",
-          display: "flex",
-          gap: "12px",
-          justifyContent: "flex-end",
-          flexWrap: "wrap",
-        },
-        "& .MuiButton-containedPrimary": {
-          backgroundColor: COLORS.primary,
-          color: "#fff",
-          borderRadius: "10px",
-          fontWeight: 600,
-          padding: "10px 28px",
-          boxShadow: `0 2px 12px ${COLORS.primary}40`,
-          transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
-          textTransform: "none",
-          fontSize: "14px",
-          "&:hover": {
-            backgroundColor: COLORS.primaryDark,
-            boxShadow: `0 6px 24px ${COLORS.primary}50`,
-            transform: "translateY(-2px) scale(1.01)",
-          },
-        },
-        "& .MuiButton-text": {
-          color: COLORS.text.secondary,
-          padding: "10px 20px",
-          borderRadius: "10px",
-          textTransform: "none",
-          fontSize: "14px",
-          "&:hover": {
-            color: COLORS.text.primary,
-            backgroundColor: `${COLORS.darkBorder}40`,
-          },
-        },
-
-        // === ARRAY INPUT (SESSIONS) - CORRIGÉ ===
-        "& .RaSimpleFormIterator-form": {
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          gap: "16px",
-          padding: "20px",
-          marginBottom: "16px",
-          backgroundColor: "rgba(0,0,0,0.25)",
-          borderRadius: "14px",
-          border: `1px solid ${COLORS.darkBorder}`,
-          transition: "all 0.3s ease",
-          position: "relative",
-          "&:hover": {
-            borderColor: COLORS.primary,
-            boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
-          },
-          "&:before": {
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: "3px",
-            background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
-            borderRadius: "14px 14px 0 0",
-            opacity: 0,
-            transition: "opacity 0.3s ease",
-          },
-          "&:hover:before": {
-            opacity: 1,
-          },
-        },
-        "& .RaSimpleFormIterator-add button": {
-          backgroundColor: `${COLORS.primary}12`,
-          color: COLORS.primary,
-          borderRadius: "10px",
-          fontWeight: 600,
-          padding: "12px 20px",
-          border: `2px dashed ${COLORS.primary}30`,
-          transition: "all 0.3s ease",
-          textTransform: "none",
-          fontSize: "14px",
-          width: "100%",
-          justifyContent: "center",
-          marginTop: "8px",
-          "&:hover": {
-            backgroundColor: `${COLORS.primary}20`,
-            borderColor: COLORS.primary,
-            transform: "translateY(-2px)",
-          },
-        },
-        "& .RaSimpleFormIterator-remove button": {
-          color: COLORS.primary,
-          padding: "6px 12px",
-          borderRadius: "8px",
-          transition: "all 0.2s ease",
-          "&:hover": {
-            color: COLORS.error,
-            backgroundColor: `${COLORS.error}15`,
-          },
-        },
-        "& .RaSimpleFormIterator-line": {
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
         },
       }}
     >
@@ -368,21 +446,33 @@ export const EventEdit = () => (
         </Link>
       </div>
 
-      {/* === FORM GRID - 2 COLUMNS === */}
+      {/* === FORM GRID — responsive : 2 colonnes desktop, 1 colonne mobile/tablette === */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "minmax(0, 2fr) minmax(0, 1fr)",
+          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
           gap: "24px",
           width: "100%",
           alignItems: "start",
         }}
+        className="event-edit-grid"
       >
         {/* === LEFT COLUMN - General Information === */}
         <div style={sectionCard}>
-          {sectionHeader(FileText, "General Information", "Title, description, category, dates, and location")}
+          {sectionHeader(
+            FileText,
+            "General Information",
+            "Title, description, category, dates, and location",
+          )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: "16px",
+            }}
+            className="event-edit-subgrid"
+          >
             {/* Title - Full Width */}
             <div style={{ gridColumn: "span 2" }}>
               <TextInput
@@ -470,82 +560,23 @@ export const EventEdit = () => (
           </div>
         </div>
 
-        {/* === RIGHT COLUMN - Sessions (layout corrigé en 2 colonnes) === */}
+        {/* === RIGHT COLUMN - Sessions === */}
         <div style={sectionCard}>
           {sectionHeader(Layers, "Sessions", "Add or manage event sessions")}
 
           <ArrayInput source="sessions" label="Session List">
-            <SimpleFormIterator
-              inline
-              sx={{
-                width: "100%",
-                "& .RaSimpleFormIterator-form": {
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  padding: "20px",
-                  marginBottom: "16px",
-                  backgroundColor: "rgba(0,0,0,0.25)",
-                  borderRadius: "14px",
-                  border: `1px solid ${COLORS.darkBorder}`,
-                  transition: "all 0.3s ease",
-                  position: "relative",
-                  "&:hover": {
-                    borderColor: COLORS.primary,
-                    boxShadow: `0 4px 16px rgba(0,0,0,0.3)`,
-                  },
-                  "&:before": {
-                    content: '""',
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "3px",
-                    background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
-                    borderRadius: "14px 14px 0 0",
-                    opacity: 0,
-                    transition: "opacity 0.3s ease",
-                  },
-                  "&:hover:before": {
-                    opacity: 1,
-                  },
-                },
-                "& .RaSimpleFormIterator-add button": {
-                  backgroundColor: `${COLORS.primary}12`,
-                  color: COLORS.primary,
-                  borderRadius: "10px",
-                  fontWeight: 600,
-                  padding: "12px 20px",
-                  border: `2px dashed ${COLORS.primary}30`,
-                  transition: "all 0.3s ease",
-                  textTransform: "none",
-                  fontSize: "14px",
-                  width: "100%",
-                  justifyContent: "center",
-                  marginTop: "8px",
-                  "&:hover": {
-                    backgroundColor: `${COLORS.primary}20`,
-                    borderColor: COLORS.primary,
-                    transform: "translateY(-2px)",
-                  },
-                },
-                "& .RaSimpleFormIterator-remove button": {
-                  color: COLORS.primary,
-                  padding: "6px 12px",
-                  borderRadius: "8px",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    color: COLORS.error,
-                    backgroundColor: `${COLORS.error}15`,
-                  },
-                },
-              }}
-            >
-              {/* === SESSION FORM - 2 COLUMNS GRID === */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
+            <SimpleFormIterator sx={iteratorSx}>
+              {/* === SESSION FORM — responsive : 3 colonnes desktop, 1 colonne mobile === */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr 1fr",
+                  gap: "14px",
+                }}
+                className="event-edit-subgrid event-edit-subgrid-3"
+              >
                 {/* Title - Full Width */}
-                <div style={{ gridColumn: "span 2" }}>
+                <div style={{ gridColumn: "span 3" }}>
                   <TextInput
                     source="title"
                     label="Session Title"
@@ -557,7 +588,7 @@ export const EventEdit = () => (
                 </div>
 
                 {/* Description - Full Width */}
-                <div style={{ gridColumn: "span 2" }}>
+                <div style={{ gridColumn: "span 3" }}>
                   <TextInput
                     source="description"
                     label="Description"
@@ -604,8 +635,8 @@ export const EventEdit = () => (
                   />
                 </div>
 
-                {/* End Time */}
-                <div>
+                {/* End Time — seule sur sa ligne, occupe toute la largeur restante */}
+                <div style={{ gridColumn: "span 2" }}>
                   <DateTimeInput
                     source="endTime"
                     label="End Time"
@@ -642,10 +673,34 @@ export const EventEdit = () => (
         </div>
       </div>
 
+      {/* Media queries pour la responsivité réelle des grilles (style inline ne gère pas @media) */}
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
+        @media (max-width: 960px) {
+          .event-edit-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        /* Palier intermédiaire : la grille de session (3 colonnes) passe à 2 colonnes
+           dès que la colonne Sessions devient un peu plus étroite (tablette). */
+        @media (max-width: 1280px) {
+          .event-edit-subgrid-3 {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .event-edit-subgrid-3 > div[style*="span 3"] {
+            grid-column: span 2 !important;
+          }
+          .event-edit-subgrid-3 > div[style*="span 2"] {
+            grid-column: span 2 !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .event-edit-subgrid {
+            grid-template-columns: 1fr !important;
+          }
+          .event-edit-subgrid > div[style*="span 2"],
+          .event-edit-subgrid > div[style*="span 3"] {
+            grid-column: span 1 !important;
+          }
         }
       `}</style>
     </SimpleForm>
