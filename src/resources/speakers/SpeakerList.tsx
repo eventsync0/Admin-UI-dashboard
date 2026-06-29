@@ -20,6 +20,7 @@ const cardStyle = {
 const Avatar = ({ url }: { url?: string }) => (
   <img
     src={url || "https://via.placeholder.com/80"}
+    alt="avatar"
     style={{
       width: 60,
       height: 60,
@@ -33,25 +34,36 @@ const Avatar = ({ url }: { url?: string }) => (
 const SpeakerGrid = () => {
   const { data, isLoading } = useListContext();
 
-  if (isLoading) return <p style={{ color: "#fff" }}>Loading...</p>;
+  if (isLoading) {
+    return <p style={{ color: "#fff" }}>Loading...</p>;
+  }
+
+  if (!data || data.length === 0) {
+    return <p style={{ color: "#fff" }}>No speakers found</p>;
+  }
 
   return (
     <div style={gridStyle}>
-      {data?.map((s: any) => (
+      {data.map((s: any) => (
         <div key={s.id} style={cardStyle}>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <Avatar url={s.photoUrl} />
             <div>
               <h3 style={{ margin: 0 }}>{s.fullName}</h3>
               <p style={{ margin: 0, opacity: 0.6, fontSize: 12 }}>
-                {s.bio?.slice(0, 50)}
+                {s.bio ? s.bio.slice(0, 60) : "No bio"}
               </p>
             </div>
           </div>
 
           <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-            <Link to={`/speakers/${s.id}/show`}><Eye size={16} /></Link>
-            <Link to={`/speakers/${s.id}`}><Edit2 size={16} /></Link>
+            <Link to={`/speakers/${s.id}/show`} title="View">
+              <Eye size={16} color="white" />
+            </Link>
+
+            <Link to={`/speakers/${s.id}`} title="Edit">
+              <Edit2 size={16} color="white" />
+            </Link>
           </div>
         </div>
       ))}
@@ -60,7 +72,11 @@ const SpeakerGrid = () => {
 };
 
 export const SpeakerList = () => (
-  <List actions={false}>
+  <List
+    actions={false}
+    perPage={12}
+    sort={{ field: "fullName", order: "ASC" }}
+  >
     <SpeakerGrid />
   </List>
 );

@@ -128,7 +128,9 @@ export const dataProvider: DataProvider = {
   getOne: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
     const { json } = await httpClient(url);
-    return { data: ensureId(normalizeOne(json)) };
+ return {
+    data: json.data,
+  };
   },
 
   create: async (resource, params) => {
@@ -137,8 +139,10 @@ export const dataProvider: DataProvider = {
       method: "POST",
       body: JSON.stringify(params.data),
     });
-    return { data: ensureId(normalizeOne(json)) };
-  },
+  return {
+    data: json.data,
+  };  
+},
 
   update: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
@@ -146,7 +150,9 @@ export const dataProvider: DataProvider = {
       method: "PUT",
       body: JSON.stringify(params.data),
     });
-    return { data: ensureId(normalizeOne(json)) };
+     return {
+    data: json.data,
+  };
   },
 
   delete: async (resource, params) => {

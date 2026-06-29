@@ -2,7 +2,9 @@ import { Edit, SimpleForm, TextInput, ArrayInput, SimpleFormIterator, required }
 import { User } from "lucide-react";
 
 export const SpeakerEdit = () => (
-  <Edit actions={false}>
+  <Edit actions={false}
+  mutationMode="pessimistic"
+  redirect={false}>
     <SimpleForm
       sx={{
         "& .MuiInputBase-input": { color: "#fff" },
