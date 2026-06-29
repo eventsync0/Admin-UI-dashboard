@@ -1,4 +1,3 @@
-// src/sessions/SessionList.tsx
 import { useState, useEffect } from "react";
 import { List, useListContext, useDelete, useNotify, useRefresh } from "react-admin";
 import { Link } from "react-router-dom";
@@ -13,7 +12,6 @@ const COLORS = {
   text: { primary: "#ffffff", secondary: "rgba(255,255,255,0.7)", muted: "rgba(255,255,255,0.5)" },
   error: "#ef4444",
   success: "#4ade80",
-  // Couleurs pour les KPI
   kpiColors: ["#ea580c"],
 };
 
@@ -61,7 +59,6 @@ const SessionGrid = () => {
   return (
     <div style={{ padding: 24, minHeight: "100vh", backgroundColor: COLORS.background }}>
 
-      {/* HEADER */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 700, color: COLORS.text.primary }}>Sessions</h1>
@@ -76,15 +73,12 @@ const SessionGrid = () => {
         </Link>
       </div>
 
-      {/* KPI CARDS AVEC COULEURS */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
         {kpis.map((kpi, index) => (
           <div key={index} style={{ 
             backgroundColor: COLORS.card, 
-            border: `1px solid ${COLORS.border}`, 
             borderRadius: 12, 
             padding: 16,
-            borderLeft: `4px solid ${kpi.color}`,
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
@@ -108,7 +102,6 @@ const SessionGrid = () => {
         ))}
       </div>
 
-      {/* SEARCH */}
       <div style={{ marginBottom: 24 }}>
         <div style={{ position: "relative" }}>
           <Search size={16} style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: COLORS.text.muted }} />
@@ -117,14 +110,13 @@ const SessionGrid = () => {
             value={search} onChange={(e) => setSearch(e.target.value)}
             style={{
               width: "100%", padding: "10px 16px 10px 40px", borderRadius: 10,
-              border: `1px solid ${COLORS.border}`, background: COLORS.card,
+              background: COLORS.card,
               color: COLORS.text.primary, fontSize: 14, outline: "none"
             }}
           />
         </div>
       </div>
 
-      {/* GRID */}
       {isLoading ? (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
           {[...Array(6)].map((_, i) => (
@@ -146,7 +138,6 @@ const SessionGrid = () => {
                   borderRadius: 12, 
                   padding: 16, 
                   transition: "all 0.2s",
-                  borderTop: `3px solid ${color}`,
                 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                     <h3 style={{ fontSize: 16, fontWeight: 600, color: COLORS.text.primary, margin: 0 }}>
@@ -158,7 +149,6 @@ const SessionGrid = () => {
                       background: `${color}25`,
                       padding: "2px 10px", 
                       borderRadius: 12,
-                      border: `1px solid ${color}50`,
                     }}>
                       {session.room?.name || "Salle"}
                     </span>
@@ -170,7 +160,7 @@ const SessionGrid = () => {
                     <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Calendar size={14} color={color} /> {formatDate(session.startTime)}</span>
                     <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Users size={14} color={color} /> {session.capacity || 0}</span>
                   </div>
-                  <div style={{ display: "flex", gap: 6, borderTop: `1px solid ${COLORS.border}`, paddingTop: 12 }}>
+                  <div style={{ display: "flex", gap: 6, paddingTop: 12 }}>
                     <Link to={`/sessions/${session.id}/show`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Eye size={16} /></Link>
                     <Link to={`/sessions/${session.id}`} style={{ padding: "4px 8px", color: COLORS.text.muted }}><Edit2 size={16} /></Link>
                     <button onClick={() => handleDelete(session.id, session.title)} style={{ padding: "4px 8px", background: "none", border: "none", color: COLORS.text.muted, cursor: "pointer" }}><Trash2 size={16} /></button>
@@ -180,14 +170,13 @@ const SessionGrid = () => {
             })}
           </div>
 
-          {/* PAGINATION */}
           {totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, padding: "12px 0", borderTop: `1px solid ${COLORS.border}` }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 24, padding: "12px 0" }}>
               <span style={{ fontSize: 13, color: COLORS.text.muted }}>{start + 1} – {Math.min(start + 12, total || 0)} sur {total}</span>
               <div style={{ display: "flex", gap: 4 }}>
-                <button onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${COLORS.border}`, background: "transparent", color: currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>←</button>
+                <button onClick={() => setPage(currentPage - 1)} disabled={currentPage <= 1} style={{ padding: "6px 14px", borderRadius: 6, background: "transparent", color: currentPage <= 1 ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>←</button>
                 <span style={{ padding: "6px 14px", color: COLORS.text.primary }}>{currentPage} / {totalPages}</span>
-                <button onClick={() => setPage(currentPage + 1)} disabled={currentPage >= totalPages} style={{ padding: "6px 14px", borderRadius: 6, border: `1px solid ${COLORS.border}`, background: "transparent", color: currentPage >= totalPages ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>→</button>
+                <button onClick={() => setPage(currentPage + 1)} disabled={currentPage >= totalPages} style={{ padding: "6px 14px", borderRadius: 6, background: "transparent", color: currentPage >= totalPages ? COLORS.text.muted : COLORS.text.secondary, cursor: "pointer" }}>→</button>
               </div>
             </div>
           )}
