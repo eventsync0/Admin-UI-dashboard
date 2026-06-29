@@ -6,6 +6,8 @@ import Dashboard from "./Dashboard";
 import { Layout } from "./layout/Layout";
 import { SessionList } from "./resources/sessions/SessionList";
 import { SessionCreate } from "./resources/sessions/SessionCreate";
+import { SessionEdit } from "./resources/sessions/SessionEdit";
+
 
 import {
   EventList,
@@ -53,6 +55,7 @@ function App() {
                 options={{ label: 'Sessions' }}
                 list={SessionList}
                 create={SessionCreate}
+                edit={SessionEdit}
             />
 
       <Resource
