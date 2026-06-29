@@ -51,6 +51,7 @@ const query = (params: any) => {
 
   Object.entries(filter).forEach(([key, val]) => {
     if (val != null && val !== "") {
+      // 🔥 IMPORTANT FIX
       q.set(key === "q" ? "search" : key, String(val));
     }
   });
