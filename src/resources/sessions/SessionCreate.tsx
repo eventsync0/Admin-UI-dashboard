@@ -1,27 +1,96 @@
+import React from "react";
 import {
+  Create,
   SimpleForm,
   TextInput,
   DateTimeInput,
   NumberInput,
+  required,
   ReferenceInput,
-  SelectInput,
+  AutocompleteInput,
   ReferenceArrayInput,
   SelectArrayInput,
 } from "react-admin";
-import { Card, CardContent, Typography, Box } from "@mui/material";
-import { Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowLeft, FileText, Sparkles, Clock, Users } from "lucide-react";
 
 const COLORS = {
   primary: "#ea580c",
+  primaryDark: "#d94a00",
   background: "#0B0B14",
-  card: "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
+
+  darkCard: "rgba(255, 255, 255, 0.03)",
+  darkBorder: "rgba(255, 255, 255, 0.08)",
   text: {
     primary: "#ffffff",
-    secondary: "rgba(255,255,255,0.7)",
-    muted: "rgba(255,255,255,0.5)",
+    secondary: "rgba(255, 255, 255, 0.7)",
+    muted: "rgba(255, 255, 255, 0.5)",
   },
 };
+
+const cardStyle = {
+  backgroundColor: COLORS.darkCard,
+  border: `1px solid ${COLORS.darkBorder}`,
+  borderRadius: "1.25rem",
+  padding: "24px",
+  backdropFilter: "blur(12px)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
+};
+
+const SectionHeader = ({
+  icon: Icon,
+  label,
+  description,
+}: {
+  icon: React.FC<any>;
+  label: string;
+  description?: string;
+}) => (
+  <div style={{ marginBottom: "24px" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        paddingBottom: "16px",
+        borderBottom: `1px solid ${COLORS.darkBorder}`,
+      }}
+    >
+      <div
+        style={{
+          padding: "8px",
+          borderRadius: "10px",
+          backgroundColor: `${COLORS.primary}20`,
+          color: COLORS.primary,
+          display: "flex",
+        }}
+      >
+        <Icon size={18} />
+      </div>
+      <h3
+        style={{
+          fontSize: "16px",
+          fontWeight: 700,
+          color: COLORS.text.primary,
+          margin: 0,
+        }}
+      >
+        {label}
+      </h3>
+    </div>
+    {description && (
+      <p
+        style={{
+          fontSize: "13px",
+          color: COLORS.text.secondary,
+          margin: "10px 0 0 42px",
+        }}
+      >
+        {description}
+      </p>
+    )}
+  </div>
+);
 
 export const SessionCreate = () => (
   <Box sx={{ p: 3, minHeight: "100vh", bgcolor: COLORS.background }}>
