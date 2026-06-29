@@ -5,6 +5,7 @@ import { Login } from "./components/Login";
 import Dashboard from "./Dashboard";
 import { Layout } from "./layout/Layout";
 import { SessionList } from "./resources/sessions/SessionList";
+import { SessionCreate } from "./resources/sessions/SessionCreate";
 
 import {
   EventList,
@@ -46,11 +47,12 @@ function App() {
         show={EventShow}
         recordRepresentation="title"
       />
-      
+
       <Resource 
                 name="sessions"
                 options={{ label: 'Sessions' }}
                 list={SessionList}
+                create={SessionCreate}
             />
 
       <Resource
