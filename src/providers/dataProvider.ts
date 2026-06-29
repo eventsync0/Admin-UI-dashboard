@@ -1,6 +1,5 @@
 import { DataProvider } from "react-admin";
 
-// Pas de /api ici : il est ajouté dans chaque appel
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 const getToken = () => localStorage.getItem("accessToken");
@@ -60,7 +59,64 @@ const normalizeList = (json: any): { data: any[]; total: number } => {
   return { data: [], total: 0 };
 };
 
-const normalizeOne = (json: any) => json?.data ?? json;
+/**
+ * Extrait l'objet métier depuis la réponse du backend.
+ * Gère les formats :
+ *   - { data: { ... } }           → standard
+ *   - { room: { ... } }           → POST /rooms
+ *   - { event: { ... } }          → POST /events
+ *   - { user: { ... } }           → POST /users
+ *   - { message: '...', room: {} } → backend avec message + entité
+ *   - { id: ..., name: ... }      → objet direct
+ */
+const normalizeOne = (json: any): any => {
+  if (!json || typeof json !== "object") return json;
+
+  // Format standard react-admin { data: { ... } }
+  if (json.data && typeof json.data === "object" && !Array.isArray(json.data)) {
+    return json.data;
+  }
+
+  // Si l'objet a déjà un id, c'est l'entité directement
+  if (json.id !== undefined) return json;
+
+  // Cherche un sous-objet qui ressemble à l'entité métier
+  // (on ignore les champs scalaires comme "message")
+  const entityKeys = Object.keys(json).filter(
+    (k) => json[k] && typeof json[k] === "object" && !Array.isArray(json[k]),
+  );
+
+  if (entityKeys.length === 1) {
+    // { message: '...', room: { id, name } } → on prend room
+    return json[entityKeys[0]];
+  }
+
+  // Plusieurs sous-objets : on cherche celui qui a un id
+  const withId = entityKeys.find((k) => json[k]?.id !== undefined);
+  if (withId) return json[withId];
+
+  return json;
+};
+
+const ensureId = (raw: any): any => {
+  if (!raw || typeof raw !== "object") return raw;
+  if (raw.id !== undefined) return raw;
+
+  const id =
+    raw.roomId ??
+    raw.room_id ??
+    raw.eventId ??
+    raw.event_id ??
+    raw.uuid ??
+    raw._id ??
+    null;
+
+  if (id === null) {
+    console.warn("[dataProvider] ensureId: aucun champ id trouvé dans", raw);
+  }
+
+  return { ...raw, id };
+};
 
 export const dataProvider: DataProvider = {
   getList: async (resource, _params) => {
@@ -72,7 +128,7 @@ export const dataProvider: DataProvider = {
   getOne: async (resource, params) => {
     const url = `${API_URL}/api/${resource}/${params.id}`;
     const { json } = await httpClient(url);
-    return { data: normalizeOne(json) };
+    return { data: ensureId(normalizeOne(json)) };
   },
 
   create: async (resource, params) => {
@@ -81,7 +137,7 @@ export const dataProvider: DataProvider = {
       method: "POST",
       body: JSON.stringify(params.data),
     });
-    return { data: normalizeOne(json) };
+    return { data: ensureId(normalizeOne(json)) };
   },
 
   update: async (resource, params) => {
@@ -90,7 +146,7 @@ export const dataProvider: DataProvider = {
       method: "PUT",
       body: JSON.stringify(params.data),
     });
-    return { data: normalizeOne(json) };
+    return { data: ensureId(normalizeOne(json)) };
   },
 
   delete: async (resource, params) => {
@@ -103,7 +159,6 @@ export const dataProvider: DataProvider = {
     const url = `${API_URL}/api/${resource}`;
     const { json } = await httpClient(url);
     const { data } = normalizeList(json);
-
     const filtered = data.filter((item: any) => params.ids.includes(item.id));
     return { data: filtered };
   },

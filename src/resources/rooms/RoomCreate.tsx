@@ -1,16 +1,8 @@
 import React from "react";
-import {
-  Create,
-  SimpleForm,
-  TextInput,
-  NumberInput,
-  SelectInput,
-  required,
-} from "react-admin";
+import { Create, SimpleForm, TextInput, required } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Home, Layers } from "lucide-react";
+import { ArrowLeft, Home } from "lucide-react";
 
-// 🎨 Style glassmorphism réutilisé
 const sectionCard = {
   backgroundColor: "rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(16px)",
@@ -24,7 +16,6 @@ const sectionCard = {
   zIndex: 10,
 } as const;
 
-// Header section
 const sectionHeader = (Icon: React.FC<any>, label: string) => (
   <div
     style={{
@@ -48,17 +39,19 @@ const sectionHeader = (Icon: React.FC<any>, label: string) => (
     >
       <Icon size={20} />
     </div>
-
-    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0 }}>
-      {label}
-    </h3>
+    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0 }}>{label}</h3>
   </div>
 );
 
 export const RoomCreate = () => {
   return (
-    <div
-      style={{
+    // ✅ Create est la RACINE — component="div" supprime le Card MUI par défaut
+    <Create
+      actions={false}
+      redirect="list"
+      component="div"
+      sx={{
+        // Remet le background custom sur le wrapper de Create
         position: "relative",
         minHeight: "100%",
         padding: "24px",
@@ -67,7 +60,7 @@ export const RoomCreate = () => {
         overflow: "hidden",
       }}
     >
-      {/* background glow */}
+      {/* background glow — ici à l'intérieur de Create */}
       <div
         style={{
           position: "absolute",
@@ -104,127 +97,79 @@ export const RoomCreate = () => {
         />
       </div>
 
-      <Create actions={false}>
-        <SimpleForm
-          sx={{
-            p: 0,
-            backgroundColor: "transparent",
-            position: "relative",
-            zIndex: 10,
-
-            "& .MuiOutlinedInput-root": {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              borderRadius: "12px",
-              color: "#fff",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "rgba(255,255,255,0.1)",
-            },
-            "& .MuiInputLabel-root": {
-              color: "rgba(255,255,255,0.6)",
-            },
-            "& .MuiButton-containedPrimary": {
-              background:
-                "linear-gradient(90deg, #cd5b32 0%, #d4704b 100%)",
-              borderRadius: "12px",
-            },
+      <SimpleForm
+        sx={{
+          p: 0,
+          backgroundColor: "transparent",
+          position: "relative",
+          zIndex: 10,
+          "& .MuiOutlinedInput-root": {
+            backgroundColor: "rgba(0,0,0,0.2)",
+            borderRadius: "12px",
+            color: "#fff",
+          },
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "rgba(255,255,255,0.1)",
+          },
+          "& .MuiInputLabel-root": {
+            color: "rgba(255,255,255,0.6)",
+          },
+          "& .MuiButton-containedPrimary": {
+            background: "linear-gradient(90deg, #cd5b32 0%, #d4704b 100%)",
+            borderRadius: "12px",
+          },
+        }}
+      >
+        {/* HEADER */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: "24px",
+            width: "100%",
           }}
         >
-          {/* HEADER */}
-          <div
+          <div>
+            <h1 style={{ color: "#fff", fontSize: "28px", margin: 0 }}>
+              Créer une salle
+            </h1>
+            <p style={{ color: "rgba(255,255,255,0.6)" }}>
+              Ajoutez une nouvelle salle au système
+            </p>
+          </div>
+
+          <Link
+            to="/rooms"
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              marginBottom: "24px",
-              width: "100%",
+              alignItems: "center",
+              gap: "8px",
+              color: "#fff",
+              textDecoration: "none",
+              padding: "10px 14px",
+              borderRadius: "10px",
+              border: "1px solid rgba(255,255,255,0.1)",
             }}
           >
-            <div>
-              <h1 style={{ color: "#fff", fontSize: "28px", margin: 0 }}>
-                Créer une salle
-              </h1>
-              <p style={{ color: "rgba(255,255,255,0.6)" }}>
-                Ajoutez une nouvelle room au système
-              </p>
-            </div>
+            <ArrowLeft size={16} />
+            Retour
+          </Link>
+        </div>
 
-            <Link
-              to="/rooms"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                color: "#fff",
-                textDecoration: "none",
-                padding: "10px 14px",
-                borderRadius: "10px",
-                border: "1px solid rgba(255,255,255,0.1)",
-              }}
-            >
-              <ArrowLeft size={16} />
-              Retour
-            </Link>
+        {/* FORM */}
+        <div style={{ maxWidth: "480px", width: "100%" }}>
+          <div style={sectionCard}>
+            {sectionHeader(Home, "Informations de la salle")}
+
+            <TextInput
+              source="name"
+              label="Nom de la salle"
+              validate={required()}
+              fullWidth
+            />
           </div>
-
-          {/* FORM GRID */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-              gap: "24px",
-            }}
-          >
-            {/* LEFT */}
-            <div style={sectionCard}>
-              {sectionHeader(Home, "Informations de la salle")}
-
-              <TextInput
-                source="name"
-                label="Nom de la salle"
-                validate={required()}
-                fullWidth
-              />
-
-              <TextInput
-                source="location"
-                label="Emplacement"
-                fullWidth
-              />
-
-              <SelectInput
-                source="type"
-                label="Type"
-                choices={[
-                  { id: "MEETING", name: "Meeting" },
-                  { id: "CONFERENCE", name: "Conférence" },
-                  { id: "WORKSHOP", name: "Atelier" },
-                ]}
-                fullWidth
-              />
-            </div>
-
-            {/* RIGHT */}
-            <div style={sectionCard}>
-              {sectionHeader(Layers, "Capacité & détails")}
-
-              <NumberInput
-                source="capacity"
-                label="Capacité"
-                validate={required()}
-                fullWidth
-              />
-
-              <TextInput
-                source="description"
-                label="Description"
-                multiline
-                rows={4}
-                fullWidth
-              />
-            </div>
-          </div>
-        </SimpleForm>
-      </Create>
-    </div>
+        </div>
+      </SimpleForm>
+    </Create>
   );
 };
