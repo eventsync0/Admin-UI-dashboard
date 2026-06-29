@@ -120,8 +120,7 @@ export const RoomEdit = () => {
                 margin: 0,
               }}
             >
-              Mettez à jour le nom de la salle
-            </p>
+          Update the room name            </p>
           </div>
 
           <Link

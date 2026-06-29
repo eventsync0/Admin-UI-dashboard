@@ -114,10 +114,10 @@ const RoomListGrid = () => {
               }}
             >
               <Sparkles size={22} color={COLORS.primary} />
-              Gestion des Salles
+              Room Management
             </h1>
             <p style={{ color: COLORS.text.secondary, fontSize: "14px" }}>
-              Gérez vos salles.
+              Manage your rooms.
             </p>
           </div>
 

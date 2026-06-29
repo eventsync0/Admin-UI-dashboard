@@ -1,50 +1,106 @@
-import { List, useListContext } from "react-admin";
+import { List, useListContext, useDelete, useNotify, useRefresh } from "react-admin";
 import { Link } from "react-router-dom";
-import { User, Eye, Edit2 } from "lucide-react";
+import { Eye, Edit2, Trash2 } from "lucide-react";
 
-const COLORS = {
-  bg: "#0B0B14",
-  card: "rgba(255,255,255,0.03)",
-  border: "rgba(255,255,255,0.08)",
-  text: {
-    primary: "#fff",
-    secondary: "rgba(255,255,255,0.7)",
-  },
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gap: 20,
 };
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.08)",
+  borderRadius: 20,
+  padding: 16,
+  color: "#fff",
+  backdropFilter: "blur(10px)",
+};
+
+const Avatar = ({ url }: { url?: string }) => (
+  <img
+    src={url || "https://via.placeholder.com/80"}
+    alt="avatar"
+    style={{
+      width: 60,
+      height: 60,
+      borderRadius: "50%",
+      objectFit: "cover",
+      border: "2px solid rgba(255,255,255,0.2)",
+    }}
+  />
+);
 
 const SpeakerGrid = () => {
   const { data, isLoading } = useListContext();
 
-  if (isLoading) return <p style={{ color: "#fff" }}>Loading...</p>;
+  const [deleteOne] = useDelete();
+  const notify = useNotify();
+  const refresh = useRefresh();
+
+  const handleDelete = (id: string) => {
+    if (!window.confirm("Delete this speaker ?")) return;
+
+    deleteOne(
+      "speakers",
+      { id },
+      {
+        onSuccess: () => {
+          notify("Speaker deleted", { type: "info" });
+          refresh();
+        },
+        onError: (err: any) => {
+          notify(`Error: ${err.message}`, { type: "error" });
+        },
+      }
+    );
+  };
+
+  if (isLoading) {
+    return <p style={{ color: "#fff" }}>Loading...</p>;
+  }
+
+  if (!data || data.length === 0) {
+    return <p style={{ color: "#fff" }}>No speakers found</p>;
+  }
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(3, 1fr)",
-      gap: 20,
-    }}>
-      {data?.map((s: any) => (
-        <div
-          key={s.id}
-          style={{
-            background: COLORS.card,
-            border: `1px solid ${COLORS.border}`,
-            borderRadius: 20,
-            padding: 20,
-            color: "#fff",
-          }}
-        >
-          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-            <User size={18} />
-            <h3>{s.name}</h3>
+    <div style={gridStyle}>
+      {data.map((s: any) => (
+        <div key={s.id} style={cardStyle}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <Avatar url={s.photoUrl} />
+            <div>
+              <h3 style={{ margin: 0 }}>{s.fullName}</h3>
+              <p style={{ margin: 0, opacity: 0.6, fontSize: 12 }}>
+                {s.bio ? s.bio.slice(0, 60) : "No bio"}
+              </p>
+            </div>
           </div>
 
-          <p style={{ opacity: 0.7 }}>{s.jobTitle}</p>
-          <p style={{ fontSize: 12, opacity: 0.5 }}>{s.company}</p>
+          {/* ACTIONS */}
+          <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+            <Link to={`/speakers/${s.id}/show`} title="View">
+              <Eye size={16} color="white" />
+            </Link>
 
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-            <Link to={`/speakers/${s.id}/show`}><Eye size={16} /></Link>
-            <Link to={`/speakers/${s.id}`}><Edit2 size={16} /></Link>
+            <Link to={`/speakers/${s.id}`} title="Edit">
+              <Edit2 size={16} color="white" />
+            </Link>
+
+            {/* DELETE BUTTON */}
+            <button
+              onClick={() => handleDelete(s.id)}
+              title="Delete"
+              style={{
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              <Trash2 size={16} color="#ef4444" />
+            </button>
           </div>
         </div>
       ))}
@@ -53,7 +109,7 @@ const SpeakerGrid = () => {
 };
 
 export const SpeakerList = () => (
-  <List actions={false}>
+  <List perPage={12} sort={{ field: "fullName", order: "ASC" }}>
     <SpeakerGrid />
   </List>
 );

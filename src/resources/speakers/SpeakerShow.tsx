@@ -1,11 +1,11 @@
 import { Show, useShowContext } from "react-admin";
 import { Link } from "react-router-dom";
-import { ArrowLeft, User } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 export const SpeakerShowDetail = () => {
   const { record, isLoading } = useShowContext();
 
-  if (isLoading) return <p style={{ color: "#fff" }}>Loading...</p>;
+  if (isLoading) return <p>Loading...</p>;
   if (!record) return <p>Not found</p>;
 
   return (
@@ -17,18 +17,29 @@ export const SpeakerShowDetail = () => {
       <div style={{
         marginTop: 20,
         background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 20,
         padding: 24,
+        border: "1px solid rgba(255,255,255,0.08)",
       }}>
-        <User size={40} />
-        <h1>{record.name}</h1>
-        <p>{record.jobTitle}</p>
-        <p>{record.company}</p>
+        <img
+          src={record.photoUrl}
+          style={{
+            width: 120,
+            height: 120,
+            borderRadius: "50%",
+            objectFit: "cover",
+          }}
+        />
 
-        <p style={{ marginTop: 20, opacity: 0.8 }}>
-          {record.bio}
-        </p>
+        <h1>{record.fullName}</h1>
+        <p style={{ opacity: 0.7 }}>{record.bio}</p>
+
+        <h3>Liens</h3>
+        {record.links?.map((l: any, i: number) => (
+          <p key={i}>
+            🔗 <strong>{l.platform}</strong> — {l.url}
+          </p>
+        ))}
       </div>
     </div>
   );
