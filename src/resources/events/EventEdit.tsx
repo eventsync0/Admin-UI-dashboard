@@ -4,13 +4,8 @@ import {
   SimpleForm,
   TextInput,
   DateTimeInput,
-  NumberInput,
   required,
   SelectInput,
-  ArrayInput,
-  SimpleFormIterator,
-  ReferenceInput,
-  AutocompleteInput,
   Toolbar,
   SaveButton,
   DeleteButton,
@@ -19,9 +14,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft,
   FileText,
-  Layers,
   Sparkles,
-  Clock,
   Save,
   Trash2,
 } from "lucide-react";
@@ -56,108 +49,6 @@ const sectionCard = {
   transition: "all 0.3s ease",
   boxShadow: "0 4px 20px rgba(0,0,0,0.2)",
 };
-
-// Styles partagés pour le SimpleFormIterator (sessions),
-// définis une seule fois et réutilisés -> plus de duplication.
-// IMPORTANT : pas de prop `inline` ici — ce style est pensé pour des
-// cartes empilées (column), pas pour des lignes côte à côte.
-const iteratorSx = {
-  width: "100%",
-
-  // Chaque ligne = wrapper autour d'une carte de session.
-  // On le rend position:relative pour pouvoir y ancrer le badge remove.
-  "& .RaSimpleFormIterator-line": {
-    position: "relative",
-    width: "100%",
-    margin: 0,
-    padding: 0,
-    border: "none",
-    "&:not(:last-of-type)": {
-      marginBottom: "16px",
-    },
-  },
-
-  // La carte elle-même
-  "& .RaSimpleFormIterator-form": {
-    width: "100%",
-    boxSizing: "border-box",
-    display: "flex",
-    flexDirection: "column",
-    gap: "16px",
-    padding: "20px",
-    paddingRight: "56px", // laisse la place au badge remove sans chevaucher les champs
-    backgroundColor: "rgba(0,0,0,0.25)",
-    borderRadius: "14px",
-    border: `1px solid ${COLORS.darkBorder}`,
-    transition: "all 0.3s ease",
-    position: "relative",
-    "&:hover": {
-      borderColor: COLORS.primary,
-      boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-    },
-    "&:before": {
-      content: '""',
-      position: "absolute",
-      top: 0,
-      left: 0,
-      right: 0,
-      height: "3px",
-      background: `linear-gradient(90deg, ${COLORS.primary}, ${COLORS.primaryDark})`,
-      borderRadius: "14px 14px 0 0",
-      opacity: 0,
-      transition: "opacity 0.3s ease",
-    },
-    "&:hover:before": {
-      opacity: 1,
-    },
-  },
-
-  // Bouton "Ajouter une session"
-  "& .RaSimpleFormIterator-add": {
-    width: "100%",
-  },
-  "& .RaSimpleFormIterator-add button": {
-    backgroundColor: `${COLORS.primary}12`,
-    color: COLORS.primary,
-    borderRadius: "10px",
-    fontWeight: 600,
-    padding: "12px 20px",
-    border: `2px dashed ${COLORS.primary}30`,
-    transition: "all 0.3s ease",
-    textTransform: "none",
-    fontSize: "14px",
-    width: "100%",
-    justifyContent: "center",
-    marginTop: "8px",
-    "&:hover": {
-      backgroundColor: `${COLORS.primary}20`,
-      borderColor: COLORS.primary,
-      transform: "translateY(-2px)",
-    },
-  },
-
-  // Bouton "Supprimer cette session" : ancré en badge rond,
-  // flottant en haut à droite de la carte plutôt que dans le flux.
-  "& .RaSimpleFormIterator-form .RaSimpleFormIterator-action, & .RaSimpleFormIterator-form .RaSimpleFormIterator-remove":
-    {
-      position: "absolute",
-      top: "10px",
-      right: "10px",
-      margin: 0,
-    },
-  "& .RaSimpleFormIterator-remove button, & .RaSimpleFormIterator-action button": {
-    color: COLORS.text.muted,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    padding: "6px",
-    borderRadius: "8px",
-    minWidth: "unset",
-    transition: "all 0.2s ease",
-    "&:hover": {
-      color: "#fff",
-      backgroundColor: COLORS.errorDark,
-    },
-  },
-} as const;
 
 const sectionHeader = (
   Icon: React.FC<any>,
@@ -307,7 +198,7 @@ export const EventEdit = () => (
       toolbar={<EventEditToolbar />}
       sx={{
         p: 0,
-        maxWidth: "1400px",
+        maxWidth: "900px",
         margin: "0 auto",
         position: "relative",
         zIndex: 1,
@@ -361,12 +252,6 @@ export const EventEdit = () => (
         "& .MuiInputAdornment-root": {
           color: COLORS.primary,
         },
-        "& .MuiAutocomplete-root .MuiOutlinedInput-root": {
-          padding: "0",
-        },
-        "& .MuiAutocomplete-root .MuiInputBase-input": {
-          padding: "12px 14px",
-        },
         "& .MuiInputBase-multiline": {
           padding: "12px 14px",
         },
@@ -408,7 +293,7 @@ export const EventEdit = () => (
               margin: "4px 0 0 34px",
             }}
           >
-            Update event information and manage sessions
+            Update this event's information
           </p>
         </div>
 
@@ -446,259 +331,116 @@ export const EventEdit = () => (
         </Link>
       </div>
 
-      {/* === FORM GRID — responsive : 2 colonnes desktop, 1 colonne mobile/tablette === */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-          gap: "24px",
-          width: "100%",
-          alignItems: "start",
-        }}
-        className="event-edit-grid"
-      >
-        {/* === LEFT COLUMN - General Information === */}
-        <div style={sectionCard}>
-          {sectionHeader(
-            FileText,
-            "General Information",
-            "Title, description, category, dates, and location",
-          )}
+      {/* === GENERAL INFORMATION === */}
+      <div style={sectionCard}>
+        {sectionHeader(
+          FileText,
+          "General Information",
+          "Title, description, category, dates, and location",
+        )}
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              gap: "16px",
-            }}
-            className="event-edit-subgrid"
-          >
-            {/* Title - Full Width */}
-            <div style={{ gridColumn: "span 2" }}>
-              <TextInput
-                source="title"
-                label="Event Title"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-                placeholder="Ex: Tech Conference 2024"
-              />
-            </div>
-
-            {/* Description - Full Width */}
-            <div style={{ gridColumn: "span 2" }}>
-              <TextInput
-                source="description"
-                label="Detailed Description"
-                multiline
-                rows={4}
-                fullWidth
-                variant="outlined"
-                placeholder="Describe the event in a few sentences..."
-              />
-            </div>
-
-            {/* Category */}
-            <div>
-              <SelectInput
-                source="category"
-                label="Category"
-                choices={[
-                  { id: "CONFERENCE", name: "Conference" },
-                  { id: "WORKSHOP", name: "Workshop" },
-                  { id: "SEMINAR", name: "Seminar" },
-                  { id: "MEETUP", name: "Meetup" },
-                  { id: "WEBINAR", name: "Webinar" },
-                  { id: "SOCIAL", name: "Social" },
-                  { id: "FUNDRAISER", name: "Fundraiser" },
-                  { id: "SPORTS", name: "Sports" },
-                  { id: "ARTS", name: "Arts" },
-                  { id: "TECHNOLOGY", name: "Technology" },
-                  { id: "BUSINESS", name: "Business" },
-                  { id: "EDUCATION", name: "Education" },
-                  { id: "OTHER", name: "Other" },
-                ]}
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
-
-            {/* Location */}
-            <div>
-              <TextInput
-                source="location"
-                label="Location"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-                placeholder="Address or online link"
-              />
-            </div>
-
-            {/* Start Date */}
-            <div>
-              <DateTimeInput
-                source="startDate"
-                label="Start Date & Time"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
-
-            {/* End Date */}
-            <div>
-              <DateTimeInput
-                source="endDate"
-                label="End Date & Time"
-                validate={required()}
-                fullWidth
-                variant="outlined"
-              />
-            </div>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "16px",
+          }}
+          className="event-edit-subgrid"
+        >
+          {/* Title - Full Width */}
+          <div style={{ gridColumn: "span 2" }}>
+            <TextInput
+              source="title"
+              label="Event Title"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+              placeholder="Ex: Tech Conference 2024"
+            />
           </div>
-        </div>
 
-        {/* === RIGHT COLUMN - Sessions === */}
-        <div style={sectionCard}>
-          {sectionHeader(Layers, "Sessions", "Add or manage event sessions")}
+          {/* Description - Full Width */}
+          <div style={{ gridColumn: "span 2" }}>
+            <TextInput
+              source="description"
+              label="Detailed Description"
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              placeholder="Describe the event in a few sentences..."
+            />
+          </div>
 
-          <ArrayInput source="sessions" label="Session List">
-            <SimpleFormIterator sx={iteratorSx}>
-              {/* === SESSION FORM — responsive : 3 colonnes desktop, 1 colonne mobile === */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr",
-                  gap: "14px",
-                }}
-                className="event-edit-subgrid event-edit-subgrid-3"
-              >
-                {/* Title - Full Width */}
-                <div style={{ gridColumn: "span 3" }}>
-                  <TextInput
-                    source="title"
-                    label="Session Title"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Ex: React Workshop"
-                  />
-                </div>
+          {/* Category */}
+          <div>
+            <SelectInput
+              source="category"
+              label="Category"
+              choices={[
+                { id: "CONFERENCE", name: "Conference" },
+                { id: "WORKSHOP", name: "Workshop" },
+                { id: "SEMINAR", name: "Seminar" },
+                { id: "MEETUP", name: "Meetup" },
+                { id: "WEBINAR", name: "Webinar" },
+                { id: "SOCIAL", name: "Social" },
+                { id: "FUNDRAISER", name: "Fundraiser" },
+                { id: "SPORTS", name: "Sports" },
+                { id: "ARTS", name: "Arts" },
+                { id: "TECHNOLOGY", name: "Technology" },
+                { id: "BUSINESS", name: "Business" },
+                { id: "EDUCATION", name: "Education" },
+                { id: "OTHER", name: "Other" },
+              ]}
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
+          </div>
 
-                {/* Description - Full Width */}
-                <div style={{ gridColumn: "span 3" }}>
-                  <TextInput
-                    source="description"
-                    label="Description"
-                    multiline
-                    rows={2}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Session description..."
-                  />
-                </div>
+          {/* Location */}
+          <div>
+            <TextInput
+              source="location"
+              label="Location"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+              placeholder="Address or online link"
+            />
+          </div>
 
-                {/* Room */}
-                <div>
-                  <ReferenceInput source="roomId" reference="rooms" label="Room" fullWidth>
-                    <AutocompleteInput
-                      optionText="name"
-                      validate={required()}
-                      variant="outlined"
-                      placeholder="Choose a room"
-                    />
-                  </ReferenceInput>
-                </div>
+          {/* Start Date */}
+          <div>
+            <DateTimeInput
+              source="startDate"
+              label="Start Date & Time"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
+          </div>
 
-                {/* Capacity */}
-                <div>
-                  <NumberInput
-                    source="capacity"
-                    label="Capacity"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Number of seats"
-                  />
-                </div>
-
-                {/* Start Time */}
-                <div>
-                  <DateTimeInput
-                    source="startTime"
-                    label="Start Time"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                  />
-                </div>
-
-                {/* End Time — seule sur sa ligne, occupe toute la largeur restante */}
-                <div style={{ gridColumn: "span 2" }}>
-                  <DateTimeInput
-                    source="endTime"
-                    label="End Time"
-                    validate={required()}
-                    fullWidth
-                    variant="outlined"
-                  />
-                </div>
-              </div>
-            </SimpleFormIterator>
-          </ArrayInput>
-
-          {/* Footer */}
-          <div
-            style={{
-              marginTop: "16px",
-              paddingTop: "16px",
-              borderTop: `1px solid ${COLORS.darkBorder}`,
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-            }}
-          >
-            <Clock size={14} color={COLORS.primary} />
-            <span
-              style={{
-                fontSize: "12px",
-                color: COLORS.text.muted,
-              }}
-            >
-              Add one or more sessions to your event
-            </span>
+          {/* End Date */}
+          <div>
+            <DateTimeInput
+              source="endDate"
+              label="End Date & Time"
+              validate={required()}
+              fullWidth
+              variant="outlined"
+            />
           </div>
         </div>
       </div>
 
-      {/* Media queries pour la responsivité réelle des grilles (style inline ne gère pas @media) */}
+      {/* Media query pour la responsivité de la grille générale */}
       <style>{`
-        @media (max-width: 960px) {
-          .event-edit-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-        /* Palier intermédiaire : la grille de session (3 colonnes) passe à 2 colonnes
-           dès que la colonne Sessions devient un peu plus étroite (tablette). */
-        @media (max-width: 1280px) {
-          .event-edit-subgrid-3 {
-            grid-template-columns: 1fr 1fr !important;
-          }
-          .event-edit-subgrid-3 > div[style*="span 3"] {
-            grid-column: span 2 !important;
-          }
-          .event-edit-subgrid-3 > div[style*="span 2"] {
-            grid-column: span 2 !important;
-          }
-        }
         @media (max-width: 600px) {
           .event-edit-subgrid {
             grid-template-columns: 1fr !important;
           }
-          .event-edit-subgrid > div[style*="span 2"],
-          .event-edit-subgrid > div[style*="span 3"] {
+          .event-edit-subgrid > div[style*="span 2"] {
             grid-column: span 1 !important;
           }
         }
